@@ -1,5 +1,14 @@
 import "@/styles/globals.css";
+import { HomeLayout } from "@/page-components/layouts";
 
-export default function App({ Component, pageProps }) {
-  return <Component {...pageProps} />;
-}
+const App = ({ Component, pageProps }) => {
+  const PageLayout = Component.Layout || HomeLayout;
+
+  return (
+    <PageLayout {...pageProps}>
+      <Component {...pageProps} />
+    </PageLayout>
+  );
+};
+
+export default App;
