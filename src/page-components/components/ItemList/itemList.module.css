@@ -1,0 +1,49 @@
+.item-container {
+  width: 50%; /* Adjust the width of the container */
+  margin: 0 auto; /* Center the container horizontally */
+}
+
+.item {
+  border: 4px solid #a7c4e3;
+  margin: 0.75rem auto; /* Adjust margin to center the item horizontally */
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  max-width: 77%; /* Allow the item to take up to 100% of the container's width */
+}
+
+.itemContent {
+  flex: 1;
+}
+
+.itemTitle {
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.itemDescription,
+.itemQuantity,
+.itemExpDate,
+.postedDate {
+  margin-top: 0.5rem;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: flex-end;
+  margin-right: 150px;
+  margin-top: 1rem; /* Add margin to separate from the items */
+}
+
+.addButton {
+  background-color: #99b7e1; /* Box background color */
+  padding: 0.5rem 1rem; /* Box padding */
+  border-radius: 8px; /* Box border radius */
+  width: auto; /* Set width to auto */
+}
+
+.btnGroup {
+  display: flex;
+  gap: 1rem;
+}

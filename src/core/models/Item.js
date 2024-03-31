@@ -1,34 +1,37 @@
 import { Schema, models, model } from "mongoose";
 
-const ItemSchema = new Schema({
-  itemId: {
-    type: String,
-    require: true,
-    default: "",
+const ItemSchema = new Schema(
+  {
+    itemName: {
+      type: String,
+      require: true,
+      default: "",
+    },
+    description: {
+      type: String,
+      default: "",
+    },
+    quantity: {
+      type: Number,
+      require: true,
+      default: "",
+    },
+    expirationDate: {
+      type: String,
+      required: true,
+      default: "",
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+    },
   },
-  itemName: {
-    type: String,
-    require: true,
-    default: "",
-  },
-  description: {
-    type: String,
-    default: "",
-  },
-  quantity: {
-    type: Number,
-    require: true,
-    default: "",
-  },
-  datePosted: {
-    type: Date,
-    default: Date.now
-  },
-  expirationDate: {
-    type: String,
-    required: true,
-    default: ""
-  },
-});
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
+);
 
-export const ItemModel = models?.Item || model("Item", ItemSchema);
+const ItemModel = models?.Item || model("Item", ItemSchema);
+
+export default ItemModel;
