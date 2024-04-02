@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+require("dotenv").config();
 
 const mongoUri = process.env.MONGO_URI;
 
@@ -16,6 +17,7 @@ if (!cachedMongoObject) {
 
 async function connectToDB() {
   if (cachedMongoObject.connection) {
+    console.log("Hello");
     return cachedMongoObject.connection;
   }
 
@@ -23,15 +25,19 @@ async function connectToDB() {
     const opts = {
       bufferCommands: false,
     };
-
-    cachedMongoObject.promise = mongoose
-      .connect(mongoUri, opts)
-      .then((mongoose) => {
-        return mongoose;
-      });
+    try {
+      cachedMongoObject.promise = mongoose
+        .connect(mongoUri, opts)
+        .then((mongoose) => {
+          return mongoose;
+        });
+      cachedMongoObject.connection = await cachedMongoObject.promise;
+      console.log("Success");
+      return cachedMongoObject.connection;
+    } catch {
+      throw new Error("No Connection");
+    }
   }
-  cachedMongoObject.connection = await cachedMongoObject.promise;
-  return cachedMongoObject.connection;
 }
 
 export default connectToDB;
