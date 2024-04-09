@@ -5,11 +5,9 @@ import { HomeLayout } from "@/page-components/layouts";
 const HomeIndex = () => {
   return (
     <div className={styles.container}>
-      {/* AppBar */}
       <div className={styles.appBar}>
-        <Link href="/items/1">Click for the page two!</Link>
+        <Link href="/api/items/1/page">Click for page two!</Link>
       </div>
-      {/* Main Content */}
       <div className={styles.mainContent}>
         <h1>This is your home page.</h1>
       </div>
