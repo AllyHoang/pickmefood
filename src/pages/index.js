@@ -7,7 +7,7 @@ const HomeIndex = () => {
     <div className={styles.container}>
       {/* AppBar */}
       <div className={styles.appBar}>
-        <Link href="/items/1">Click for page two!</Link>
+        <Link href="/items/1">Click for the page two!</Link>
       </div>
       {/* Main Content */}
       <div className={styles.mainContent}>
