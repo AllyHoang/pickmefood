@@ -1,10 +1,10 @@
-import { ACtiveRequestLayout } from "@/page-components/layouts/ActiveRequestLayout";
+import { ActiveRequestLayout } from "@/page-components/layouts";
 import RequestList from "@/page-components/components/RequestList/RequestList";
 
 const ActiveRequestIndex = () => {
-    return <RequestList/>
+  return <RequestList />;
 };
 
-ActiveRequestIndex.Layout = ACtiveRequestLayout;
+ActiveRequestIndex.Layout = ActiveRequestLayout;
 
 export default ActiveRequestIndex;

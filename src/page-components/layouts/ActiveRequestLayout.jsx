@@ -1,8 +1,8 @@
 import React from "react";
 import Head from "next/head";
-import Navbar from "../components/Navbar/Navbar";
+import Navbar from "../components/Navbar/NavbarRequest";
 
-export const ACtiveRequestLayout = ({ children }) => {
+export const ActiveRequestLayout = ({ children }) => {
   return (
     <>
       <Head>
