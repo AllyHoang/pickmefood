@@ -5,10 +5,10 @@ export default function Navbar() {
   return (
     <nav className={styles.navbar}>
       <div className={styles.linkBox1}>
-        <Link href={"/"}>Active Requests</Link>
+        <Link href={"/"}>Active Donations</Link>
       </div>
       <div className={styles.linkBox2}>
-        <Link href={"/addTopic"}>Active Donations</Link>
+        <Link href={"/addTopic"}>Active Requests</Link>
       </div>
     </nav>
   );
