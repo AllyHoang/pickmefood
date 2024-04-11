@@ -32,7 +32,7 @@
 .buttonContainer {
   display: flex;
   justify-content: flex-end;
-  margin-right: 150px;
+  margin-right: 160px;
   margin-top: 1rem; /* Add margin to separate from the items */
 }
 

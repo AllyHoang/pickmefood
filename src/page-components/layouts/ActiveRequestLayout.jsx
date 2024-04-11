@@ -1,12 +1,12 @@
 import React from "react";
 import Head from "next/head";
-import Navbar from "../components/Navbar/Navbar";
+import Navbar from "../components/Navbar/NavbarRequest";
 
-export const ActiveDonationLayout = ({ children }) => {
+export const ActiveRequestLayout = ({ children }) => {
   return (
     <>
       <Head>
-        <title>PickMeFood | Active Donation</title>
+        <title>PickMeFood | Active Request</title>
       </Head>
       <Navbar />
       <main>

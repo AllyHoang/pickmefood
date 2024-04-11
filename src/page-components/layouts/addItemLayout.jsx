@@ -1,6 +1,5 @@
 import React from "react";
 import Head from "next/head";
-import AddItem from "../components/addItemForm/addItemForm";
 
 export const addItemLayout = ({ children }) => {
   return (
