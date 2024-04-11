@@ -7,7 +7,7 @@ export const addItemLayout = ({ children }) => {
     <>
       <Head>
         <title>PickMeFood | Add Donation</title>
-        <title>PickMeFood | Add Donation</title>
+
       </Head>
       <main>
         <div>{children}</div>
