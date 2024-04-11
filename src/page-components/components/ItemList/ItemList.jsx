@@ -58,7 +58,7 @@ const ItemList = () => {
             </div>
             <div className={styles.btnGroup}>
               <RemoveBtn id={t._id} />
-              <Link href={`/editItem/${t._id}`}>
+              <Link href={`/editItem/${t._id}/page`}>
                 <HiPencilAlt size={24} />
               </Link>
             </div>

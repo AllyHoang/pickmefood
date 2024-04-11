@@ -8,7 +8,7 @@ export default function Navbar() {
         <Link href={"/"}>Active Requests</Link>
       </div>
       <div className={styles.linkBox2}>
-        <Link href={"/addTopic"}>Active Donations</Link>
+        <Link href={"/active-donation"}>Active Donations</Link>
       </div>
     </nav>
   );
