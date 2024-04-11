@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import RemoveBtn from "../RemoveBtn";
 import { HiPencilAlt } from "react-icons/hi";
 import styles from "./requestList.module.css";
+import RemoveRequestsBtn from "../RemoveRequestsBtn";
 
 const RequestList = () => {
   const [requests, setRequests] = useState(null);
@@ -53,7 +53,7 @@ const RequestList = () => {
               </div>
             </div>
             <div className={styles.btnGroup}>
-              <RemoveBtn id={t._id} />
+              <RemoveRequestsBtn id={t._id} />
               <Link href={`/editRequest/${t._id}`}>
                 <HiPencilAlt size={24} />
               </Link>
