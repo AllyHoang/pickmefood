@@ -54,7 +54,7 @@ const RequestList = () => {
             </div>
             <div className={styles.btnGroup}>
               <RemoveRequestsBtn id={t._id} />
-              <Link href={`/editRequest/${t._id}`}>
+              <Link href={`/editRequest/${t._id}/page`}>
                 <HiPencilAlt size={24} />
               </Link>
             </div>
@@ -62,7 +62,7 @@ const RequestList = () => {
         ))}
         <div className={styles.buttonContainer}>
           <div className={styles.addButton}>
-            <Link href={"/requestForm"}>Add</Link>
+            <Link href={"/addRequest/page"}>Add</Link>
           </div>
         </div>
       </div>
