@@ -1,4 +1,5 @@
 import { Schema, models, model } from "mongoose";
+import { flushAllTraces } from "next/dist/trace";
 
 const UserSchema = new Schema({
   email: {
@@ -17,7 +18,6 @@ const UserSchema = new Schema({
   },
   location: {
     type: String,
-    required: true,
     default: "",
   },
 });

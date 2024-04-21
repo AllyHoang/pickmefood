@@ -1,21 +1,41 @@
-// Connect to MongoDB
+// Pseudocode for creating a new user in the database
 
-// Handle POST request to login user
-// Get request body
-// Destructure email and password from request body
-// Log request body (REMOVE IN PRODUCTION)
+import connectToDB from "@/core/db/mongodb";
+import { UserModel } from "@/core/models/User";
+import bcrypt from "bcrypt";
+import { NextResponse, NextRequest } from "next/server";
+import jwt from "jsonwebtoken";
 
-// Check if user with provided email exists in the database
-// If user does not exist, return error response
+export default async function handler(req, res) {
+  if (req.method === "POST") {
+    await connectToDB();
+    const email = req.body.email;
+    const user = await UserModel.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ error: "Email not registered" });
+    }
 
-// Check if the provided password matches the hashed password stored in the database
-// If password is invalid, return error response
+    const password = req.body.password;
+    const hashedPassword = user.password;
+    const matched = await bcrypt.compare(password, hashedPassword);
+    if (!matched) {
+      return res.status(401).json({ error: "Incorrect password" });
+    }
 
-// Create token data containing user ID, username, and email
-// Create JWT token with token data and secret key
+    res.json({ message: "successful" });
 
-// Create response with success message
+    //create token data
+    const tokenData = {
+      id: user._id,
+      email: user.email,
+    };
 
-// Set JWT token in user's cookies
+    const token = await jwt.sign(tokenData, process.env.TOKEN_SECRET, {
+      expiresIn: "1d",
+    });
 
-// Return response
+    // Set token as a cookie
+    res.setHeader("Set-Cookie", `token=${token}; HttpOnly; Path=/`);
+    return { status: 200, json: { message: "Login successful" } };
+  }
+}
