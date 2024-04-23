@@ -1,25 +1,23 @@
 // Pseudocode for creating a new user in the database
 
-// Connect to MongoDB
+import connectToDB from "@/core/db/mongodb";
+import { UserModel } from "@/core/models/User";
+import bcrypt from "bcrypt";
 
-// Handle POST request to create a new user
+export default async function handler(req, res) {
+  if (req.method === "POST") {
+    await connectToDB();
 
-// Get request body
+    const email = req.body.email;
+    const existingUser = await UserModel.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: "Email is already registered" });
+    }
 
-// Destructure incoming variables from request body
-
-// Log request body (REMOVE IN PRODUCTION)
-
-// Check if user with the provided email already exists
-
-// If user exists, return an error response
-
-// Hash the password
-
-// Create a new user instance
-
-// Save the new user to the database
-
-// Return success response with created user details
-
-// Handle errors and return error response
+    const password = req.body.password;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = new UserModel({ email, password: hashedPassword });
+    await newUser.save();
+    return res.status(201).json({ message: "User created successfully." });
+  }
+}
