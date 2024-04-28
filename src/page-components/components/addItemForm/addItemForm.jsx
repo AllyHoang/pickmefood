@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./addItemForm.module.css"; // Import the CSS file
 
-export default function AddItem() {
+export default function AddItem({ userId }) {
   const [itemName, setName] = useState("");
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -19,18 +19,22 @@ export default function AddItem() {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/api/items/page", {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify({
-          itemName,
-          description,
-          quantity,
-          expirationDate,
-        }),
-      });
+      const res = await fetch(
+        `http://localhost:3000/api/activeItem/${userId}/page`,
+        {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+          },
+          body: JSON.stringify({
+            userId,
+            itemName,
+            description,
+            quantity,
+            expirationDate,
+          }),
+        }
+      );
 
       if (res.ok) {
         router.push("/active-donation");

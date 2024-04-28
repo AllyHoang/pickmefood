@@ -4,15 +4,18 @@ import RemoveBtn from "../RemoveBtn";
 import { HiPencilAlt } from "react-icons/hi";
 import styles from "./ItemList.module.css"; // Import CSS module
 
-const ItemList = () => {
+const ItemList = ({ userId }) => {
   const [items, setItems] = useState(null); // State to hold items
 
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/items/page", {
-          cache: "no-store",
-        });
+        const res = await fetch(
+          `http://localhost:3000/api/activeItem/${userId}/page`,
+          {
+            cache: "no-store",
+          }
+        );
 
         if (!res.ok) {
           throw new Error("Failed to fetch items");
@@ -66,7 +69,7 @@ const ItemList = () => {
         ))}
         <div className={styles.buttonContainer}>
           <div className={styles.addButton}>
-            <Link href={"/addItem/page"}>Add</Link>
+            <Link href={"/AddItem"}>Add</Link>
           </div>
         </div>
       </div>
