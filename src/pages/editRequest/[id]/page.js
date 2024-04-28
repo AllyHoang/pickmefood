@@ -2,7 +2,6 @@ import EditRequestForm from "@/page-components/components/editRequestForm/editRe
 import editRequestLayout from "@/page-components/layouts/editRequestLayout";
 import { useRouter } from "next/router";
 
-
 const EditRequestIndex = () => {
   const router = useRouter();
   const { id } = router.query;

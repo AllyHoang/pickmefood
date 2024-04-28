@@ -16,7 +16,6 @@ export default async function handler(req, res) {
       } else {
         res.status(404).json({ message: "Item Not Found" });
       }
-
     } else if (req.method === "GET") {
       const itemId = req.query.id;
       const itemInfo = await ItemModel.findById(itemId);
@@ -28,7 +27,6 @@ export default async function handler(req, res) {
       } else {
         res.status(404).json({ message: "Item Not Found" });
       }
-
     } else if (req.method === "PUT") {
       const itemId = req.query.id;
       const updatedItemInfo = req.body;
@@ -48,7 +46,6 @@ export default async function handler(req, res) {
     } else {
       res.status(405).json({ message: "Method Not Allowed" });
     }
-
   } catch (error) {
     res
       .status(500)

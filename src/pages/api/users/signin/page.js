@@ -1,10 +1,8 @@
-// Pseudocode for creating a new user in the database
-
 import connectToDB from "@/core/db/mongodb";
 import { UserModel } from "@/core/models/User";
 import bcrypt from "bcrypt";
-import { NextResponse, NextRequest } from "next/server";
 import jwt from "jsonwebtoken";
+import Cookies from "js-cookie";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
@@ -22,20 +20,21 @@ export default async function handler(req, res) {
       return res.status(401).json({ error: "Incorrect password" });
     }
 
-    res.json({ message: "successful" });
-
-    //create token data
+    // Create token data
     const tokenData = {
       id: user._id,
       email: user.email,
     };
 
-    const token = await jwt.sign(tokenData, process.env.TOKEN_SECRET, {
+    const token = jwt.sign(tokenData, process.env.SECRET_KEY, {
       expiresIn: "1d",
     });
 
     // Set token as a cookie
     res.setHeader("Set-Cookie", `token=${token}; HttpOnly; Path=/`);
-    return { status: 200, json: { message: "Login successful" } };
+    // Send the response to the client
+    return res.status(200).json({ message: "Login successful" });
+  } else {
+    return res.status(405).end(); // Method Not Allowed
   }
 }
