@@ -2,7 +2,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh; /* Adjust as needed */
+  height: 100vh;
 }
 
 .form-container {
@@ -11,8 +11,8 @@
   gap: 1rem;
   background-color: #bee3ef;
   padding: 50px;
-  border-radius: 20px; /* Adding border-radius for rounded corners */
-  align-items: center; /* Center content horizontally */
+  border-radius: 20px;
+  align-items: center; 
 }
 
 .input-field {
