@@ -1,29 +1,25 @@
 import connectToDB from "@/core/db/mongodb";
 import ItemModel from "@/core/models/Item";
-import jwt from "jsonwebtoken"; // Import jsonwebtoken library
 
 export default async function handler(req, res) {
   try {
-    // Perform server-side operations, such as connecting to the database
     await connectToDB();
 
-    // Decode the token to get user information
-    const token = req.cookies.token; // Assuming token is passed in cookies
-    const decodedToken = jwt.decode(token);
-    console.log(decodedToken);
-
-    if (!decodedToken || !decodedToken.id) {
-      // If token is invalid or userId is not present, return unauthorized
-      return res.status(401).json({ message: "Unauthorized" });
-    }
-
-    // Fetch item data based on the request method
     if (req.method === "DELETE") {
-      // Handle DELETE request
+      const userId = req.query.userId;
       const itemId = req.query.id;
+
+      // Check if both itemId and userId are provided
+      if (!itemId || !userId) {
+        return res
+          .status(400)
+          .json({ message: "Both itemId and userId are required" });
+      }
+
+      // Find and delete item by both itemId and userId
       const deletedItem = await ItemModel.findOneAndDelete({
         _id: itemId,
-        userId: decodedToken.id, // Filter by userId
+        userId: userId,
       });
 
       if (deletedItem) {
@@ -34,11 +30,20 @@ export default async function handler(req, res) {
         res.status(404).json({ message: "Item Not Found" });
       }
     } else if (req.method === "PUT") {
-      // Handle PUT request
+      const userId = req.query.userId;
       const itemId = req.query.id;
       const updatedItemInfo = req.body;
+
+      // Check if both itemId and userId are provided
+      if (!itemId || !userId) {
+        return res
+          .status(400)
+          .json({ message: "Both itemId and userId are required" });
+      }
+
+      // Find and update item by both itemId and userId
       const updatedItem = await ItemModel.findOneAndUpdate(
-        { _id: itemId, userId: decodedToken.id }, // Filter by userId
+        { _id: itemId, userId: userId },
         updatedItemInfo,
         { new: true }
       );
@@ -50,6 +55,8 @@ export default async function handler(req, res) {
       } else {
         res.status(404).json({ message: "Item Not Found" });
       }
+    } else if (req.method === "GET") {
+      // Handle GET request
     } else {
       res.status(405).json({ message: "Method Not Allowed" });
     }

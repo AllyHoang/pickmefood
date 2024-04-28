@@ -1,15 +1,14 @@
-import { ActiveDonationLayout } from "@/page-components/layouts";
-import ItemList from "@/page-components/components/ItemList/ItemList";
+import { addItemLayout } from "@/page-components/layouts";
+import AddItem from "@/page-components/components/addItemForm/addItemForm";
 import { jwtDecode } from "jwt-decode"; // Import jwt_decode library
-import axios from "axios"; // Import axios for HTTP requests
 
-const ActiveDonationIndex = ({ userId }) => {
-  return <ItemList userId={userId} />;
+const AddItemIndex = ({ userId }) => {
+  return <AddItem userId={userId} />;
 };
 
-ActiveDonationIndex.Layout = ActiveDonationLayout;
+AddItemIndex.Layout = addItemLayout;
 
-export default ActiveDonationIndex;
+export default AddItemIndex;
 
 export async function getServerSideProps(context) {
   // Fetch the token from context

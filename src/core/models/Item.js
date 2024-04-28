@@ -25,6 +25,11 @@ const ItemSchema = new Schema(
       type: Date,
       default: Date.now,
     },
+    userId: {
+      type: String,
+      required: true,
+      default: "",
+    },
   },
   {
     toJSON: { virtuals: true },
