@@ -24,6 +24,14 @@ const UserSchema = new Schema({
     type: String,
     default: "",
   },
+  resetToken: {
+    type: String,
+    required: false,
+  },
+  resetTokenExpiry: {
+    type: Date,
+    required: false,
+  },
 });
 
 export const UserModel = models?.User || model("User", UserSchema);
