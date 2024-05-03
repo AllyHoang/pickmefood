@@ -3,6 +3,8 @@ import styles from "@/styles/Dashboard.module.css";
 import * as cookie from "cookie";
 import jwt from "jsonwebtoken";
 import Router from "next/router";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styles
 
 const Dashboard = ({ parsedCookies }) => {
   const [token, setToken] = useState("");
@@ -27,16 +29,14 @@ const Dashboard = ({ parsedCookies }) => {
     // Redirect to login page if token is not present
     if (!token) {
       setRedirectToLogin(true);
-      // Alert the user about redirection
-      alert(
-        "You must be logged in to access this page. Redirecting to login page..."
-      );
+      // Show toast notification
     }
   }, [parsedCookies]);
 
   // Redirect to login page if redirectToLogin is true
   useEffect(() => {
     if (redirectToLogin) {
+      toast.error("You must be logged in to access this page");
       Router.replace("/");
     }
   }, [redirectToLogin]);
@@ -51,6 +51,7 @@ const Dashboard = ({ parsedCookies }) => {
           <pre>{JSON.stringify(decodedToken, null, 2)}</pre>
         </div>
       )}
+      <ToastContainer />
     </div>
   );
 };

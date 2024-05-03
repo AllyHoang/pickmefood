@@ -17,6 +17,18 @@ export default async function handler(req, res) {
     const password = req.body.password;
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new UserModel({ email, password: hashedPassword });
+    // Create token data
+    const tokenData = {
+      id: newUser._id,
+      email: newUser.email,
+    };
+
+    const token = jwt.sign(tokenData, process.env.SECRET_KEY, {
+      expiresIn: "1d",
+    });
+
+    // Set token as a cookie
+    res.setHeader("Set-Cookie", `token=${token}; HttpOnly; Path=/`);
     await newUser.save();
     return res.status(201).json({ message: "User created successfully." });
   }

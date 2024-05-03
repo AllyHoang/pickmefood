@@ -1,6 +1,6 @@
 // Navbar.js
-import Link from 'next/link';
-import styles from './GlobalNavbar.module.css';
+import Link from "next/link";
+import styles from "./GlobalNavbar.module.css";
 
 const GlobalNavbar = () => {
   return (
@@ -25,7 +25,7 @@ const GlobalNavbar = () => {
         </ul>
         <ul className={styles.navbarNavRight}>
           <li className={styles.navItem}>
-            <Link href="/signin" legacyBehavior>
+            <Link href="/sign-in" legacyBehavior>
               <a className={styles.signInButton}>Sign In</a>
             </Link>
           </li>
@@ -36,3 +36,21 @@ const GlobalNavbar = () => {
 };
 
 export default GlobalNavbar;
+
+export async function getServerSideProps(context) {
+  // Fetch the token from context
+  const token = context.req.cookies.token;
+
+  // Decode the token to get user information
+  const decodedToken = jwtDecode(token);
+
+  // Extract userId from decoded token
+  const userId = decodedToken.id;
+
+  // Pass userId as props to the component
+  return {
+    props: {
+      userId,
+    },
+  };
+}

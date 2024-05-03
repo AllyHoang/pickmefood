@@ -1,15 +1,31 @@
 import connectToDB from "@/core/db/mongodb";
 import RequestModel from "@/core/models/Request";
+import jwt from "jsonwebtoken"; // Import jsonwebtoken library
 
 export default async function handler(req, res) {
   try {
+    // Perform server-side operations, such as connecting to the database
     await connectToDB();
 
-    if (req.method === "DELETE") {
-      const itemId = req.query.id;
-      const deletedItem = await RequestModel.findByIdAndDelete(itemId);
+    // Decode the token to get user information
+    const token = req.cookies.token; // Assuming token is passed in cookies
+    const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
 
-      if (deletedItem) {
+    if (!decodedToken || !decodedToken.id) {
+      // If token is invalid or userId is not present, return unauthorized
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    // Fetch item data based on the request method
+    if (req.method === "DELETE") {
+      // Handle DELETE request
+      const requestId = req.query.id;
+      const deletedRequest = await RequestModel.findOneAndDelete({
+        _id: requestId,
+        userId: decodedToken.id, // Filter by userId
+      });
+
+      if (deletedRequest) {
         res
           .status(200)
           .json({ message: "Item deleted", data: { item: deletedItem } });
@@ -17,8 +33,8 @@ export default async function handler(req, res) {
         res.status(404).json({ message: "Item Not Found" });
       }
     } else if (req.method === "GET") {
-      const itemId = req.query.id;
-      const itemInfo = await RequestModel.findById(itemId);
+      const requestId = req.query.id;
+      const itemInfo = await RequestModel.findById(requestId);
 
       if (itemInfo) {
         res
@@ -28,10 +44,11 @@ export default async function handler(req, res) {
         res.status(404).json({ message: "Item Not Found" });
       }
     } else if (req.method === "PUT") {
-      const itemId = req.query.id;
+      // Handle PUT request
+      const requestId = req.query.id;
       const updatedItemInfo = req.body;
-      const updatedItem = await RequestModel.findByIdAndUpdate(
-        itemId,
+      const updatedItem = await RequestModel.findOneAndUpdate(
+        { _id: requestId, userId: decodedToken.id }, // Filter by userId
         updatedItemInfo,
         { new: true }
       );

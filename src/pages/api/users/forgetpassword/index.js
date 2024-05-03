@@ -25,7 +25,7 @@ export default async function handler(req, res) {
       user.resetToken = passwordResetToken;
       user.resetTokenExpiry = passwordResetExpires;
 
-      const resetUrl = `localhost:3000/reset-password/${resetToken}/page`;
+      const resetUrl = `localhost:3000/reset-password/${resetToken}`;
       console.log(resetUrl);
 
       const body =

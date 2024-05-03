@@ -23,7 +23,7 @@ export default function ForgetPasswordForm() {
 
     try {
       const res = await fetch(
-        "http://localhost:3000/api/users/forgetpassword/page",
+        "http://localhost:3000/api/users/forgetpassword",
         {
           method: "POST",
           headers: {

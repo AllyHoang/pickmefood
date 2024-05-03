@@ -9,8 +9,7 @@ export default async function handler(req, res) {
 
     // Decode the token to get user information
     const token = req.cookies.token; // Assuming token is passed in cookies
-    const decodedToken = jwt.decode(token);
-    console.log(decodedToken);
+    const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
 
     if (!decodedToken || !decodedToken.id) {
       // If token is invalid or userId is not present, return unauthorized
@@ -30,6 +29,17 @@ export default async function handler(req, res) {
         res
           .status(200)
           .json({ message: "Item deleted", data: { item: deletedItem } });
+      } else {
+        res.status(404).json({ message: "Item Not Found" });
+      }
+    } else if (req.method === "GET") {
+      const itemId = req.query.id;
+      const itemInfo = await ItemModel.findById(itemId);
+
+      if (itemInfo) {
+        res
+          .status(200)
+          .json({ message: "Item data fetched", data: { item: itemInfo } });
       } else {
         res.status(404).json({ message: "Item Not Found" });
       }

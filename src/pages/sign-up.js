@@ -2,7 +2,7 @@
 // - check if there is any existing email in database
 // - hash the password
 
-import SignUpForm from "@/page-components/components/signUpForm/SignUpForm";
+import SignUpForm from "@/page-components/components/SignUpForm/SignUpForm";
 const SignUp = () => {
   return <SignUpForm />;
 };

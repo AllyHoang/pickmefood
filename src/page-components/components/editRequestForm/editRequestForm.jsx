@@ -11,7 +11,7 @@ export default function EditRequestForm({ id }) {
   useEffect(() => {
     const fetchItemData = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/api/requests/${id}/page`, {
+        const res = await fetch(`http://localhost:3000/api/requests/${id}`, {
           cache: "no-store",
         });
         const data = await res.json();
@@ -34,7 +34,7 @@ export default function EditRequestForm({ id }) {
     }
     try {
       e.preventDefault();
-      const res = await fetch(`http://localhost:3000/api/requests/${id}/page`, {
+      const res = await fetch(`http://localhost:3000/api/requests/${id}`, {
         method: "PUT",
         headers: {
           "Content-type": "application/json",
