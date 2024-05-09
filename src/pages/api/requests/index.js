@@ -1,6 +1,5 @@
 import connectToDB from "@/core/db/mongodb";
 import RequestModel from "@/core/models/Request";
-import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req, res) {
   if (req.method == "POST") {

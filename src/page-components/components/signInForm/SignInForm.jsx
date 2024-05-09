@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import styles from "./signInForm.module.css";
+import styles from "./SignInForm.module.css";
 
 export default function SignInForm() {
   const [email, setEmail] = useState("");
@@ -22,7 +22,7 @@ export default function SignInForm() {
       return;
     }
     try {
-      const res = await fetch("http://localhost:3000/api/users/signin/page", {
+      const res = await fetch("http://localhost:3000/api/users/signin", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -83,7 +83,7 @@ export default function SignInForm() {
         <h2>Oh naw you forgot your password?</h2>
         <div>
           Reset{" "}
-          <Link href="/forget-password/page" className={styles.link}>
+          <Link href="/forget-password" className={styles.link}>
             here!
           </Link>
         </div>

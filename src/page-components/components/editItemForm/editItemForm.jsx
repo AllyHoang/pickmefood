@@ -13,7 +13,7 @@ export default function EditItem({ id }) {
   useEffect(() => {
     const fetchItemData = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/api/items/${id}/page`, {
+        const res = await fetch(`http://localhost:3000/api/items/${id}`, {
           cache: "no-store",
         });
         const data = await res.json();
@@ -37,7 +37,7 @@ export default function EditItem({ id }) {
     }
     try {
       e.preventDefault();
-      const res = await fetch(`http://localhost:3000/api/items/${id}/page`, {
+      const res = await fetch(`http://localhost:3000/api/items/${id}`, {
         method: "PUT",
         headers: {
           "Content-type": "application/json",

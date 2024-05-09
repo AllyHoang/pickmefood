@@ -1,4 +1,4 @@
-import ResetPasswordForm from "@/page-components/components/resetPasswordForm/resetPasswordForm";
+import ResetPasswordForm from "@/page-components/components/ResetPasswordForm/ResetPasswordForm";
 import { useRouter } from "next/router";
 
 const ResetPassword = () => {

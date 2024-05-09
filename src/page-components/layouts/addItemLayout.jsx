@@ -1,7 +1,7 @@
 import React from "react";
 import Head from "next/head";
 
-export const addItemLayout = ({ children }) => {
+export const AddItemLayout = ({ children }) => {
   return (
     <>
       <Head>

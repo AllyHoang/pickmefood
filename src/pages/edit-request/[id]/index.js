@@ -1,5 +1,5 @@
-import EditRequestForm from "@/page-components/components/editRequestForm/editRequestForm";
-import editRequestLayout from "@/page-components/layouts/editRequestLayout";
+import EditRequestForm from "@/page-components/components/EditRequestForm/EditRequestForm";
+import editRequestLayout from "@/page-components/layouts/EditRequestLayout";
 import { useRouter } from "next/router";
 
 const EditRequestIndex = () => {

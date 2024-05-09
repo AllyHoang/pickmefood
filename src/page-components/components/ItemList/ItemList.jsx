@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import RemoveBtn from "../RemoveBtn";
+import RemoveBtn from "../RemoveButton";
 import { HiPencilAlt } from "react-icons/hi";
 import styles from "./ItemList.module.css"; // Import CSS module
 
@@ -11,7 +11,7 @@ const ItemList = ({ userId }) => {
     const fetchItems = async () => {
       try {
         const res = await fetch(
-          `http://localhost:3000/api/activeItem/${userId}/page`,
+          `http://localhost:3000/api/activeItem/${userId}`,
           {
             cache: "no-store",
           }
@@ -61,7 +61,7 @@ const ItemList = ({ userId }) => {
             </div>
             <div className={styles.btnGroup}>
               <RemoveBtn id={t._id} />
-              <Link href={`/editItem/${t._id}/page`}>
+              <Link href={`/edit-item/${t._id}`}>
                 <HiPencilAlt size={24} />
               </Link>
             </div>
@@ -69,7 +69,7 @@ const ItemList = ({ userId }) => {
         ))}
         <div className={styles.buttonContainer}>
           <div className={styles.addButton}>
-            <Link href={"/AddItem"}>Add</Link>
+            <Link href={"/add-item"}>Add</Link>
           </div>
         </div>
       </div>

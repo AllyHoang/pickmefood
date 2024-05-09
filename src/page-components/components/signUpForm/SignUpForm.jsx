@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import styles from "./signUpForm.module.css";
+import styles from "./SignUpForm.module.css";
 
 export default function SignUpForm() {
   const [user, setUser] = useState({
@@ -47,7 +47,7 @@ export default function SignUpForm() {
     }
 
     try {
-      const res = await fetch("http://localhost:3000/api/users/signup/page", {
+      const res = await fetch("http://localhost:3000/api/users/signup", {
         method: "POST",
         headers: {
           "Content-type": "application/json",
@@ -62,7 +62,7 @@ export default function SignUpForm() {
 
       if (res.ok) {
         console.log("User created successfully");
-        router.push("/sign-in");
+        router.push("/dashboard");
       } else if (res.status === 400) {
         const data = await res.json();
         alert(data.error);

@@ -1,11 +1,12 @@
-import { ActiveRequestLayout } from "@/page-components/layouts";
-import RequestList from "@/page-components/components/RequestList/RequestList";
+import { AddRequestLayout } from "@/page-components/layouts/AddRequestLayout";
+import AddRequest from "@/page-components/components/AddRequestForm/AddRequestForm";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 import Swal from "sweetalert2";
+import jwt from "jsonwebtoken";
 
-const ActiveRequestIndex = ({ userId }) => {
+const AddRequestIndex = ({ userId }) => {
   const router = useRouter();
 
   useEffect(() => {
@@ -20,11 +21,12 @@ const ActiveRequestIndex = ({ userId }) => {
       });
     }
   }, [userId, router]);
-  return <>{userId && <RequestList userId={userId} />}</>;
+  return <>{userId && <AddRequest userId={userId} />}</>;
 };
-ActiveRequestIndex.Layout = ActiveRequestLayout;
 
-export default ActiveRequestIndex;
+AddRequestIndex.Layout = AddRequestLayout;
+
+export default AddRequestIndex;
 
 export async function getServerSideProps(context) {
   // Fetch the token from context
@@ -40,7 +42,7 @@ export async function getServerSideProps(context) {
   }
 
   // If there's a token, decode it to get user information
-  const decodedToken = jwtDecode(token);
+  const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
 
   // Extract userId from decoded token
   const userId = decodedToken.id;
