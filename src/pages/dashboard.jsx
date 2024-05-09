@@ -3,6 +3,7 @@ import styles from "@/styles/Dashboard.module.css";
 import * as cookie from "cookie";
 import jwt from "jsonwebtoken";
 import Router from "next/router";
+import { HomeLayout } from "@/page-components/layouts";
 
 const Dashboard = ({ parsedCookies }) => {
   const [token, setToken] = useState("");
@@ -54,6 +55,8 @@ const Dashboard = ({ parsedCookies }) => {
     </div>
   );
 };
+
+Dashboard.Layout = HomeLayout;
 
 export default Dashboard;
 

@@ -2,9 +2,10 @@ import connectToDB from "@/core/db/mongodb";
 import { UserModel } from "@/core/models/User";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import Cookies from "js-cookie";
 
 export default async function handler(req, res) {
+  require("dotenv").config();
+
   if (req.method === "POST") {
     await connectToDB();
     const email = req.body.email;
@@ -25,7 +26,7 @@ export default async function handler(req, res) {
       id: user._id,
       email: user.email,
     };
-
+    console.log(process.env.SECRET_KEY);
     const token = jwt.sign(tokenData, process.env.SECRET_KEY, {
       expiresIn: "1d",
     });
