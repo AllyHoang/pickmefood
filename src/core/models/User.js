@@ -1,7 +1,10 @@
 import { Schema, models, model } from "mongoose";
-import { flushAllTraces } from "next/dist/trace";
 
 const UserSchema = new Schema({
+  fullName: {
+    type: String,
+    required: true,
+  },
   email: {
     type: String,
     required: true,
@@ -15,10 +18,6 @@ const UserSchema = new Schema({
   points: {
     type: Number,
     default: 0,
-  },
-  location: {
-    type: String,
-    default: "",
   },
   resetToken: {
     type: String,

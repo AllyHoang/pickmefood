@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import styles from "./resetPasswordForm.module.css";
+import styles from "./ResetPasswordForm.module.css";
 
 export default function ResetPasswordForm({ id }) {
   const [password, setPassword] = useState("");
@@ -14,7 +14,7 @@ export default function ResetPasswordForm({ id }) {
   useEffect(() => {
     const verifyToken = async () => {
       try {
-        const res = await fetch(`/api/users/verifytoken/${id}/page`, {
+        const res = await fetch(`/api/users/verifytoken/${id}`, {
           method: "POST",
           headers: {
             "Content-type": "application/json",
@@ -51,19 +51,16 @@ export default function ResetPasswordForm({ id }) {
     }
 
     try {
-      const res = await fetch(
-        "http://localhost:3000/api/users/resetpassword/page",
-        {
-          method: "POST",
-          headers: {
-            "Content-type": "application/json",
-          },
-          body: JSON.stringify({
-            password,
-            email,
-          }),
-        }
-      );
+      const res = await fetch("http://localhost:3000/api/users/resetpassword", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          password,
+          email,
+        }),
+      });
       if (res.ok) {
         alert("Your password is reset!");
         router.push("/sign-in");

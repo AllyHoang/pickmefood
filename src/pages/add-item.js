@@ -1,13 +1,13 @@
-import { ActiveRequestLayout } from "@/page-components/layouts";
-import RequestList from "@/page-components/components/RequestList/RequestList";
-import { jwtDecode } from "jwt-decode";
-import { useRouter } from "next/router";
+import { AddItemLayout } from "@/page-components/layouts";
+import AddItem from "@/page-components/components/AddItemForm/AddItemForm";
+import { jwtDecode } from "jwt-decode"; // Import jwt_decode library
 import { useEffect } from "react";
+import { useRouter } from "next/router";
 import Swal from "sweetalert2";
+import jwt from "jsonwebtoken";
 
-const ActiveRequestIndex = ({ userId }) => {
+const AddItemIndex = ({ userId }) => {
   const router = useRouter();
-
   useEffect(() => {
     // Redirect to login if userId is not available (not authenticated)
     if (!userId) {
@@ -20,11 +20,14 @@ const ActiveRequestIndex = ({ userId }) => {
       });
     }
   }, [userId, router]);
-  return <>{userId && <RequestList userId={userId} />}</>;
-};
-ActiveRequestIndex.Layout = ActiveRequestLayout;
 
-export default ActiveRequestIndex;
+  // Render the component only if userId is available
+  return userId ? <AddItem userId={userId} /> : null;
+};
+
+AddItemIndex.Layout = AddItemLayout;
+
+export default AddItemIndex;
 
 export async function getServerSideProps(context) {
   // Fetch the token from context
@@ -40,7 +43,7 @@ export async function getServerSideProps(context) {
   }
 
   // If there's a token, decode it to get user information
-  const decodedToken = jwtDecode(token);
+  const decodedToken = jwt.verify(token, process.env.SECRET_KEY);
 
   // Extract userId from decoded token
   const userId = decodedToken.id;

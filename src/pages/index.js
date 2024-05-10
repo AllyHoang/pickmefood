@@ -11,3 +11,4 @@ const HomeIndex = () => {
 HomeIndex.Layout = LandingPageLayout;
 
 export default HomeIndex;
+

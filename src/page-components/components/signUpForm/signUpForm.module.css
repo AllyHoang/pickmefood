@@ -1,18 +1,20 @@
 .container {
   display: flex;
-  justify-content: flex-start; /* Align content to the left */
+  justify-content: flex-start; 
   align-items: center;
   height: 100vh;
   /* background-color: #bee3ef; */
 }
+
+/*the blue line*/
 .container::before {
-  content: ""; /* Required for pseudo-elements */
+  content: ""; 
   position: absolute;
   top: 0;
   left: 0;
-  height: 100%; /* Full height of the container */
-  width: 20px; /* Adjust thickness of the line */
-  background-color: #bee3ef; /* Color of the line */
+  height: 100%; 
+  width: 20px; 
+  background-color: #bee3ef; 
 }
 
 .form-container {
@@ -39,15 +41,19 @@
   font-size: 1rem;
   margin-bottom: 1rem; /* Decreased margin between input box and label */
 }
+.name-container {
+  display: flex;
+  gap: 2rem; /* Adjust the gap between the input fields */
+}
 
-.submit-button {
-  background-color: #bee3ef;
-  font-weight: bold;
-  padding: 1rem 2rem;
-  cursor: pointer;
-  border: none;
-  border-radius: 10px;
-  font-size: 1.2rem;
+.name-input {
+  display: flex;  /* Each input field occupies equal width */
+  flex-direction: column; /* Align label and input vertically */
+}
+.name-input-field {
+  width: calc(
+    50% - 1rem
+  ); /* Set width to half of the available space minus padding */
 }
 
 .label-text {
@@ -65,6 +71,7 @@
 }
 .submit-button {
   /* color: #70a2af; */
+  background-color: #bee3ef;
   font-weight: bold;
   padding: 0.75rem 1.5rem;
   cursor: pointer;
@@ -72,4 +79,8 @@
   border-radius: 10px;
   font-size: 1rem;
   align-self: flex-start; /* Prevent stretching */
+}
+
+.disabled-button {
+  opacity: 0.5;
 }
