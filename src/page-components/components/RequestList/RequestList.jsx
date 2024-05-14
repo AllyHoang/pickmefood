@@ -1,32 +1,35 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import RemoveBtn from "../RemoveBtn";
 import { HiPencilAlt } from "react-icons/hi";
-import styles from "./requestList.module.css";
+import styles from "./RequestList.module.css";
+import RemoveRequestsBtn from "../RemoveRequestsButton";
 
-const RequestList = () => {
+const RequestList = ({ userId }) => {
   const [requests, setRequests] = useState(null);
 
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/requests/page", {
-          cache: "no-store",
-        });
+        const res = await fetch(
+          `http://localhost:3000/api/activeRequest/${userId}`,
+          {
+            cache: "no-store",
+          }
+        );
 
         if (!res.ok) {
           throw new Error("Failed to fetch requests");
         }
 
         const data = await res.json();
-        setRequests(data.requests); 
+        setRequests(data.requests);
       } catch (error) {
         console.log("Error loading requests: ", error);
       }
     };
 
     fetchRequests();
-  }, []); 
+  }, []);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -53,8 +56,8 @@ const RequestList = () => {
               </div>
             </div>
             <div className={styles.btnGroup}>
-              <RemoveBtn id={t._id} />
-              <Link href={`/editRequest/${t._id}`}>
+              <RemoveRequestsBtn id={t._id} />
+              <Link href={`/edit-request/${t._id}`}>
                 <HiPencilAlt size={24} />
               </Link>
             </div>
@@ -62,7 +65,7 @@ const RequestList = () => {
         ))}
         <div className={styles.buttonContainer}>
           <div className={styles.addButton}>
-            <Link href={"/requestForm"}>Add</Link>
+            <Link href={"/add-request"}>Add</Link>
           </div>
         </div>
       </div>

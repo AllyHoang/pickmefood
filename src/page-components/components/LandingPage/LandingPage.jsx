@@ -9,22 +9,22 @@ export default function LandingPage() {
       {/* <Head>
         <title>Food Items Donation App</title>
       </Head> */}
-
       <main className={styles.main}>
         <section className={styles.hero}>
           <div className={styles.heroContent}>
             <h1 className={styles.title}>
-              Support a cause.<br />
+              Support a cause.
+              <br />
               Nourish the future.
             </h1>
             <p className={styles.description}>
-              Help local communities combat hunger. Donate food items, groceries, 
-              and essential supplies. Every contribution helps a pantry provide 
-              for those in need.
+              Help local communities combat hunger. Donate food items,
+              groceries, and essential supplies. Every contribution helps a
+              pantry provide for those in need.
             </p>
             <button className={styles.ctaButton}>See local pantries</button>
             <p className={styles.ratingInfo}>
-              Our commitment to support and efficiency has earned us recognition 
+              Our commitment to support and efficiency has earned us recognition
               from local food banks and communities.
             </p>
           </div>
