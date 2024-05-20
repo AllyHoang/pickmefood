@@ -1,7 +1,13 @@
-import Head from 'next/head';
-import styles from './LandingPage.module.css';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-
+import Head from "next/head";
+import styles from "./LandingPage.module.css";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function LandingPage() {
   return (

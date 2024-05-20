@@ -86,29 +86,29 @@ export default function SignUpForm() {
         </div>
 
         <div className={styles["name-container"]}>
-            <label htmlFor="first-name" className={styles["label-text"]}>
-              First Name
-            </label>
-            <input
-              id="first-name"
-              name="first-name"
-              value={user.firstName}
-              onChange={(e) => setUser({ ...user, firstName: e.target.value })}
-              type="text"
-              className={`${styles["input-field"]} ${styles["name-input-field"]}`} // Apply new class
-              />
+          <label htmlFor="first-name" className={styles["label-text"]}>
+            First Name
+          </label>
+          <input
+            id="first-name"
+            name="first-name"
+            value={user.firstName}
+            onChange={(e) => setUser({ ...user, firstName: e.target.value })}
+            type="text"
+            className={`${styles["input-field"]} ${styles["name-input-field"]}`} // Apply new class
+          />
 
-            <label htmlFor="last-name" className={styles["label-text"]}>
-              Last Name
-            </label>
-            <input
-              id="last-name"
-              name="last-name"
-              value={user.lastName}
-              onChange={(e) => setUser({ ...user, lastName: e.target.value })}
-              type="text"
-              className={`${styles["input-field"]} ${styles["name-input-field"]}`} // Apply new class
-              />
+          <label htmlFor="last-name" className={styles["label-text"]}>
+            Last Name
+          </label>
+          <input
+            id="last-name"
+            name="last-name"
+            value={user.lastName}
+            onChange={(e) => setUser({ ...user, lastName: e.target.value })}
+            type="text"
+            className={`${styles["input-field"]} ${styles["name-input-field"]}`} // Apply new class
+          />
         </div>
 
         <label htmlFor="email" className={styles["label-text"]}>
