@@ -17,6 +17,9 @@ export default function AddRequest({ userId }) {
   const mapContainerRef = useRef(null);
   const addressInputRef = useRef(null);
 
+  mapboxgl.accessToken =
+    "pk.eyJ1IjoicGlja21lZm9vZCIsImEiOiJjbHZwbHdyMzgwM2hmMmtvNXJ6ZHU2NXh3In0.aITfZvPY-sKGwepyPVPGOg";
+
   useEffect(() => {
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,

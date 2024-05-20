@@ -1,8 +1,7 @@
-// Pseudocode for creating a new user in the database
-
 import connectToDB from "@/core/db/mongodb";
 import { UserModel } from "@/core/models/User";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
