@@ -1,9 +1,20 @@
 import Head from "next/head";
 import styles from "./LandingPage.module.css";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function LandingPage() {
   return (
-    <div className={styles.container}>
+    <div className="background-color: rgb(255 255 12)">
+      {/* <Head>
+        <title>Food Items Donation App</title>
+      </Head> */}
       <main className={styles.main}>
         <section className={styles.hero}>
           <div className={styles.heroContent}>

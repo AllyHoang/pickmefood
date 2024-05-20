@@ -7,7 +7,6 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import the CSS for styles
 import { HomeLayout } from "@/page-components/layouts";
 
-
 const Dashboard = ({ parsedCookies }) => {
   const [token, setToken] = useState("");
   const [decodedToken, setDecodedToken] = useState(null);
@@ -32,12 +31,14 @@ const Dashboard = ({ parsedCookies }) => {
     if (!token) {
       setRedirectToLogin(true);
       // Show toast notification
+      // Show toast notification
     }
   }, [parsedCookies]);
 
   // Redirect to login page if redirectToLogin is true
   useEffect(() => {
     if (redirectToLogin) {
+      toast.error("You must be logged in to access this page");
       toast.error("You must be logged in to access this page");
       Router.replace("/");
     }
@@ -53,6 +54,7 @@ const Dashboard = ({ parsedCookies }) => {
           <pre>{JSON.stringify(decodedToken, null, 2)}</pre>
         </div>
       )}
+      <ToastContainer />
       <ToastContainer />
     </div>
   );
