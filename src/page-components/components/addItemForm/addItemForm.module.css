@@ -22,6 +22,14 @@
   max-width: 50%;
 }
 
+.input-field-date {
+  border: none;
+  border-bottom: 1px solid #000000;
+  padding: 0.5rem 1rem;
+  width: 100%;
+  padding-right: 180px;
+}
+
 .input-field {
   border: none;
   border-bottom: 1px solid #000000;
@@ -88,4 +96,17 @@
   border-radius: 8px;
   padding: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Additional styling for date picker */
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker {
+  font-size: 1rem;
+}
+
+.react-datepicker__input-container input {
+  width: 100%;
 }

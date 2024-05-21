@@ -5,3 +5,5 @@ export { ActiveRequestLayout } from "./ActiveRequestLayout";
 export { LandingPageLayout } from "./LandingPageLayout";
 export { RootLayout } from "./RootLayout";
 export { DashboardLayout } from "./DashboardLayout";
+export { EditItemLayout } from "./EditItemLayout";
+export { EditRequestLayout } from "./EditRequestLayout";

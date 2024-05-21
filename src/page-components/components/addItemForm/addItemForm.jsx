@@ -5,6 +5,8 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import styles from "./AddItemForm.module.css";
 import Select from "react-select";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 // Add your Mapbox access token here
 
 export default function AddItem({ userId }) {
@@ -19,6 +21,9 @@ export default function AddItem({ userId }) {
   const [foodItems, setFoodItems] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
   const router = useRouter();
+
+  mapboxgl.accessToken =
+    "pk.eyJ1IjoicGlja21lZm9vZCIsImEiOiJjbHZwbHdyMzgwM2hmMmtvNXJ6ZHU2NXh3In0.aITfZvPY-sKGwepyPVPGOg";
 
   useEffect(() => {
     const mapInstance = new mapboxgl.Map({
@@ -152,7 +157,6 @@ export default function AddItem({ userId }) {
     e.preventDefault();
 
     if (!itemName || !quantity || !expirationDate) {
-      alert(userAddress);
       toast.error("Please fill in all the required fields");
       return;
     }
@@ -230,13 +234,11 @@ export default function AddItem({ userId }) {
         <label htmlFor="expirationDate" className={styles["label-text"]}>
           Item expiration date:
         </label>
-        <input
-          id="expirationDate"
-          value={expirationDate}
-          onChange={(e) => setExpirationDate(e.target.value)}
-          className={styles["input-field"]}
-          type="text"
-          placeholder="Format: 04/05/24"
+        <DatePicker
+          selected={expirationDate}
+          onChange={(date) => setExpirationDate(date)}
+          dateFormat="MM/dd/yyyy"
+          className={styles["input-field-date"]}
         />
 
         <label htmlFor="userAddress" className={styles["label-text"]}>
