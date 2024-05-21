@@ -1,7 +1,6 @@
 import React from "react";
 import Head from "next/head";
 import GlobalNavbar from "../components/Navbar/GlobalNavbar";
-import LandingPageNavbar from "../components/Navbar/LandingPageNavbar";
 
 export const HomeLayout = ({ children }) => {
   return (

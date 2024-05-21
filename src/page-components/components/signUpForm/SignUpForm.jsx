@@ -31,10 +31,6 @@ export default function SignUpForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // if (!firstName || !lastName || !email || !password) {
-    //   alert("Please fill in the missing boxes");
-    // }
-
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(user.email)) {
       alert("Please enter a valid email address.");

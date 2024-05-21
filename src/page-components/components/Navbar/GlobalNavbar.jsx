@@ -1,5 +1,6 @@
 // Navbar.js
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import * as React from "react";
 import {
@@ -13,6 +14,19 @@ import {
   NavigationMenuViewport,
   navigationMenuTriggerStyle,
 } from "@/page-components/shadcn/navigation-menu";
+
+const handleLogout = async () => {
+  try {
+    await fetch("/api/users/signout", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+  } catch (error) {
+    console.error("Failed to logout:", error);
+  }
+};
 
 const ListItem = React.forwardRef(function ListItem(
   { className, title, children, ...props },
@@ -69,7 +83,7 @@ const GlobalNavbar = () => {
 
           <div className="flex flex-col justify-between space-y-6">
             <NavigationMenuItem>
-              <Link href="/" legacyBehavior passHref>
+              <Link href="/dashboard" legacyBehavior passHref>
                 <NavigationMenuLink
                   className={`${navigationMenuTriggerStyle()} w-[180px] h-12 py-2`}
                 >
@@ -148,7 +162,8 @@ const GlobalNavbar = () => {
                   </ListItem>
                   <ListItem
                     className={`${navigationMenuTriggerStyle()} w-[120px] h-12 py-2`}
-                    href="/log-out"
+                    href="/"
+                    onClick={handleLogout}
                   >
                     Log Out
                   </ListItem>
@@ -163,21 +178,3 @@ const GlobalNavbar = () => {
 };
 
 export default GlobalNavbar;
-
-export async function getServerSideProps(context) {
-  // Fetch the token from context
-  const token = context.req.cookies.token;
-
-  // Decode the token to get user information
-  const decodedToken = jwtDecode(token);
-
-  // Extract userId from decoded token
-  const userId = decodedToken.id;
-
-  // Pass userId as props to the component
-  return {
-    props: {
-      userId,
-    },
-  };
-}

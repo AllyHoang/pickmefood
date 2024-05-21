@@ -24,14 +24,12 @@ export default function ResetPasswordForm({ id }) {
           }),
         });
         if (res.ok) {
-          alert("Verified!");
           setVerified(true);
           const responseData = await res.json();
           const email = responseData.email;
           setEmail(email);
         } else if (res.status === 401 || res.status === 400) {
           const data = await res.json();
-          alert(data.error);
           setVerified(true);
         }
       } catch (error) {
