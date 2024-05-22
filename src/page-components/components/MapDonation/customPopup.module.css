@@ -1,0 +1,29 @@
+.customPopup {
+  position: absolute;
+  background-color: #fff;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  border-radius: 8px;
+  z-index: 1000; /* Ensure the popup is above the map */
+  display: none; /* Initially hide the popup */
+}
+
+.popupContent {
+  /* Add styling for popup content */
+}
+
+.popupTitle {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.popupContent {
+  /* Add styling for popup content */
+}
+
+.popupClose {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  cursor: pointer;
+}

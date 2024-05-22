@@ -7,3 +7,4 @@ export { RootLayout } from "./RootLayout";
 export { DashboardLayout } from "./DashboardLayout";
 export { EditItemLayout } from "./EditItemLayout";
 export { EditRequestLayout } from "./EditRequestLayout";
+export { MapLayout } from "./MapLayout";

@@ -91,6 +91,7 @@ export default function SignUpForm() {
             value={user.firstName}
             onChange={(e) => setUser({ ...user, firstName: e.target.value })}
             type="text"
+            autoComplete="off"
             className={`${styles["input-field"]} ${styles["name-input-field"]}`} // Apply new class
           />
 
@@ -103,6 +104,7 @@ export default function SignUpForm() {
             value={user.lastName}
             onChange={(e) => setUser({ ...user, lastName: e.target.value })}
             type="text"
+            autoComplete="off"
             className={`${styles["input-field"]} ${styles["name-input-field"]}`} // Apply new class
           />
         </div>
@@ -116,6 +118,7 @@ export default function SignUpForm() {
           value={user.email}
           onChange={(e) => setUser({ ...user, email: e.target.value })}
           type="text"
+          autoComplete="off"
           className={styles["input-field"]}
         />
 
@@ -128,6 +131,7 @@ export default function SignUpForm() {
           value={user.password}
           onChange={(e) => setUser({ ...user, password: e.target.value })}
           className={styles["input-field"]}
+          autoComplete="off"
           type="password"
         />
 
@@ -138,6 +142,7 @@ export default function SignUpForm() {
           id="confirm-password"
           name="confirm-password"
           value={user.confirmPassword}
+          autoComplete="off"
           onChange={(e) =>
             setUser({ ...user, confirmPassword: e.target.value })
           }
