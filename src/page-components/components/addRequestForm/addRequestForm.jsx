@@ -20,9 +20,6 @@ export default function AddRequest({ userId }) {
   const [showNewItemInput, setShowNewItemInput] = useState(false);
   const router = useRouter();
 
-  mapboxgl.accessToken =
-    "pk.eyJ1IjoicGlja21lZm9vZCIsImEiOiJjbHZwbHdyMzgwM2hmMmtvNXJ6ZHU2NXh3In0.aITfZvPY-sKGwepyPVPGOg";
-
   useEffect(() => {
     const mapInstance = new mapboxgl.Map({
       container: "map",
