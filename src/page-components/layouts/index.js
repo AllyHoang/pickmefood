@@ -8,3 +8,5 @@ export { DashboardLayout } from "./DashboardLayout";
 export { EditItemLayout } from "./EditItemLayout";
 export { EditRequestLayout } from "./EditRequestLayout";
 export { MapLayout } from "./MapLayout";
+export { ChatLayout } from "./ChatLayout";
+export { ProfilePageLayout } from "./ProfilePageLayout";

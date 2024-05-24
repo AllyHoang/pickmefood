@@ -2,11 +2,11 @@ import React from "react";
 import Head from "next/head";
 import GlobalNavbar from "../components/Navbar/GlobalNavbar";
 
-export const MapLayout = ({ children }) => {
+export const ProfilePageLayout = ({ children }) => {
   return (
     <>
       <Head>
-        <title>PickMeFood | Map</title>
+        <title>PickMeFood | Profile</title>
       </Head>
       <div className="grid grid-cols-[auto,1fr]">
         <GlobalNavbar className="border-r border-black-200 pr-4" />

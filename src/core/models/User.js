@@ -1,6 +1,10 @@
 import { Schema, models, model } from "mongoose";
+import mongoose from "mongoose";
 
 const UserSchema = new Schema({
+  username: {
+    type: String,
+  },
   firstName: {
     type: String,
   },
@@ -28,6 +32,14 @@ const UserSchema = new Schema({
   resetTokenExpiry: {
     type: Date,
     required: false,
+  },
+  profileImage: {
+    type: String,
+    default: "",
+  },
+  chats: {
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Chat" }],
+    default: [],
   },
 });
 

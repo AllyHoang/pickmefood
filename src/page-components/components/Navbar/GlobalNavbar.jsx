@@ -6,12 +6,10 @@ import * as React from "react";
 import {
   NavigationMenu,
   NavigationMenuContent,
-  NavigationMenuIndicator,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  NavigationMenuViewport,
   navigationMenuTriggerStyle,
 } from "@/page-components/shadcn/navigation-menu";
 
@@ -93,7 +91,7 @@ const GlobalNavbar = () => {
             </NavigationMenuItem>
 
             <NavigationMenuItem>
-              <Link href="/" legacyBehavior passHref>
+              <Link href="/profile-page" legacyBehavior passHref>
                 <NavigationMenuLink
                   className={`${navigationMenuTriggerStyle()} w-[180px] h-12 py-2`}
                 >
