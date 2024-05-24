@@ -14,10 +14,12 @@ function App({ Component, pageProps }) {
     Component.Layout || LandingPageLayout || HomeLayout || ActiveDonationLayout;
 
   return (
-    <PageLayout {...pageProps}>
-      <Component {...pageProps} />
-      <ToastContainer />
-    </PageLayout>
+    <RootLayout>
+      <PageLayout {...pageProps}>
+        <Component {...pageProps} />
+        <ToastContainer />
+      </PageLayout>
+    </RootLayout>
   );
 }
 
