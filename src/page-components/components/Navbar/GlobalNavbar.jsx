@@ -85,7 +85,7 @@ const GlobalNavbar = () => {
             <NavigationMenuItem>
               <Link href="/dashboard" legacyBehavior passHref>
                 <NavigationMenuLink
-                  className={`${navigationMenuTriggerStyle()} w-[180px] h-12 py-2`}
+                  className={`${navigationMenuTriggerStyle()} w-[160px] h-12 py-2`}
                 >
                   Dashboard
                 </NavigationMenuLink>
@@ -95,7 +95,7 @@ const GlobalNavbar = () => {
             <NavigationMenuItem>
               <Link href="/" legacyBehavior passHref>
                 <NavigationMenuLink
-                  className={`${navigationMenuTriggerStyle()} w-[180px] h-12 py-2`}
+                  className={`${navigationMenuTriggerStyle()} w-[160px] h-12 py-2`}
                 >
                   Profile
                 </NavigationMenuLink>
@@ -105,7 +105,7 @@ const GlobalNavbar = () => {
             <NavigationMenuItem>
               <Link href="/active-donation" legacyBehavior passHref>
                 <NavigationMenuLink
-                  className={`${navigationMenuTriggerStyle()} w-[180px] h-12 py-2`}
+                  className={`${navigationMenuTriggerStyle()} w-[160px] h-12 py-2`}
                 >
                   My Donations
                 </NavigationMenuLink>
@@ -115,7 +115,7 @@ const GlobalNavbar = () => {
             <NavigationMenuItem>
               <Link href="/active-request" legacyBehavior passHref>
                 <NavigationMenuLink
-                  className={`${navigationMenuTriggerStyle()} w-[180px] h-12 py-2`}
+                  className={`${navigationMenuTriggerStyle()} w-[160px] h-12 py-2`}
                 >
                   My Requests
                 </NavigationMenuLink>
@@ -125,7 +125,7 @@ const GlobalNavbar = () => {
             <NavigationMenuItem>
               <Link href="/" legacyBehavior passHref>
                 <NavigationMenuLink
-                  className={`${navigationMenuTriggerStyle()} w-[180px] h-12  py-2`}
+                  className={`${navigationMenuTriggerStyle()} w-[160px] h-12  py-2`}
                 >
                   My Transactions
                 </NavigationMenuLink>
@@ -135,7 +135,7 @@ const GlobalNavbar = () => {
             <NavigationMenuItem>
               <Link href="/" legacyBehavior passHref>
                 <NavigationMenuLink
-                  className={`${navigationMenuTriggerStyle()} w-[180px] h-12 py-2`}
+                  className={`${navigationMenuTriggerStyle()} w-[160px] h-12 py-2`}
                 >
                   Notifications
                 </NavigationMenuLink>
@@ -147,7 +147,7 @@ const GlobalNavbar = () => {
             <NavigationMenuTrigger className="">
               More
               <NavigationMenuContent className="">
-                <ul className="grid gap-3 p-6 md:w-[100px] lg:w-[180px] lg:grid-cols-[1fr]">
+                <ul className="grid gap-3 p-6 md:w-[100px] lg:w-[160px] lg:grid-cols-[1fr]">
                   <ListItem
                     className={`${navigationMenuTriggerStyle()} w-[120px] h-12 py-2`}
                     href="/about"
