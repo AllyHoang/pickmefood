@@ -2,6 +2,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import styles from "./forgetPasswordForm.module.css";
+import Swal from "sweetalert2";
 
 export default function ForgetPasswordForm() {
   const [email, setEmail] = useState("");
@@ -11,13 +12,19 @@ export default function ForgetPasswordForm() {
     e.preventDefault();
 
     if (!email) {
-      alert("Please fill in the missing boxes");
+      Swal.fire({
+        icon: "error",
+        text: "Please fill in the missing boxes",
+      });
       return;
     }
 
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(email)) {
-      alert("Please enter a valid email address.");
+      Swal.fire({
+        icon: "error",
+        text: "Please enter a valid email address",
+      });
       return;
     }
 
@@ -35,11 +42,18 @@ export default function ForgetPasswordForm() {
         }
       );
       if (res.ok) {
-        alert("Check your email!");
-        router.push("/sign-in");
+        Swal.fire({
+          text: "Check your email!",
+        }).then(() => {
+          router.replace("/sign-in");
+        });
       } else if (res.status === 401 || res.status === 400) {
         const data = await res.json();
-        alert(data.error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: data.error,
+        });
       } else {
         throw new Error("Failed to send reset email");
       }

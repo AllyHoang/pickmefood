@@ -4,7 +4,9 @@ import { useRouter } from "next/router";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import styles from "./AddItemForm.module.css";
-
+import Select from "react-select";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 // Add your Mapbox access token here
 
 export default function AddItem({ userId }) {
@@ -17,6 +19,7 @@ export default function AddItem({ userId }) {
   const [map, setMap] = useState(null);
   const [marker, setMarker] = useState(null);
   const [foodItems, setFoodItems] = useState([]);
+  const [selectedOption, setSelectedOption] = useState(null);
   const router = useRouter();
 
   mapboxgl.accessToken =
@@ -132,8 +135,11 @@ export default function AddItem({ userId }) {
   useEffect(() => {
     async function fetchFoodData() {
       try {
-        const data = await response.json();
-        setFoodItems(data.foodItems);
+        const res = await fetch(`http://localhost:3000/api/food`, {
+          cache: "no-store",
+        });
+        const data = await res.json();
+        setFoodItems(data.foods);
       } catch (error) {
         console.error("Error fetching food data:", error);
       }
@@ -142,6 +148,11 @@ export default function AddItem({ userId }) {
     fetchFoodData();
   }, []);
 
+  const handleItemChange = (selectedOption) => {
+    setSelectedOption(selectedOption); // Set the selected option state
+    setName(selectedOption.value); // Update the state with the selected item name
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -149,7 +160,6 @@ export default function AddItem({ userId }) {
       toast.error("Please fill in all the required fields");
       return;
     }
-
     try {
       const res = await fetch(
         `http://localhost:3000/api/activeItem/${userId}`,
@@ -183,29 +193,20 @@ export default function AddItem({ userId }) {
     <div className={styles.container}>
       <ToastContainer />
       <form onSubmit={handleSubmit} className={styles["form-container"]}>
-        <h2 className={styles["form-header"]}>
-          🥰 What item would you like to donate? 🥰
-        </h2>
         <label htmlFor="name" className={styles["label-text"]}>
           Item name:
         </label>
-        <select
-          id="name"
-          value={itemName}
-          onChange={(e) => setName(e.target.value)}
-          className={styles["input-field"]}
-        >
-          <option value="">Select item</option>
-          {foodItems.map((category) => (
-            <optgroup key={category.category} label={category.category}>
-              {category.items.map((item) => (
-                <option key={item} value={item}>
-                  {item}
-                </option>
-              ))}
-            </optgroup>
-          ))}
-        </select>
+        <Select
+          options={foodItems.map((item) => ({
+            value: item.name,
+            label: item.name,
+          }))}
+          value={selectedOption}
+          onChange={handleItemChange}
+          styles={{
+            width: "200px",
+          }}
+        />
         <label htmlFor="description" className={styles["label-text"]}>
           Item description (optional):
         </label>
@@ -233,13 +234,11 @@ export default function AddItem({ userId }) {
         <label htmlFor="expirationDate" className={styles["label-text"]}>
           Item expiration date:
         </label>
-        <input
-          id="expirationDate"
-          value={expirationDate}
-          onChange={(e) => setExpirationDate(e.target.value)}
-          className={styles["input-field"]}
-          type="text"
-          placeholder="Format: 04/05/24"
+        <DatePicker
+          selected={expirationDate}
+          onChange={(date) => setExpirationDate(date)}
+          dateFormat="MM/dd/yyyy"
+          className={styles["input-field-date"]}
         />
 
         <label htmlFor="userAddress" className={styles["label-text"]}>
@@ -272,13 +271,11 @@ export default function AddItem({ userId }) {
         >
           Get My Location
         </button>
-
-        <div id="map" className={styles.map}></div>
-
         <button type="submit" className={styles["submit-button"]}>
           Add Item
         </button>
       </form>
+      <div id="map" className={styles.map}></div>
     </div>
   );
 }

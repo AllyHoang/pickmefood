@@ -1,6 +1,6 @@
 .container {
   display: flex;
-  justify-content: flex-start; 
+  justify-content: flex-start;
   align-items: center;
   height: 100vh;
   /* background-color: #bee3ef; */
@@ -8,13 +8,13 @@
 
 /*the blue line*/
 .container::before {
-  content: ""; 
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
-  height: 100%; 
-  width: 20px; 
-  background-color: #bee3ef; 
+  height: 100%;
+  width: 20px;
+  background-color: #bee3ef;
 }
 
 .form-container {
@@ -47,7 +47,7 @@
 }
 
 .name-input {
-  display: flex;  /* Each input field occupies equal width */
+  display: flex; /* Each input field occupies equal width */
   flex-direction: column; /* Align label and input vertically */
 }
 .name-input-field {

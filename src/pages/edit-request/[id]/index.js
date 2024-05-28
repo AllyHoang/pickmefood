@@ -1,5 +1,5 @@
 import EditRequestForm from "@/page-components/components/EditRequestForm/EditRequestForm";
-import editRequestLayout from "@/page-components/layouts/EditRequestLayout";
+import { EditRequestLayout } from "@/page-components/layouts";
 import { useRouter } from "next/router";
 
 const EditRequestIndex = () => {
@@ -8,6 +8,6 @@ const EditRequestIndex = () => {
   return <EditRequestForm id={id} />;
 };
 
-EditRequestIndex.Layout = editRequestLayout;
+EditRequestIndex.Layout = EditRequestLayout;
 
 export default EditRequestIndex;

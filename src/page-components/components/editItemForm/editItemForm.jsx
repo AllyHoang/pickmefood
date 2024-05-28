@@ -18,7 +18,6 @@ export default function EditItem({ id }) {
         });
         const data = await res.json();
         const fetchedItemInfo = data.data.item;
-        console.log(fetchedItemInfo);
         setName(fetchedItemInfo.itemName);
         setDescription(fetchedItemInfo.description);
         setQuantity(fetchedItemInfo.quantity);

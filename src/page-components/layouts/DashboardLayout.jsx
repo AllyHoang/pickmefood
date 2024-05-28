@@ -1,16 +1,17 @@
 import React from "react";
 import Head from "next/head";
-import Navbar from "../components/Navbar/NavbarRequest";
+import GlobalNavbar from "../components/Navbar/GlobalNavbar";
 
 export const DashboardLayout = ({ children }) => {
   return (
     <>
       <Head>
-        <title>PickMeFood | Active Request</title>
+        <title>PickMeFood | Dashboard</title>
       </Head>
-      <main>
-        <div>{children}</div>
-      </main>
+      <div className="grid grid-cols-[auto,1fr] h-screen overflow-hidden">
+        <GlobalNavbar className="border-r border-black-200 fixed pr-4 w-80" />
+        <main className="flex-1 p-6 overflow-y-auto">{children}</main>
+      </div>
     </>
   );
 };

@@ -5,7 +5,21 @@ export default async function handler(req, res) {
   if (req.method === "POST") {
     // Process a POST request
     await connectToDB();
-    const newItem = await ItemModel.create(req.body);
+    const location = req.body.userAddress;
+    const userId = req.body.userId;
+    const itemName = req.body.itemName;
+    const description = req.body.description;
+    const quantity = req.body.quantity;
+    const expirationDate = req.body.expirationDate;
+    const newItem = new ItemModel({
+      userId,
+      itemName,
+      description,
+      quantity,
+      expirationDate,
+      location,
+    });
+    await newItem.save();
     res.status(201).json({ message: "Item Created", data: { item: newItem } });
   } else if (req.method === "GET") {
     // Handle a GET request

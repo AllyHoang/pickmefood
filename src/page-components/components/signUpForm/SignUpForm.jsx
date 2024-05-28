@@ -31,10 +31,6 @@ export default function SignUpForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // if (!firstName || !lastName || !email || !password) {
-    //   alert("Please fill in the missing boxes");
-    // }
-
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(user.email)) {
       alert("Please enter a valid email address.");
@@ -86,29 +82,31 @@ export default function SignUpForm() {
         </div>
 
         <div className={styles["name-container"]}>
-            <label htmlFor="first-name" className={styles["label-text"]}>
-              First Name
-            </label>
-            <input
-              id="first-name"
-              name="first-name"
-              value={user.firstName}
-              onChange={(e) => setUser({ ...user, firstName: e.target.value })}
-              type="text"
-              className={`${styles["input-field"]} ${styles["name-input-field"]}`} // Apply new class
-              />
+          <label htmlFor="first-name" className={styles["label-text"]}>
+            First Name
+          </label>
+          <input
+            id="first-name"
+            name="first-name"
+            value={user.firstName}
+            onChange={(e) => setUser({ ...user, firstName: e.target.value })}
+            type="text"
+            autoComplete="off"
+            className={`${styles["input-field"]} ${styles["name-input-field"]}`} // Apply new class
+          />
 
-            <label htmlFor="last-name" className={styles["label-text"]}>
-              Last Name
-            </label>
-            <input
-              id="last-name"
-              name="last-name"
-              value={user.lastName}
-              onChange={(e) => setUser({ ...user, lastName: e.target.value })}
-              type="text"
-              className={`${styles["input-field"]} ${styles["name-input-field"]}`} // Apply new class
-              />
+          <label htmlFor="last-name" className={styles["label-text"]}>
+            Last Name
+          </label>
+          <input
+            id="last-name"
+            name="last-name"
+            value={user.lastName}
+            onChange={(e) => setUser({ ...user, lastName: e.target.value })}
+            type="text"
+            autoComplete="off"
+            className={`${styles["input-field"]} ${styles["name-input-field"]}`} // Apply new class
+          />
         </div>
 
         <label htmlFor="email" className={styles["label-text"]}>
@@ -120,6 +118,7 @@ export default function SignUpForm() {
           value={user.email}
           onChange={(e) => setUser({ ...user, email: e.target.value })}
           type="text"
+          autoComplete="off"
           className={styles["input-field"]}
         />
 
@@ -132,6 +131,7 @@ export default function SignUpForm() {
           value={user.password}
           onChange={(e) => setUser({ ...user, password: e.target.value })}
           className={styles["input-field"]}
+          autoComplete="off"
           type="password"
         />
 
@@ -142,6 +142,7 @@ export default function SignUpForm() {
           id="confirm-password"
           name="confirm-password"
           value={user.confirmPassword}
+          autoComplete="off"
           onChange={(e) =>
             setUser({ ...user, confirmPassword: e.target.value })
           }

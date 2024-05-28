@@ -1,18 +1,8 @@
+import mongoose from "mongoose";
 import { Schema, models, model } from "mongoose";
-
-const FoodSchema = new Schema(
-  {
-    name: {
-      type: String,
-      require: true,
-      default: "",
-    },
-  },
-  {
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
-  }
-);
+const FoodSchema = new Schema({
+  name: String,
+});
 
 const FoodModel = models?.Food || model("Food", FoodSchema);
 

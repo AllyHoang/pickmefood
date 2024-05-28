@@ -5,13 +5,13 @@ import GlobalNavbar from "../components/Navbar/GlobalNavbar";
 export const HomeLayout = ({ children }) => {
   return (
     <>
-      <GlobalNavbar></GlobalNavbar>
       <Head>
         <title>PickMeFood | Home</title>
       </Head>
-      <main>
-        <div>{children}</div>
-      </main>
+      <div className="grid grid-cols-[auto,1fr]">
+        <GlobalNavbar className="border-r border-black-200 pr-4" />
+        <main className="p-6">{children}</main>
+      </div>
     </>
   );
 };

@@ -1,4 +1,4 @@
-import { editItemLayout } from "@/page-components/layouts";
+import { EditItemLayout } from "@/page-components/layouts";
 import EditItem from "@/page-components/components/EditItemForm/EditItemForm";
 import { useRouter } from "next/router";
 
@@ -8,6 +8,6 @@ const EditItemIndex = () => {
   return <EditItem id={id} />;
 };
 
-EditItemIndex.Layout = editItemLayout;
+EditItemIndex.Layout = EditItemLayout;
 
 export default EditItemIndex;
