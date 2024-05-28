@@ -1,14 +1,15 @@
-// Pseudocode for creating a new user in the database
-
 import connectToDB from "@/core/db/mongodb";
 import { UserModel } from "@/core/models/User";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
     await connectToDB();
 
     const email = req.body.email;
+    const firstName = req.body.firstName;
+    const lastName = req.body.lastName;
     const existingUser = await UserModel.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ error: "Email is already registered" });
@@ -16,7 +17,12 @@ export default async function handler(req, res) {
 
     const password = req.body.password;
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new UserModel({ email, password: hashedPassword });
+    const newUser = new UserModel({
+      email,
+      password: hashedPassword,
+      firstName,
+      lastName,
+    });
     // Create token data
     const tokenData = {
       id: newUser._id,
