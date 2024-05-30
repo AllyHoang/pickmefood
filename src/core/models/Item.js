@@ -7,6 +7,11 @@ const ItemSchema = new Schema(
       require: true,
       default: "",
     },
+    emoji: {
+      type: String,
+      require: true,
+      default: "",
+    },
     description: {
       type: String,
       default: "",
