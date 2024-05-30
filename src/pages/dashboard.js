@@ -1,5 +1,5 @@
 import { DashboardLayout } from "@/page-components/layouts";
-import DashboardPage from "@/page-components/DashboardPage/DashboardPage";
+import DashboardPage from "@/page-components/components/DashboardPage/DashboardPage";
 
 const DashboardIndex = () => {
   return <DashboardPage></DashboardPage>;

@@ -1,0 +1,108 @@
+.videoScanContainer {
+  font-family: Arial, sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.title {
+  text-align: center;
+  color: #333;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.startButton,
+.stopButton {
+  padding: 10px 20px;
+  margin: 0 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.startButton {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.startButton:disabled {
+  background-color: #aaa;
+}
+
+.stopButton {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.stopButton:disabled {
+  background-color: #aaa;
+}
+
+.videoContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.videoStream {
+  width: 100%;
+  max-width: 600px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.detectedItems,
+.confirmedItems {
+  margin-top: 20px;
+}
+
+.detectedItems h2,
+.confirmedItems h2 {
+  color: #555;
+}
+
+.detectedItems ul,
+.confirmedItems ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.detectedItems li,
+.confirmedItems li {
+  margin: 5px 0;
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.detectedItems input {
+  margin-right: 10px;
+}
+
+.confirmedItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.removeButton {
+  padding: 5px 10px;
+  margin-left: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #dc3545;
+  color: #fff;
+  cursor: pointer;
+}

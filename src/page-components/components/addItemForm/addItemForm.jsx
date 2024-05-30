@@ -1,3 +1,4 @@
+// components/AddItemForm.js
 import { useState, useEffect } from "react";
 import mapboxgl from "mapbox-gl";
 import { useRouter } from "next/router";
@@ -7,19 +8,20 @@ import styles from "./AddItemForm.module.css";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-// Add your Mapbox access token here
 
 export default function AddItem({ userId }) {
   const [itemName, setName] = useState("");
+  const [emoji, setEmoji] = useState("");
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState("");
-  const [expirationDate, setExpirationDate] = useState("");
+  const [expirationDate, setExpirationDate] = useState(null);
   const [userAddress, setUserAddress] = useState("");
   const [addressSuggestions, setAddressSuggestions] = useState([]);
   const [map, setMap] = useState(null);
   const [marker, setMarker] = useState(null);
   const [foodItems, setFoodItems] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
+  const [items, setItems] = useState([]);
   const router = useRouter();
 
   mapboxgl.accessToken =
@@ -29,13 +31,13 @@ export default function AddItem({ userId }) {
     const mapInstance = new mapboxgl.Map({
       container: "map",
       style: "mapbox://styles/mapbox/streets-v11",
-      center: [-74.5, 40], // Default center coordinates
-      zoom: 9, // Default zoom level
+      center: [-74.5, 40],
+      zoom: 9,
     });
 
     setMap(mapInstance);
 
-    return () => mapInstance.remove(); // Cleanup
+    return () => mapInstance.remove();
   }, []);
 
   const handleGetUserLocation = () => {
@@ -63,7 +65,7 @@ export default function AddItem({ userId }) {
         map.flyTo({ center: [longitude, latitude], zoom: 15 });
 
         if (marker) {
-          marker.remove(); // Remove existing marker
+          marker.remove();
         }
 
         const newMarker = new mapboxgl.Marker()
@@ -97,8 +99,6 @@ export default function AddItem({ userId }) {
   const handleSuggestionClick = (address) => {
     setUserAddress(address);
     setAddressSuggestions([]);
-
-    // Call reverse geocoding function with the selected address
     reverseGeocodeSelectedAddress(address);
   };
 
@@ -113,13 +113,12 @@ export default function AddItem({ userId }) {
       const coordinates = data.features[0].center;
       const [longitude, latitude] = coordinates;
 
-      // Update the map with the new coordinates
       if (map) {
         map.setCenter([longitude, latitude]);
         map.setZoom(15);
 
         if (marker) {
-          marker.remove(); // Remove existing marker
+          marker.remove();
         }
 
         const newMarker = new mapboxgl.Marker()
@@ -149,46 +148,77 @@ export default function AddItem({ userId }) {
   }, []);
 
   const handleItemChange = (selectedOption) => {
-    setSelectedOption(selectedOption); // Set the selected option state
-    setName(selectedOption.value); // Update the state with the selected item name
+    setSelectedOption(selectedOption);
+    setName(selectedOption.value);
+    const selectedFoodItem = foodItems.find(
+      (item) => item.name === selectedOption.value
+    );
+    setEmoji(selectedFoodItem.emoji);
+  };
+
+  const handleAddItem = () => {
+    if (!itemName || !quantity || !expirationDate) {
+      toast.error("Please fill in all the required fields");
+      return;
+    }
+    const newItem = {
+      itemName,
+      description,
+      quantity,
+      expirationDate,
+      address: userAddress,
+      emoji: emoji,
+    };
+
+    setItems([...items, newItem]);
+    setName("");
+    setDescription("");
+    setQuantity("");
+    setExpirationDate(null);
+    setSelectedOption(null);
+  };
+
+  const handleRemoveItem = (index) => {
+    const updatedItems = [...items];
+    updatedItems.splice(index, 1);
+    setItems(updatedItems);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!itemName || !quantity || !expirationDate) {
-      toast.error("Please fill in all the required fields");
+    if (items.length === 0) {
+      toast.error("Please add at least one item");
       return;
     }
+
+    const itemsWithUserIdAndLocation = items.map((item) => ({
+      ...item,
+      userId,
+      location: userAddress, // Ensure location is provided for each item
+    }));
+
     try {
-      const res = await fetch(
-        `http://localhost:3000/api/activeItem/${userId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-type": "application/json",
-          },
-          body: JSON.stringify({
-            userId,
-            itemName,
-            description,
-            quantity,
-            expirationDate,
-            userAddress,
-          }),
-        }
-      );
+      const res = await fetch(`/api/items`, {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          userId,
+          items: itemsWithUserIdAndLocation,
+        }),
+      });
 
       if (res.ok) {
         router.push("/active-donation");
       } else {
-        throw new Error("Failed to create an item");
+        throw new Error("Failed to create a basket");
       }
     } catch (error) {
       console.error("Error:", error);
     }
   };
-
   return (
     <div className={styles.container}>
       <ToastContainer />
@@ -203,9 +233,6 @@ export default function AddItem({ userId }) {
           }))}
           value={selectedOption}
           onChange={handleItemChange}
-          styles={{
-            width: "200px",
-          }}
         />
         <label htmlFor="description" className={styles["label-text"]}>
           Item description (optional):
@@ -271,10 +298,40 @@ export default function AddItem({ userId }) {
         >
           Get My Location
         </button>
-        <button type="submit" className={styles["submit-button"]}>
+        <button
+          type="button"
+          onClick={handleAddItem}
+          className={styles["submit-button"]}
+        >
           Add Item
         </button>
       </form>
+
+      <div className={styles["items-list"]}>
+        <h3>Items in Basket:</h3>
+        {items.map((item, index) => (
+          <div key={index} className={styles["item-card"]}>
+            <div className={styles["item-details"]}>
+              <p className={styles["item-name"]}>{item.itemName}</p>
+              <p className={styles["item-quantity"]}>
+                Quantity: {item.quantity}
+              </p>
+              <p className={styles["item-expiration"]}>
+                Expiration Date: {item.expirationDate.toLocaleDateString()}
+              </p>
+            </div>
+            <button
+              onClick={() => handleRemoveItem(index)}
+              className={styles["remove-button"]}
+            >
+              Remove
+            </button>
+          </div>
+        ))}
+        <button onClick={handleSubmit} className={styles["submit-button"]}>
+          Create Basket
+        </button>
+      </div>
       <div id="map" className={styles.map}></div>
     </div>
   );

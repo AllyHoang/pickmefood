@@ -158,6 +158,12 @@ export default function AddRequest({ userId }) {
     }
   };
 
+  const handleRemoveItem = (index) => {
+    const updatedItems = [...items];
+    updatedItems.splice(index, 1);
+    setItems(updatedItems);
+  };
+
   const handleNewItemSubmit = async () => {
     if (!newItemName.trim()) {
       toast.error("Item name cannot be empty");
