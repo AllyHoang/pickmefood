@@ -27,30 +27,24 @@ import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 
 function DashboardPage() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [viewType, setViewType] = useState("donations"); // 'donations' or 'requests'
+    const [searchTerm, setSearchTerm] = useState('');
+    const [viewType, setViewType] = useState('donations');  // 'donations' or 'requests'
 
-  const donations = getAllDonations().filter((donation) =>
-    donation.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    const donations = getAllDonations().filter(donation =>
+        donation.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-  };
+    const handleSearchChange = (event) => {
+        setSearchTerm(event.target.value);
+    };
 
-  const handleSearchSubmit = () => {};
+    const handleSearchSubmit = () => {
 
-  const handleToggleView = () => {
-    setViewType(viewType === "donations" ? "requests" : "donations");
-  };
+    };
 
-  const truncateDescription = (description, maxWords) => {
-    const words = description.split(" ");
-    if (words.length > maxWords) {
-      return words.slice(0, maxWords).join(" ") + "...";
-    }
-    return description;
-  };
+    const handleToggleView = () => {
+        setViewType(viewType === 'donations' ? 'requests' : 'donations');
+    };
 
   return (
     <div
@@ -121,32 +115,43 @@ function DashboardPage() {
                   <CardTitle className="text-xl">{donation.title}</CardTitle>
                   <CardDescription>{donation.ownerName}</CardDescription>
                 </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <p>{truncateDescription(donation.description, 17)}</p>
-            </CardContent>
-            <CardFooter className="flex justify-between">
-              <p className="font-semibold"> ○ {donation.location} </p>
-              <p className="font-semibold">
-                {" "}
-                {donation.type === "Donation"
-                  ? `○ Expires: ${donation.expiryDate}`
-                  : ``}{" "}
-              </p>
+                <button
+                    onClick={handleToggleView}
+                    className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                >
+                    Toggle View: {viewType === 'donations' ? 'Requests' : 'Donations'}
+                </button>
+            </div>
+            <div className="grid grid-cols-3 gap-8 m-10">
+                {donations.map(donation => (
+                    <Card key={donation.id} className="flex flex-col justify-between bg-white rounded-lg shadow-md">
+                        <CardHeader className="flex-row gap-4 items-center">
+                            <Avatar>
+                                <AvatarImage src={`/images/${donation.image}`} alt="Donation Image" />
+                                <AvatarFallback>
+                                    {donation.title.slice(0,2)}
+                                </AvatarFallback>
+                            </Avatar>
+                            <div>
+                                <CardTitle>{donation.title}</CardTitle>
+                                <CardDescription>{donation.donorName}</CardDescription>
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            <p>{donation.description}</p>
+                        </CardContent>
+                        <CardFooter className="flex justify-between">
+                            <Button>View Detail</Button>
+                            <Badge variant="secondary" className=" px-3 py-1 rounded-full text-sm font-medium">
+                                Strong Match 🚀
+                            </Badge>
 
-              <Drawer direction="right">
-                <DrawerTrigger asChild>
-                  <Button>View Details</Button>
-                </DrawerTrigger>
-                <DrawerContent className="bg-white flex flex-col rounded-t-[10px] h-full w-[500px] mt-24 fixed bottom-0 right-0"></DrawerContent>
-              </Drawer>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
-    </div>
-  );
+                        </CardFooter>
+                    </Card>
+                ))}
+            </div>
+        </div>
+    );
 }
 
 export default DashboardPage;

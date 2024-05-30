@@ -3,8 +3,9 @@ import { CldUploadButton } from "next-cloudinary";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { PersonOutline } from "@mui/icons-material";
-import styles from "./ProfileComponent.module.css";
-
+import { Card, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 const Profile = ({ userId }) => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
@@ -35,7 +36,10 @@ const Profile = ({ userId }) => {
         }
         setUser(fetchedUserInfo);
         reset({
+          fitstName: fetchedUserInfo.fitstName || "",
+          lastName: fetchedUserInfo.lastName || "",
           username: fetchedUserInfo.username || "",
+          points: fetchedUserInfo.points || 0,
           profileImage: fetchedUserInfo.profileImage || "./person.jpg",
         });
       } catch (error) {
@@ -52,8 +56,11 @@ const Profile = ({ userId }) => {
     setLoading(true);
     try {
       const formData = {
+        firstName: data.firstName,
+        lastName: data.lastName,
         username: data.username,
         profileImage: data.profileImage,
+        points: data.points,
       };
 
       const res = await fetch(`/api/users/${user._id}/update`, {
@@ -86,35 +93,16 @@ const Profile = ({ userId }) => {
   }
 
   return (
-    <div className={styles["profile-page"]}>
-      <h1 className={styles["text-heading3-bold"]}>Edit Your Profile</h1>
-
-      <form
-        className={styles["edit-profile"]}
-        onSubmit={handleSubmit(updateUser)}
+    <Card className="p-6 max-w-lg">
+      <CardHeader
+        className="font-bold mb-2 flex flex-col items-center"
+        style={{ fontSize: "1.5rem" }}
       >
-        <div className={styles.input}>
-          <input
-            {...register("username", {
-              required: "Username is required",
-              validate: (value) => {
-                if (value.length < 3) {
-                  return "Username must be at least 3 characters";
-                }
-              },
-            })}
-            type="text"
-            placeholder="Username"
-            className={styles["input-field"]}
-            defaultValue={user?.username || ""}
-          />
-          <PersonOutline sx={{ color: "#737373" }} />
-        </div>
-        {errors.username && (
-          <p className={styles["text-red-500"]}>{errors.username.message}</p>
-        )}
-
-        <div className={styles.flex}>
+        Profile Page
+      </CardHeader>
+      
+      <form onSubmit={handleSubmit(updateUser)}>
+        <div className="flex flex-col items-center mb-4">
           <img
             src={
               watch("profileImage") ||
@@ -122,7 +110,7 @@ const Profile = ({ userId }) => {
               "/assets/person.jpg"
             }
             alt="profile"
-            className={`${styles["w-40"]} ${styles["h-40"]} ${styles["rounded-full"]}`}
+            className="w-40 h-40 rounded-full mb-2"
           />
           <CldUploadButton
             options={{ maxFiles: 1 }}
@@ -135,15 +123,98 @@ const Profile = ({ userId }) => {
             }
             uploadPreset="zoa1vsa7"
           >
-            <p className={styles["text-body-bold"]}>Upload new photo</p>
+            <Button
+              variant="outline"
+              className="bg-black text-white mb-2"
+              style={{ fontSize: "0.85rem" }}
+            >
+              Upload new photo
+            </Button>
           </CldUploadButton>
         </div>
 
-        <button className={styles.btn} type="submit">
-          Save Changes
-        </button>
+        <div className="mb-2">
+          <label htmlFor="username" className="block font-bold mb-1">
+            User Name
+          </label>
+          <div className="flex items-center">
+            <Input
+              id="username"
+              type="text"
+              placeholder="Username"
+              {...register("username", {
+                required: "Username is required",
+                validate: (value) => {
+                  if (value.length < 3) {
+                    return "Username must be at least 3 characters";
+                  }
+                },
+              })}
+              defaultValue={user?.username || ""}
+              className="flex-1"
+            />
+          </div>
+          {errors.username && (
+            <p className="text-red-500">{errors.username.message}</p>
+          )}
+        </div>
+
+        <div className="mb-2">
+          <label htmlFor="firstName" className="block font-bold mb-1">
+            First Name
+          </label>
+          <Input
+            id="firstName"
+            type="text"
+            placeholder="First Name"
+            {...register("firstName", {
+              required: "First name is required",
+            })}
+            defaultValue={user?.firstName || ""}
+          />
+          {errors.firstName && (
+            <p className="text-red-500">{errors.firstName.message}</p>
+          )}
+        </div>
+
+        <div className="mb-2">
+          <label htmlFor="lastName" className="block font-bold mb-1">
+            Last Name
+          </label>
+          <Input
+            id="lastName"
+            type="text"
+            placeholder="Last Name"
+            {...register("lastName", {
+              required: "Last name is required",
+            })}
+            defaultValue={user?.lastName || ""}
+          />
+          {errors.lastName && (
+            <p className="text-red-500">{errors.lastName.message}</p>
+          )}
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="points" className="block font-bold mb-1">
+            Points
+          </label>
+          <Input
+            id="points"
+            type="text"
+            {...register("points")}
+            defaultValue={user?.points || 0}
+            readOnly
+          />
+        </div>
+
+        <div className="flex justify-center">
+          <Button type="submit" className="w-half">
+            Save Changes
+          </Button>
+        </div>
       </form>
-    </div>
+    </Card>
   );
 };
 
