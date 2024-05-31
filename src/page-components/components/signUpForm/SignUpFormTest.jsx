@@ -36,7 +36,7 @@ const validateConfirmPassword = (value, getValues) => {
   return true;
 };
 
-export default function SignUpForm() {
+export default function SignUpFormTest() {
   const router = useRouter();
   const form = useForm({
     defaultValues: {
@@ -88,7 +88,10 @@ export default function SignUpForm() {
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-2">
-        <Label className=" text-2xl font-bold"> Sign Up for Pick Me Food </Label>
+        <Label className=" text-2xl font-bold">
+          {" "}
+          Sign Up for Pick Me Food{" "}
+        </Label>
         <Label className=" text-base font-normal text-slate-500">
           Already have an account? Log in{" "}
           <Link className="underline" href="/sign-in">
@@ -98,39 +101,41 @@ export default function SignUpForm() {
       </div>
       <Form {...form}>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={control}
-            name="firstName"
-            rules={{ required: "First name is required." }}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>First Name</FormLabel>
-                <FormControl>
-                  <Input type="text" placeholder="John" {...field} />
-                </FormControl>
-                {errors.firstName && (
-                  <FormMessage>{errors.firstName.message}</FormMessage>
-                )}
-              </FormItem>
-            )}
-          />
+          <div className="flex flex-row gap-10">
+            <FormField
+              control={control}
+              name="firstName"
+              rules={{ required: "First name is required." }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>First Name</FormLabel>
+                  <FormControl>
+                    <Input type="text" placeholder="John" {...field} />
+                  </FormControl>
+                  {errors.firstName && (
+                    <FormMessage>{errors.firstName.message}</FormMessage>
+                  )}
+                </FormItem>
+              )}
+            />
 
-          <FormField
-            control={control}
-            name="lastName"
-            rules={{ required: "Last name is required." }}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Last Name</FormLabel>
-                <FormControl>
-                  <Input type="text" placeholder="Doe" {...field} />
-                </FormControl>
-                {errors.lastName && (
-                  <FormMessage>{errors.lastName.message}</FormMessage>
-                )}
-              </FormItem>
-            )}
-          />
+            <FormField
+              control={control}
+              name="lastName"
+              rules={{ required: "Last name is required." }}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Last Name</FormLabel>
+                  <FormControl>
+                    <Input type="text" placeholder="Doe" {...field} />
+                  </FormControl>
+                  {errors.lastName && (
+                    <FormMessage>{errors.lastName.message}</FormMessage>
+                  )}
+                </FormItem>
+              )}
+            />
+          </div>
 
           <FormField
             control={control}
@@ -179,7 +184,9 @@ export default function SignUpForm() {
           <FormField
             control={control}
             name="confirmPassword"
-            rules={{ validate: (value) => validateConfirmPassword(value, getValues) }}
+            rules={{
+              validate: (value) => validateConfirmPassword(value, getValues),
+            }}
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Confirm Password</FormLabel>
@@ -193,8 +200,11 @@ export default function SignUpForm() {
             )}
           />
 
-          <Button type="submit" className="">
-            Sign Up
+          <Button
+            type="submit"
+            className="bg-sky-500 font-lg text-md text-white text-center"
+          >
+            Create your account
           </Button>
         </form>
       </Form>

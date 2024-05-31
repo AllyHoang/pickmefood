@@ -5,3 +5,7 @@ export { ActiveRequestLayout } from "./ActiveRequestLayout";
 export { LandingPageLayout } from "./LandingPageLayout";
 export { RootLayout } from "./RootLayout";
 export { DashboardLayout } from "./DashboardLayout";
+export { AuthenticationLayout } from "./AuthenticationLayout";
+export { SignUpLayout } from "./SignUpLayout";
+export { ForgetPasswordLayout } from "./ForgetPasswordLayout";
+

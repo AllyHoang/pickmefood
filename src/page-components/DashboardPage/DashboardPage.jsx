@@ -85,8 +85,9 @@ function DashboardPage() {
         >
           Toggle View: {viewType === "donations" ? "Requests" : "Donations"}
         </button> */}
+        
       </div>
-      <div className="grid grid-cols-2 gap-8 m-10">
+      <div className="grid grid-cols-2 gap-8">
         {donations.map((donation) => (
           <Card
             key={donation.id}
@@ -103,13 +104,13 @@ function DashboardPage() {
               </Badge>
 
               <div className="flex flex-row gap-4 items-center">
-                {/* <Avatar>
+                <Avatar>
                   <AvatarImage
                     src={`/images/${donation.image}`}
                     alt="Donation Image"
                   />
                   <AvatarFallback>{donation.title.slice(0, 2)}</AvatarFallback>
-                </Avatar> */}
+                </Avatar>
                 <div>
                   <CardTitle className="text-xl">{donation.title}</CardTitle>
                   <CardDescription>{donation.ownerName}</CardDescription>
@@ -117,11 +118,11 @@ function DashboardPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <p>{truncateDescription(donation.description, 17)}</p>
+              <p>{truncateDescription(donation.description, 15)}</p>
             </CardContent>
             <CardFooter className="flex justify-between">
-              <p className="font-semibold"> ○ {donation.location} </p>
-              <p className="font-semibold">
+              <p className="font-medium text-sm"> ○ {donation.location} </p>
+              <p className="font-medium text-sm">
                 {" "}
                 {donation.type === "Donation"
                   ? `○ Expires: ${donation.expiryDate}`
