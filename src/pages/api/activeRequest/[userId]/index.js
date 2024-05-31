@@ -4,7 +4,19 @@ import RequestModel from "@/core/models/Request";
 export default async function handler(req, res) {
   if (req.method == "POST") {
     await connectToDB();
-    const newRequest = await RequestModel.create(req.body);
+    const location = req.body.userAddress;
+    const userId = req.body.userId;
+    const itemName = req.body.itemName;
+    const reason = req.body.reason;
+    const quantity = req.body.quantity;
+    const newRequest = new RequestModel({
+      userId,
+      itemName,
+      reason,
+      quantity,
+      location,
+    });
+    await newRequest.save();
     res
       .status(201)
       .json({ message: "Request Created", data: { request: newRequest } });

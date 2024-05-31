@@ -1,3 +1,4 @@
+"use client";
 import { useState } from "react";
 import {
   Card,
@@ -19,7 +20,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 
-import { getAllDonations } from "../../../dummy-data";
+import { getAllDonations } from "../../../../dummy-data";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -52,7 +53,13 @@ function DashboardPage() {
   };
 
   return (
-    <div className="container mx-auto px-4">
+    <div
+      className="container mx-auto px-4"
+      style={{
+        background:
+          "linear-gradient(to bottom, #ffffff, #f3f2fe, #e4e6fd, #d3dafc, #c0cffc, #bfcafb, #c0c5fb, #c1bff9, #d5bef4, #e7beed, #f5bfe5, #ffc1dd);",
+      }}
+    >
       <h1 className="text-3xl font-bold text-start text-gray-800 my-8">
         Welcome back, Thuc Anh!
       </h1>

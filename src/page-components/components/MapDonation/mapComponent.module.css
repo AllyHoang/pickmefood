@@ -1,0 +1,194 @@
+/* mapDonation.module.css */
+@import url("https://fonts.googleapis.com/css2?family=Hubot+Sans:wght@400;700&display=swap");
+.mapContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+.container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.searchForm {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 1;
+  width: calc(100% - 600px);
+}
+
+.searchInput {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  width: calc(100% - 100px);
+  border-radius: 4px;
+  margin-right: 8px;
+}
+
+.searchButton {
+  padding: 8px 16px;
+  font-size: 16px;
+  background-color: #0b95bf;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.error {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  color: red;
+}
+
+.suggestions {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  position: absolute;
+  top: 50px; /* Adjust this value as needed */
+  left: 20px;
+  right: 20px;
+  width: calc(100% - 700px);
+  z-index: 1;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.suggestions li {
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.suggestions li:hover {
+  background-color: #f0f0f0;
+}
+
+.sidebar {
+  margin-top: 20px;
+  position: absolute;
+  top: 10%;
+  right: 10px;
+  width: 300px;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  gap: 10px;
+  max-height: 400px; /* Maximum height */
+  overflow-y: scroll; /* Enable vertical scrolling */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.title {
+  font-family: "Hubot Sans", sans-serif;
+  font-size: 22px;
+  color: #000000;
+  text-align: left;
+  padding-top: 10px;
+  padding-bottom: 5px;
+  border-radius: 10px;
+  font-weight: bold;
+}
+.donationDetails {
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  padding-left: 10px;
+  font-family: "Hubot Sans", sans-serif;
+  font-size: 14px;
+  color: #000000;
+  text-align: left;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  width: calc(100% - 20px);
+  transition: box-shadow 0.3s ease; /* Add transition for smooth effect */
+}
+
+.requestDetails {
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  padding-left: 10px;
+  font-family: "Hubot Sans", sans-serif;
+  font-size: 14px;
+  color: #000000;
+  text-align: left;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  width: calc(100% - 20px);
+  transition: box-shadow 0.3s ease; /* Add transition for smooth effect */
+}
+
+.donationDetails:hover {
+  box-shadow: 0 0 30px rgba(240, 178, 149, 0.891); /* Add color shadow effect on hover */
+}
+
+.requestDetails:hover {
+  box-shadow: 0 0 30px rgba(194, 243, 189, 0.891); /* Add color shadow effect on hover */
+}
+.closeButton {
+  padding-left: 5px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 20px;
+  color: #264653;
+  cursor: pointer;
+}
+
+.addButton {
+  margin: 10px 10px 10px 10px;
+  font-family: "Hubot Sans", sans-serif;
+  background-color: #ffffff;
+  color: #000000;
+  border: none;
+  border: 1px solid #9c9c9c;
+  border-radius: 5px;
+  padding: 7px;
+  font-size: 12px;
+  cursor: pointer;
+  float: right; /* Align button to the right */
+}
+
+.addButton:hover {
+  background-color: #efaeb1;
+}
+
+.donationButton {
+  position: absolute;
+  top: 20px; /* Adjust the top position as needed */
+  right: 20px; /* Adjust the right position as needed */
+  z-index: 9999; /* Ensure the button appears on top of other elements */
+  padding: 10px;
+  background-color: #efaeb1;
+  border: 1px solid #dddddd;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.requestButton {
+  position: absolute;
+  top: 20px; /* Adjust the top position as needed */
+  right: 20px; /* Adjust the right position as needed */
+  z-index: 9999; /* Ensure the button appears on top of other elements */
+  padding: 10px;
+  background-color: #95d3b7;
+  border: 1px solid #dddddd;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.toggleButton:hover {
+  background-color: #f0f0f0;
+}

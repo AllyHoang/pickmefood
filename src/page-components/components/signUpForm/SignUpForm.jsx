@@ -94,110 +94,87 @@ export default function SignUpForm() {
           <Link className="underline" href="/sign-in">
             here
           </Link>
-        </Label>
-      </div>
-      <Form {...form}>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={control}
-            name="firstName"
-            rules={{ required: "First name is required." }}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>First Name</FormLabel>
-                <FormControl>
-                  <Input type="text" placeholder="John" {...field} />
-                </FormControl>
-                {errors.firstName && (
-                  <FormMessage>{errors.firstName.message}</FormMessage>
-                )}
-              </FormItem>
-            )}
+        </div>
+
+        <div className={styles["name-container"]}>
+          <label htmlFor="first-name" className={styles["label-text"]}>
+            First Name
+          </label>
+          <input
+            id="first-name"
+            name="first-name"
+            value={user.firstName}
+            onChange={(e) => setUser({ ...user, firstName: e.target.value })}
+            type="text"
+            autoComplete="off"
+            className={`${styles["input-field"]} ${styles["name-input-field"]}`} // Apply new class
           />
 
-          <FormField
-            control={control}
-            name="lastName"
-            rules={{ required: "Last name is required." }}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Last Name</FormLabel>
-                <FormControl>
-                  <Input type="text" placeholder="Doe" {...field} />
-                </FormControl>
-                {errors.lastName && (
-                  <FormMessage>{errors.lastName.message}</FormMessage>
-                )}
-              </FormItem>
-            )}
+          <label htmlFor="last-name" className={styles["label-text"]}>
+            Last Name
+          </label>
+          <input
+            id="last-name"
+            name="last-name"
+            value={user.lastName}
+            onChange={(e) => setUser({ ...user, lastName: e.target.value })}
+            type="text"
+            autoComplete="off"
+            className={`${styles["input-field"]} ${styles["name-input-field"]}`} // Apply new class
           />
+        </div>
 
-          <FormField
-            control={control}
-            name="email"
-            rules={{ validate: validateEmail }}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    type="email"
-                    placeholder="example@example.com"
-                    {...field}
-                  />
-                </FormControl>
-                <FormDescription>
-                  Please enter your email address.
-                </FormDescription>
-                {errors.email && (
-                  <FormMessage>{errors.email.message}</FormMessage>
-                )}
-              </FormItem>
-            )}
-          />
+        <label htmlFor="email" className={styles["label-text"]}>
+          Email
+        </label>
+        <input
+          id="email"
+          name="email"
+          value={user.email}
+          onChange={(e) => setUser({ ...user, email: e.target.value })}
+          type="text"
+          autoComplete="off"
+          className={styles["input-field"]}
+        />
 
-          <FormField
-            control={control}
-            name="password"
-            rules={{ validate: validatePassword }}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="********" {...field} />
-                </FormControl>
-                <FormDescription>
-                  Your password must be at least 6 characters.
-                </FormDescription>
-                {errors.password && (
-                  <FormMessage>{errors.password.message}</FormMessage>
-                )}
-              </FormItem>
-            )}
-          />
+        <label htmlFor="password" className={styles["label-text"]}>
+          Password
+        </label>
+        <input
+          id="password"
+          name="password"
+          value={user.password}
+          onChange={(e) => setUser({ ...user, password: e.target.value })}
+          className={styles["input-field"]}
+          autoComplete="off"
+          type="password"
+        />
 
-          <FormField
-            control={control}
-            name="confirmPassword"
-            rules={{ validate: (value) => validateConfirmPassword(value, getValues) }}
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Confirm Password</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="********" {...field} />
-                </FormControl>
-                {errors.confirmPassword && (
-                  <FormMessage>{errors.confirmPassword.message}</FormMessage>
-                )}
-              </FormItem>
-            )}
-          />
+        <label htmlFor="confirm-password" className={styles["label-text"]}>
+          Confirm Password
+        </label>
+        <input
+          id="confirm-password"
+          name="confirm-password"
+          value={user.confirmPassword}
+          autoComplete="off"
+          onChange={(e) =>
+            setUser({ ...user, confirmPassword: e.target.value })
+          }
+          className={styles["input-field"]}
+          type="password"
+        />
 
-          <Button type="submit" className="">
-            Sign Up
-          </Button>
-        </form>
-      </Form>
+        <button
+          type="submit"
+          className={`${styles["submit-button"]} ${
+            buttonDisabled ? styles["disabled-button"] : ""
+          }`}
+          disabled={buttonDisabled}
+        >
+          Sign Up
+        </button>
+      </form>
     </div>
   );
 }

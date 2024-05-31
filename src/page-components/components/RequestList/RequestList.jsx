@@ -47,13 +47,12 @@ const RequestList = ({ userId }) => {
           <div key={t._id} className={styles.item}>
             <div className={styles.itemContent}>
               <h2 className={styles.itemTitle}>{t.itemName}</h2>
-              <div className={styles.itemDescription}>
-                Description: {t.description}
-              </div>
+              <div className={styles.itemReason}>Reason: {t.reason}</div>
               <div className={styles.itemQuantity}>Quantity: {t.quantity}</div>
               <div className={styles.postedDate}>
                 Posted Date: {formatDate(t.createdAt)}
               </div>
+              <div className={styles.location}>Location: {t.location}</div>
             </div>
             <div className={styles.btnGroup}>
               <RemoveRequestsBtn id={t._id} />

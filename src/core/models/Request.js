@@ -7,8 +7,13 @@ const RequestSchema = new Schema(
       require: true,
       default: "",
     },
-    description: {
+    reason: {
       type: String,
+      default: "",
+    },
+    emoji: {
+      type: String,
+      require: true,
       default: "",
     },
     quantity: {

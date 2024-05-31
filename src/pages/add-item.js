@@ -1,6 +1,5 @@
 import { AddItemLayout } from "@/page-components/layouts";
 import AddItem from "@/page-components/components/AddItemForm/AddItemForm";
-import { jwtDecode } from "jwt-decode"; // Import jwt_decode library
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import Swal from "sweetalert2";
