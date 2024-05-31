@@ -7,7 +7,7 @@ const RequestSchema = new Schema(
       require: true,
       default: "",
     },
-    description: {
+    reason: {
       type: String,
       default: "",
     },
@@ -16,10 +16,20 @@ const RequestSchema = new Schema(
       require: true,
       default: "",
     },
-    
+
     createdAt: {
       type: Date,
       default: Date.now,
+    },
+    userId: {
+      type: String,
+      required: true,
+      default: "",
+    },
+    location: {
+      type: String,
+      required: true,
+      default: "",
     },
   },
   {

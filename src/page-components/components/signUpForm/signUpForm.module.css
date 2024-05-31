@@ -1,0 +1,86 @@
+.container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  height: 100vh;
+  /* background-color: #bee3ef; */
+}
+
+/*the blue line*/
+.container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 20px;
+  background-color: #bee3ef;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem; /* Increased gap between elements */
+  padding: 2rem; /* Increased padding */
+  margin-left: 4rem;
+}
+
+.header {
+  font-size: 2.5rem;
+}
+
+.link {
+  text-decoration: underline;
+  color: #33c1f0;
+}
+
+.input-field {
+  padding: 0.5rem 1rem;
+  width: 600px; /* Increased width for a wider input box */
+  border-radius: 10px;
+  font-size: 1rem;
+  margin-bottom: 1rem; /* Decreased margin between input box and label */
+}
+.name-container {
+  display: flex;
+  gap: 2rem; /* Adjust the gap between the input fields */
+}
+
+.name-input {
+  display: flex; /* Each input field occupies equal width */
+  flex-direction: column; /* Align label and input vertically */
+}
+.name-input-field {
+  width: calc(
+    50% - 1rem
+  ); /* Set width to half of the available space minus padding */
+}
+
+.label-text {
+  font-weight: bold;
+  font-size: 1.25 rem;
+  margin-bottom: -1rem;
+}
+
+.form-header {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  color: #50748c;
+  align-self: flex-start;
+  width: 100px;
+}
+.submit-button {
+  /* color: #70a2af; */
+  background-color: #bee3ef;
+  font-weight: bold;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  align-self: flex-start; /* Prevent stretching */
+}
+
+.disabled-button {
+  opacity: 0.5;
+}

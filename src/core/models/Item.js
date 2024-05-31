@@ -7,6 +7,11 @@ const ItemSchema = new Schema(
       require: true,
       default: "",
     },
+    emoji: {
+      type: String,
+      require: true,
+      default: "",
+    },
     description: {
       type: String,
       default: "",
@@ -24,6 +29,16 @@ const ItemSchema = new Schema(
     createdAt: {
       type: Date,
       default: Date.now,
+    },
+    userId: {
+      type: String,
+      required: true,
+      default: "",
+    },
+    location: {
+      type: String,
+      required: true,
+      default: "",
     },
   },
   {

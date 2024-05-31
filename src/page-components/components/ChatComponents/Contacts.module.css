@@ -1,0 +1,79 @@
+/* Contacts.css */
+
+/* Create Chat Container */
+.create-chat-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Input Search */
+.input-search {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Contact Bar */
+.contact-bar {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* Contact List */
+.contact-list {
+  width: 45%;
+}
+
+/* Contact */
+.contact {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+/* Profile Photo */
+.profilePhoto {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+}
+
+/* Selected Contact */
+.selected-contact {
+  background-color: #f0f0f0;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+}
+
+/* Input Group Name */
+.input-group-name {
+  width: 100%;
+  padding: 0.5rem;
+}
+
+/* Button */
+.btn {
+  padding: 0.5rem 1rem;
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+/* Media Query for Contact Bar */
+@media (max-width: 768px) {
+  .contact-bar {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .contact-list {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+}

@@ -1,20 +1,11 @@
-import styles from "@/styles/Home.module.css";
-import Link from "next/link";
-import { HomeLayout } from "@/page-components/layouts";
+import { LandingPageLayout } from "@/page-components/layouts";
+import LandingPage from "@/page-components/components/LandingPage/LandingPage";
 
 const HomeIndex = () => {
-  return (
-    <div className={styles.container}>
-      <div className={styles.appBar}>
-        <Link href="/api/items/1/page">Click for page two!</Link>
-      </div>
-      <div className={styles.mainContent}>
-        <h1>This is your home page.</h1>
-      </div>
-    </div>
-  );
+  return <LandingPage> </LandingPage>;
 };
 
-HomeIndex.Layout = HomeLayout;
+// HomeIndex.Layout = HomeLayout;
+HomeIndex.Layout = LandingPageLayout;
 
 export default HomeIndex;

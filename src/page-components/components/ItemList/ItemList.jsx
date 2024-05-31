@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import RemoveBtn from "../RemoveBtn";
+import RemoveBtn from "../RemoveButton";
 import { HiPencilAlt } from "react-icons/hi";
 import styles from "./ItemList.module.css"; // Import CSS module
 
-const ItemList = () => {
+const ItemList = ({ userId }) => {
   const [items, setItems] = useState(null); // State to hold items
 
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/items/page", {
-          cache: "no-store",
-        });
+        const res = await fetch(
+          `http://localhost:3000/api/activeItem/${userId}`,
+          {
+            cache: "no-store",
+          }
+        );
 
         if (!res.ok) {
           throw new Error("Failed to fetch items");
@@ -55,10 +58,11 @@ const ItemList = () => {
               <div className={styles.postedDate}>
                 Posted Date: {formatDate(t.createdAt)}
               </div>
+              <div className={styles.location}>Location: {t.location}</div>
             </div>
             <div className={styles.btnGroup}>
               <RemoveBtn id={t._id} />
-              <Link href={`/editItem/${t._id}`}>
+              <Link href={`/edit-item/${t._id}`}>
                 <HiPencilAlt size={24} />
               </Link>
             </div>
@@ -66,7 +70,7 @@ const ItemList = () => {
         ))}
         <div className={styles.buttonContainer}>
           <div className={styles.addButton}>
-            <Link href={"/addItem/page"}>Add</Link>
+            <Link href={"/add-item"}>Add</Link>
           </div>
         </div>
       </div>
