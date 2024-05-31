@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useRouter } from "next/router";
 import Link from "next/link";
 
 const validateEmail = (value) => {
@@ -29,6 +30,7 @@ const validateEmail = (value) => {
 // };
 
 export default function SignInFormTest() {
+  const router = useRouter();
   const form = useForm({
     defaultValues: {
       email: "",
