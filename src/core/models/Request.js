@@ -11,6 +11,11 @@ const RequestSchema = new Schema(
       type: String,
       default: "",
     },
+    emoji: {
+      type: String,
+      require: true,
+      default: "",
+    },
     quantity: {
       type: Number,
       require: true,
