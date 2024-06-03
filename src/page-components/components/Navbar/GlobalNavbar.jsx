@@ -91,7 +91,7 @@ const GlobalNavbar = () => {
             </NavigationMenuItem>
 
             <NavigationMenuItem>
-              <Link href="/profile-page" legacyBehavior passHref>
+              <Link href="/userpage" legacyBehavior passHref>
                 <NavigationMenuLink
                   className={`${navigationMenuTriggerStyle()} w-[160px] h-12 py-2`}
                 >
