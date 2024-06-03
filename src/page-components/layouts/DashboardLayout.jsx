@@ -1,6 +1,7 @@
 import React from "react";
 import Head from "next/head";
-import GlobalNavbar from "../components/Navbar/GlobalNavbar";
+import SideBar from "../components/Navbar/SideBar";
+import RightBar from "../components/RightBar/RightBar";
 
 export const DashboardLayout = ({ children }) => {
   return (
@@ -9,8 +10,9 @@ export const DashboardLayout = ({ children }) => {
         <title>PickMeFood | Dashboard</title>
       </Head>
       <div className="grid grid-cols-[auto,1fr] h-screen overflow-hidden">
-        <GlobalNavbar className="border-r border-black-200 fixed pr-4 w-80" />
+        <SideBar className="border-r border-black-200 fixed pr-4 w-80" />
         <main className="flex-1 p-6 overflow-y-auto">{children}</main>
+        <RightBar className="border-l border-black-200 fixed w-60" />
       </div>
     </>
   );

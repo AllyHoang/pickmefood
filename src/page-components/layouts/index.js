@@ -13,3 +13,7 @@ export { ProfilePageLayout } from "./ProfilePageLayout";
 export { ScanLayout } from "./ScanLayout";
 export { ConfirmationLayout } from "./ConfirmationLayout";
 export { UserPageLayout } from "./UserPageLayout";
+export { AuthenticationLayout } from "./AuthenticationLayout";
+export { SignUpLayout } from "./SignUpLayout";
+export { ForgetPasswordLayout } from "./ForgetPasswordLayout";
+
