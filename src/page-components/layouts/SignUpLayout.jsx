@@ -1,8 +1,5 @@
 import React from "react";
 import Head from "next/head";
-import LandingPageNavbar from "../components/Navbar/LandingPageNavbar";
-import GlobalNavbar from "../components/Navbar/GlobalNavbar";
-import SignUpFormTest from "../components/signUpForm/SignUpFormTest";
 
 export const SignUpLayout = ({ children }) => {
   return (
