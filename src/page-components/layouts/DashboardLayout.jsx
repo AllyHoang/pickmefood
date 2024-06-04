@@ -1,6 +1,7 @@
 import React from "react";
 import Head from "next/head";
 import SideBar from "../components/Navbar/SideBar";
+import RightBar from "../components/RightBar/RightBar";
 
 export const DashboardLayout = ({ children }) => {
   return (

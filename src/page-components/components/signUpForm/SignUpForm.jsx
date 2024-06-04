@@ -88,93 +88,90 @@ export default function SignUpForm() {
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-2">
-        <Label className=" text-2xl font-bold"> Sign Up for Pick Me Food </Label>
-        <Label className=" text-base font-normal text-slate-500">
+        <Label className="text-2xl font-bold">Sign Up for Pick Me Food</Label>
+        <Label className="text-base font-normal text-slate-500">
           Already have an account? Log in{" "}
           <Link className="underline" href="/sign-in">
             here
           </Link>
-        </div>
+        </Label>
+      </div>
 
-        <div className={styles["name-container"]}>
-          <label htmlFor="first-name" className={styles["label-text"]}>
-            First Name
-          </label>
-          <input
-            id="first-name"
-            name="first-name"
-            value={user.firstName}
-            onChange={(e) => setUser({ ...user, firstName: e.target.value })}
-            type="text"
-            autoComplete="off"
-            className={`${styles["input-field"]} ${styles["name-input-field"]}`} // Apply new class
-          />
-
-          <label htmlFor="last-name" className={styles["label-text"]}>
-            Last Name
-          </label>
-          <input
-            id="last-name"
-            name="last-name"
-            value={user.lastName}
-            onChange={(e) => setUser({ ...user, lastName: e.target.value })}
-            type="text"
-            autoComplete="off"
-            className={`${styles["input-field"]} ${styles["name-input-field"]}`} // Apply new class
-          />
-        </div>
-
-        <label htmlFor="email" className={styles["label-text"]}>
-          Email
-        </label>
-        <input
-          id="email"
+      <Form onSubmit={handleSubmit(onSubmit)}>
+        <FormField
+          name="firstName"
+          control={control}
+          rules={{ required: "First Name is required" }}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>First Name</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage>{errors.firstName?.message}</FormMessage>
+            </FormItem>
+          )}
+        />
+        <FormField
+          name="lastName"
+          control={control}
+          rules={{ required: "Last Name is required" }}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Last Name</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage>{errors.lastName?.message}</FormMessage>
+            </FormItem>
+          )}
+        />
+        <FormField
           name="email"
-          value={user.email}
-          onChange={(e) => setUser({ ...user, email: e.target.value })}
-          type="text"
-          autoComplete="off"
-          className={styles["input-field"]}
+          control={control}
+          rules={{ validate: validateEmail }}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage>{errors.email?.message}</FormMessage>
+            </FormItem>
+          )}
         />
-
-        <label htmlFor="password" className={styles["label-text"]}>
-          Password
-        </label>
-        <input
-          id="password"
+        <FormField
           name="password"
-          value={user.password}
-          onChange={(e) => setUser({ ...user, password: e.target.value })}
-          className={styles["input-field"]}
-          autoComplete="off"
-          type="password"
+          control={control}
+          rules={{ validate: validatePassword }}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input type="password" {...field} />
+              </FormControl>
+              <FormMessage>{errors.password?.message}</FormMessage>
+            </FormItem>
+          )}
         />
-
-        <label htmlFor="confirm-password" className={styles["label-text"]}>
-          Confirm Password
-        </label>
-        <input
-          id="confirm-password"
-          name="confirm-password"
-          value={user.confirmPassword}
-          autoComplete="off"
-          onChange={(e) =>
-            setUser({ ...user, confirmPassword: e.target.value })
-          }
-          className={styles["input-field"]}
-          type="password"
+        <FormField
+          name="confirmPassword"
+          control={control}
+          rules={{
+            validate: (value) => validateConfirmPassword(value, getValues),
+          }}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Confirm Password</FormLabel>
+              <FormControl>
+                <Input type="password" {...field} />
+              </FormControl>
+              <FormMessage>{errors.confirmPassword?.message}</FormMessage>
+            </FormItem>
+          )}
         />
-
-        <button
-          type="submit"
-          className={`${styles["submit-button"]} ${
-            buttonDisabled ? styles["disabled-button"] : ""
-          }`}
-          disabled={buttonDisabled}
-        >
-          Sign Up
-        </button>
-      </form>
+        <Button type="submit">Sign Up</Button>
+      </Form>
     </div>
   );
 }
