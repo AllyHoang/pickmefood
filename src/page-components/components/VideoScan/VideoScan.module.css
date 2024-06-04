@@ -1,16 +1,15 @@
 .videoScanContainer {
-  font-family: Arial, sans-serif;
-  max-width: 800px;
-  margin: 0 auto;
+  font-family: "Roboto", sans-serif;
   padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .title {
   text-align: center;
   color: #333;
+  margin-bottom: 20px;
+  font-size: 2rem;
 }
 
 .buttons {
@@ -26,16 +25,12 @@
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-size: 16px;
+  transition: background-color 0.3s;
 }
 
 .startButton {
-  background-color: #28a745;
+  background-color: #007bff;
   color: #fff;
-}
-
-.startButton:disabled {
-  background-color: #aaa;
 }
 
 .stopButton {
@@ -43,52 +38,27 @@
   color: #fff;
 }
 
-.stopButton:disabled {
-  background-color: #aaa;
-}
-
 .videoContainer {
-  display: flex;
-  justify-content: center;
+  text-align: center;
   margin-bottom: 20px;
 }
 
 .videoStream {
-  width: 100%;
-  max-width: 600px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+  max-width: 100%;
 }
 
 .detectedItems,
 .confirmedItems {
-  margin-top: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
 }
 
 .detectedItems h2,
 .confirmedItems h2 {
-  color: #555;
-}
-
-.detectedItems ul,
-.confirmedItems ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.detectedItems li,
-.confirmedItems li {
-  margin: 5px 0;
-  padding: 10px;
-  background-color: #fff;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-}
-
-.detectedItems input {
-  margin-right: 10px;
+  margin-bottom: 10px;
 }
 
 .confirmedItem {
@@ -98,11 +68,31 @@
 }
 
 .removeButton {
-  padding: 5px 10px;
-  margin-left: 10px;
-  border: none;
-  border-radius: 5px;
   background-color: #dc3545;
   color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
   cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.removeButton:hover {
+  background-color: #c82333;
+}
+
+.confirmButton {
+  display: block;
+  margin: 0 auto;
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.confirmButton:hover {
+  background-color: #218838;
 }

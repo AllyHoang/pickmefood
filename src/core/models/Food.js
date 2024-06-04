@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import { Schema, models, model } from "mongoose";
 const FoodSchema = new Schema({
   name: String,
