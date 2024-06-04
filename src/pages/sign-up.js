@@ -2,9 +2,12 @@
 // - check if there is any existing email in database
 // - hash the password
 
-import SignUpForm from "@/page-components/components/SignUpForm/SignUpForm";
+import SignUpFormTest from "@/page-components/components/SignUpForm/SignUpFormTest";
+import { SignUpLayout } from "@/page-components/layouts";
 const SignUp = () => {
-  return <SignUpForm />;
+  return <SignUpFormTest/>;
 };
+
+SignUp.Layout = SignUpLayout
 
 export default SignUp;
