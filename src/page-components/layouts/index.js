@@ -12,3 +12,7 @@ export { ChatLayout } from "./ChatLayout";
 export { ProfilePageLayout } from "./ProfilePageLayout";
 export { ScanLayout } from "./ScanLayout";
 export { ConfirmationLayout } from "./ConfirmationLayout";
+export { AuthenticationLayout } from "./AuthenticationLayout";
+export { SignUpLayout } from "./SignUpLayout";
+export { ForgetPasswordLayout } from "./ForgetPasswordLayout";
+
