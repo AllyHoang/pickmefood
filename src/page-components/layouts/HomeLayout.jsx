@@ -1,6 +1,6 @@
 import React from "react";
 import Head from "next/head";
-import GlobalNavbar from "../components/Navbar/GlobalNavbar";
+import SideBar from "../components/Navbar/SideBar";
 
 export const HomeLayout = ({ children }) => {
   return (
@@ -8,8 +8,9 @@ export const HomeLayout = ({ children }) => {
       <Head>
         <title>PickMeFood | Home</title>
       </Head>
+      
       <div className="grid grid-cols-[auto,1fr]">
-        <GlobalNavbar className="border-r border-black-200 pr-4" />
+        <SideBar className="border-r border-black-200 pr-4" />
         <main className="p-6">{children}</main>
       </div>
     </>

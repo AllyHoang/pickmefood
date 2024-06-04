@@ -1,10 +1,16 @@
 import React, { useState } from "react";
 import { CldUploadButton } from "next-cloudinary";
+import { useRouter } from "next/router";
+import styles from "./ImageScan.module.css";
 
-const ClarifaiComponent = () => {
+const ImageScan = () => {
   const [imageUrl, setImageUrl] = useState("");
   const [detectedItems, setDetectedItems] = useState([]);
   const [confirmedItems, setConfirmedItems] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const router = useRouter();
+
+  const itemsPerPage = 10;
 
   const runClarifai = async () => {
     const PAT = "dda115b63573404e9acee82bb952af34";
@@ -52,6 +58,7 @@ const ClarifaiComponent = () => {
         (concept) => concept.name
       );
       setDetectedItems(concepts);
+      setCurrentPage(0); // Reset to first page on new scan
     } catch (error) {
       console.error("Error:", error);
     }
@@ -67,10 +74,34 @@ const ClarifaiComponent = () => {
     setConfirmedItems(confirmedItems.filter((i) => i !== item));
   };
 
+  const handleNextPage = () => {
+    if ((currentPage + 1) * itemsPerPage < detectedItems.length) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePrevPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const redirectToConfirmationPage = () => {
+    router.push({
+      pathname: "/confirmation",
+      query: { confirmedItems: JSON.stringify(confirmedItems) },
+    });
+  };
+
+  const paginatedItems = detectedItems.slice(
+    currentPage * itemsPerPage,
+    (currentPage + 1) * itemsPerPage
+  );
+
   return (
-    <div>
-      <h1 style={{ textAlign: "center" }}>Clarifai Image Recognition</h1>
-      <div style={{ textAlign: "center", marginBottom: "20px" }}>
+    <div className={styles.container}>
+      <h1 className={styles.title}>Image Recognition</h1>
+      <div className={styles.uploadSection}>
         <CldUploadButton
           options={{ maxFiles: 1 }}
           folder="images"
@@ -80,46 +111,89 @@ const ClarifaiComponent = () => {
           }
           uploadPreset="zoa1vsa7"
         >
-          <p>Upload Image</p>
+          <p className={styles.uploadButton}>Upload Image</p>
         </CldUploadButton>
-        <button onClick={runClarifai} disabled={!imageUrl}>
-          Run Clarifai
+        <button
+          onClick={runClarifai}
+          disabled={!imageUrl}
+          className={`${styles.runButton} ${
+            !imageUrl ? styles.runButtonDisabled : ""
+          }`}
+        >
+          Scan
         </button>
       </div>
-      {imageUrl && (
-        <div style={{ textAlign: "center", marginBottom: "20px" }}>
-          <img src={imageUrl} alt="Uploaded" style={{ maxWidth: "100%" }} />
+      <div className={styles.content}>
+        <div className={styles.leftSection}>
+          {imageUrl && (
+            <div className={styles.imageContainer}>
+              <img src={imageUrl} alt="Uploaded" className={styles.image} />
+            </div>
+          )}
         </div>
-      )}
-      <div style={{ marginBottom: "20px" }}>
-        <h2>Detected Items</h2>
-        <ul>
-          {detectedItems.map((item, index) => (
-            <li key={index}>
-              <input
-                type="checkbox"
-                id={`item-${index}`}
-                onChange={(e) =>
-                  e.target.checked
-                    ? handleItemCheck(item)
-                    : handleItemUncheck(item)
-                }
-              />
-              <label htmlFor={`item-${index}`}>{item}</label>
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div>
-        <h2>Confirmed Items</h2>
-        <ul>
-          {confirmedItems.map((item, index) => (
-            <li key={index}>{item}</li>
-          ))}
-        </ul>
+        {detectedItems.length > 0 && (
+          <div className={styles.rightSection}>
+            <div className={styles.section}>
+              <h2>Detected Items</h2>
+              <ul className={styles.list}>
+                {paginatedItems.map((item, index) => (
+                  <li key={index} className={styles.listItem}>
+                    <input
+                      type="checkbox"
+                      id={`item-${index}`}
+                      onChange={(e) =>
+                        e.target.checked
+                          ? handleItemCheck(item)
+                          : handleItemUncheck(item)
+                      }
+                      className={styles.checkbox}
+                    />
+                    <label htmlFor={`item-${index}`} className={styles.label}>
+                      {item}
+                    </label>
+                  </li>
+                ))}
+              </ul>
+              <div className={styles.paginationButtons}>
+                <button
+                  onClick={handlePrevPage}
+                  disabled={currentPage === 0}
+                  className={styles.paginationButton}
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={handleNextPage}
+                  disabled={
+                    (currentPage + 1) * itemsPerPage >= detectedItems.length
+                  }
+                  className={styles.paginationButton}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+            <div className={styles.section}>
+              <h2>Confirmed Items</h2>
+              <ul className={styles.list}>
+                {confirmedItems.map((item, index) => (
+                  <li key={index} className={styles.listItem}>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <button
+                onClick={redirectToConfirmationPage}
+                className={styles.confirmationButton}
+              >
+                Go to Confirmation Page
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
-export default ClarifaiComponent;
+export default ImageScan;

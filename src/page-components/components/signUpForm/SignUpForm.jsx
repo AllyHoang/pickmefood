@@ -1,47 +1,62 @@
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { useRouter } from "next/router";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import Link from "next/link";
-import styles from "./SignUpForm.module.css";
+
+const validateEmail = (value) => {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!regex.test(value)) {
+    return "Please enter a valid email address.";
+  }
+  return true;
+};
+
+const validatePassword = (value) => {
+  if (value.length < 6) {
+    return "Password must be at least 6 characters.";
+  }
+  return true;
+};
+
+const validateConfirmPassword = (value, getValues) => {
+  if (value !== getValues().password) {
+    return "Passwords do not match.";
+  }
+  return true;
+};
 
 export default function SignUpForm() {
-  const [user, setUser] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-  const [buttonDisabled, setButtonDisable] = useState(true);
   const router = useRouter();
+  const form = useForm({
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+    mode: "onSubmit",
+  });
 
-  useEffect(() => {
-    if (
-      user.firstName.length > 0 &&
-      user.lastName.length > 0 &&
-      user.email.length > 0 &&
-      user.password.length > 0 &&
-      user.confirmPassword.length > 0
-    ) {
-      setButtonDisable(false);
-    } else {
-      setButtonDisable(true);
-    }
-  }, [user]);
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+    getValues,
+  } = form;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailPattern.test(user.email)) {
-      alert("Please enter a valid email address.");
-      return;
-    }
-
-    if (user.confirmPassword != user.password) {
-      alert("Passwords don't match");
-      return;
-    }
-
+  async function onSubmit(values) {
     try {
       const res = await fetch("http://localhost:3000/api/users/signup", {
         method: "POST",
@@ -49,10 +64,10 @@ export default function SignUpForm() {
           "Content-type": "application/json",
         },
         body: JSON.stringify({
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          password: user.password,
+          firstName: values.firstName,
+          lastName: values.lastName,
+          email: values.email,
+          password: values.password,
         }),
       });
 
@@ -68,98 +83,95 @@ export default function SignUpForm() {
     } catch (error) {
       console.log(error);
     }
-  };
+  }
+
   return (
-    <div className={styles.container}>
-      <form onSubmit={handleSubmit} className={styles["form-container"]}>
-        <h1 className={styles["header"]}> Welcome to PickMeFood </h1>
-        <div>
+    <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-2">
+        <Label className="text-2xl font-bold">Sign Up for Pick Me Food</Label>
+        <Label className="text-base font-normal text-slate-500">
           Already have an account? Log in{" "}
-          <Link href="/sign-in" className={styles.link}>
-            {" "}
-            here{" "}
+          <Link className="underline" href="/sign-in">
+            here
           </Link>
-        </div>
+        </Label>
+      </div>
 
-        <div className={styles["name-container"]}>
-          <label htmlFor="first-name" className={styles["label-text"]}>
-            First Name
-          </label>
-          <input
-            id="first-name"
-            name="first-name"
-            value={user.firstName}
-            onChange={(e) => setUser({ ...user, firstName: e.target.value })}
-            type="text"
-            autoComplete="off"
-            className={`${styles["input-field"]} ${styles["name-input-field"]}`} // Apply new class
-          />
-
-          <label htmlFor="last-name" className={styles["label-text"]}>
-            Last Name
-          </label>
-          <input
-            id="last-name"
-            name="last-name"
-            value={user.lastName}
-            onChange={(e) => setUser({ ...user, lastName: e.target.value })}
-            type="text"
-            autoComplete="off"
-            className={`${styles["input-field"]} ${styles["name-input-field"]}`} // Apply new class
-          />
-        </div>
-
-        <label htmlFor="email" className={styles["label-text"]}>
-          Email
-        </label>
-        <input
-          id="email"
+      <Form onSubmit={handleSubmit(onSubmit)}>
+        <FormField
+          name="firstName"
+          control={control}
+          rules={{ required: "First Name is required" }}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>First Name</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage>{errors.firstName?.message}</FormMessage>
+            </FormItem>
+          )}
+        />
+        <FormField
+          name="lastName"
+          control={control}
+          rules={{ required: "Last Name is required" }}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Last Name</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage>{errors.lastName?.message}</FormMessage>
+            </FormItem>
+          )}
+        />
+        <FormField
           name="email"
-          value={user.email}
-          onChange={(e) => setUser({ ...user, email: e.target.value })}
-          type="text"
-          autoComplete="off"
-          className={styles["input-field"]}
+          control={control}
+          rules={{ validate: validateEmail }}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage>{errors.email?.message}</FormMessage>
+            </FormItem>
+          )}
         />
-
-        <label htmlFor="password" className={styles["label-text"]}>
-          Password
-        </label>
-        <input
-          id="password"
+        <FormField
           name="password"
-          value={user.password}
-          onChange={(e) => setUser({ ...user, password: e.target.value })}
-          className={styles["input-field"]}
-          autoComplete="off"
-          type="password"
+          control={control}
+          rules={{ validate: validatePassword }}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Password</FormLabel>
+              <FormControl>
+                <Input type="password" {...field} />
+              </FormControl>
+              <FormMessage>{errors.password?.message}</FormMessage>
+            </FormItem>
+          )}
         />
-
-        <label htmlFor="confirm-password" className={styles["label-text"]}>
-          Confirm Password
-        </label>
-        <input
-          id="confirm-password"
-          name="confirm-password"
-          value={user.confirmPassword}
-          autoComplete="off"
-          onChange={(e) =>
-            setUser({ ...user, confirmPassword: e.target.value })
-          }
-          className={styles["input-field"]}
-          type="password"
+        <FormField
+          name="confirmPassword"
+          control={control}
+          rules={{
+            validate: (value) => validateConfirmPassword(value, getValues),
+          }}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Confirm Password</FormLabel>
+              <FormControl>
+                <Input type="password" {...field} />
+              </FormControl>
+              <FormMessage>{errors.confirmPassword?.message}</FormMessage>
+            </FormItem>
+          )}
         />
-
-        <button
-          type="submit"
-          className={`${styles["submit-button"]} ${
-            buttonDisabled ? styles["disabled-button"] : ""
-          }`}
-          disabled={buttonDisabled}
-        >
-          Sign Up
-        </button>
-      </form>
+        <Button type="submit">Sign Up</Button>
+      </Form>
     </div>
   );
 }
