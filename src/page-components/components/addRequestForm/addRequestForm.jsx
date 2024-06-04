@@ -5,6 +5,10 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import styles from "./AddRequestForm.module.css";
 import Select from "react-select";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { HiOutlineTrash } from "react-icons/hi";
 
 export default function AddRequest({ userId }) {
   const [itemName, setName] = useState("");
@@ -299,10 +303,16 @@ export default function AddRequest({ userId }) {
   };
 
   return (
-    <div className={styles.container}>
+    <div className="flex flex-col items-center p-5 gap-2 w-full h-screen box-border overflow-hidden">
       <ToastContainer />
-      <form onSubmit={handleSubmit} className={styles["form-container"]}>
-        <label htmlFor="name" className={styles["label-text"]}>
+
+      <h1 className="text-4xl font-bold mb-10"
+  style={{ fontSize: "2rem" }}>
+    Add Request 🤲</h1>
+    <div className="flex justify-between w-full max-w-7xl gap-10 flex-wrap">
+<Card className="flex-1 flex-col lg:w-1/3 h-auto lg:h-auto max-h-screen">
+      <form onSubmit={handleSubmit} className="p-5 bg-white rounded-lg">
+        <label htmlFor="name" className="font-bold text-gray-700 mb-2">
           Item name:
         </label>
         <Select
@@ -315,116 +325,120 @@ export default function AddRequest({ userId }) {
           ]}
           value={selectedOption}
           onChange={handleItemChange}
-          styles={{
-            width: "200px",
-          }}
+          className="w-full mb-4"
         />
         {showNewItemInput && (
           <div className={styles["new-item-container"]}>
-            <input
+            <Input
               type="text"
               value={newItemName}
               onChange={(e) => setNewItemName(e.target.value)}
               placeholder="Enter new item name"
-              className={styles["input-field"]}
+              className="border-0 border-b border-black px-4 py-2 w-full"
             />
-            <button
+            <Button
               type="button"
               onClick={handleNewItemSubmit}
               className={styles["submit-button"]}
             >
               Add New Item
-            </button>
+            </Button>
           </div>
         )}
-        <label htmlFor="reason" className={styles["label-text"]}>
+        <label htmlFor="reason" className="font-bold text-gray-700 mb-2">
           Reason for item (optional):
         </label>
-        <input
+        <Input
           id="reason"
           value={reason}
           onChange={(e) => setReason(e.target.value)}
-          className={styles["input-field"]}
+          className="w-full mb-4"
           type="text"
           placeholder="Ex: I need it for groceries"
         />
 
-        <label htmlFor="quantity" className={styles["label-text"]}>
+        <label htmlFor="quantity" className="font-bold text-gray-700 mb-2">
           Item quantity:
         </label>
-        <input
+        <Input
           id="quantity"
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}
-          className={styles["input-field"]}
+          className="w-full mb-4"
           type="text"
           placeholder="Ex: 1,2"
         />
 
-        <label htmlFor="userAddress" className={styles["label-text"]}>
+        <label htmlFor="userAddress" className="font-bold text-gray-700 mb-2">
           Your Address:
         </label>
-        <input
+        <Input
           id="userAddress"
           value={userAddress}
           onChange={handleAddressChange}
-          className={styles["input-field"]}
+          className="w-full mb-4"
           type="text"
           placeholder="Enter your address"
         />
-        <ul className={styles.suggestions}>
+        <ul className="bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto mb-4">
           {addressSuggestions.map((address, index) => (
             <li
               key={index}
               onClick={() => handleSuggestionClick(address)}
-              className={styles.suggestion}
+              className="p-2 cursor-pointer hover:bg-gray-100"
             >
               {address}
             </li>
           ))}
         </ul>
 
-        <button
+        <div id="map" className="bg-gray-200 rounded-lg shadow-lg w-full h-62 mb-18"></div>
+
+        <Button
           type="button"
           onClick={handleGetUserLocation}
-          className={`${styles["get-location-button"]} ${styles["blue-text"]}`}
+          className="w-full bg-sky-400 shadow-md shadow-sky-500/50 text-white font-bold py-2 px-4 rounded mb-4"
         >
           Get My Location
-        </button>
-        <button
-          type="submit"
+        </Button>
+
+        <Button
+          type="button"
           onClick={handleAddItem}
-          className={styles["submit-button"]}
+          className="w-full bg-sky-400 shadow-md shadow-sky-500/50 text-white font-bold py-2 px-4 rounded"
         >
           Add Request
-        </button>
+        </Button>
       </form>
-      <div className={styles["items-list"]}>
-        <h3>Items in Basket:</h3>
+      </Card>
+
+      <Card className="flex-grow overflow-y-auto p-5 bg-white rounded-lg shadow-md max-w-[30%] max-h-screen h-fit">
+      <h3 className="text-xl font-bold mb-5 text-gray-700">Items in Basket:</h3>
         {items.map((item, index) => (
-          <div key={index} className={styles["item-card"]}>
-            <div className={styles["item-details"]}>
-              <p className={styles["item-name"]}>
+          <div key={index} className="border border-gray-300 rounded-lg p-4 mb-4 flex items-center">
+            <div className="flex-grow ml-4">
+              <p className="font-bold text-lg mb-2">
                 {item.itemName} {item.emoji}
               </p>
-              <p className={styles["item-quantity"]}>
+              <p className="text-gray-600">
                 Quantity: {item.quantity}
               </p>
-              <p className={styles["item-reason"]}>Reason: {item.reason}</p>
+              <p className="text-gray-600">Reason: {item.reason}</p>
             </div>
-            <button
+            <Button
               onClick={() => handleRemoveItem(index)}
-              className={styles["remove-button"]}
+              className="bg-red-400"
             >
-              Remove
-            </button>
+              <HiOutlineTrash size ="22"/>
+            </Button>
           </div>
         ))}
-        <button onClick={handleSubmit} className={styles["submit-button"]}>
+        <Button onClick={handleSubmit} className="w-full bg-sky-400 shadow-md shadow-sky-500/50 text-white font-bold py-2 px-4 rounded">
           Submit Basket
-        </button>
-      </div>
-      <div id="map" className={styles.map}></div>
+        </Button>
+        </Card>
+      
+        </div>
     </div>
   );
 }

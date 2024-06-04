@@ -8,6 +8,10 @@ import styles from "./AddItemForm.module.css";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { HiOutlineTrash } from "react-icons/hi";
 
 export default function AddItem({ userId }) {
   const [itemName, setName] = useState("");
@@ -134,7 +138,7 @@ export default function AddItem({ userId }) {
   useEffect(() => {
     async function fetchFoodData() {
       try {
-        const res = await fetch(`http://localhost:3000/api/food`, {
+        const res = await fetch(`/api/food`, {
           cache: "no-store",
         });
         const data = await res.json();
@@ -220,119 +224,148 @@ export default function AddItem({ userId }) {
     }
   };
   return (
-    <div className={styles.container}>
+    <div className="flex flex-col items-center p-5 gap-2 w-full box-border overflow-hidden">
       <ToastContainer />
-      <form onSubmit={handleSubmit} className={styles["form-container"]}>
-        <label htmlFor="name" className={styles["label-text"]}>
-          Item name:
-        </label>
-        <Select
-          options={foodItems.map((item) => ({
-            value: item.name,
-            label: item.name,
-          }))}
-          value={selectedOption}
-          onChange={handleItemChange}
-        />
-        <label htmlFor="description" className={styles["label-text"]}>
-          Item description (optional):
-        </label>
-        <input
-          id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className={styles["input-field"]}
-          type="text"
-          placeholder="Ex: Delicious but I don't want it"
-        />
+      <h1 className="text-4xl font-bold mb-10" style={{ fontSize: "2rem" }}>
+        Add Donation 🚀
+      </h1>
+      <div className="flex justify-between w-full max-w-7xl gap-10 flex-wrap">
+        <Card className="flex-1 flex-col lg:w-1/3 h-auto lg:h-auto max-h-screen">
+          <form onSubmit={handleSubmit} className="p-5 bg-white rounded-lg">
+            <label htmlFor="name" className="font-bold text-gray-700 mb-2">
+              Item name:
+            </label>
+            <Select
+              options={foodItems.map((item) => ({
+                value: item.name,
+                label: item.name,
+              }))}
+              value={selectedOption}
+              onChange={handleItemChange}
+              className="w-full mb-4"
+            />
 
-        <label htmlFor="quantity" className={styles["label-text"]}>
-          Item quantity:
-        </label>
-        <input
-          id="quantity"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-          className={styles["input-field"]}
-          type="text"
-          placeholder="Ex: 1,2"
-        />
-
-        <label htmlFor="expirationDate" className={styles["label-text"]}>
-          Item expiration date:
-        </label>
-        <DatePicker
-          selected={expirationDate}
-          onChange={(date) => setExpirationDate(date)}
-          dateFormat="MM/dd/yyyy"
-          className={styles["input-field-date"]}
-        />
-
-        <label htmlFor="userAddress" className={styles["label-text"]}>
-          Your Address:
-        </label>
-        <input
-          id="userAddress"
-          value={userAddress}
-          onChange={handleAddressChange}
-          className={styles["input-field"]}
-          type="text"
-          placeholder="Enter your address"
-        />
-        <ul className={styles.suggestions}>
-          {addressSuggestions.map((address, index) => (
-            <li
-              key={index}
-              onClick={() => handleSuggestionClick(address)}
-              className={styles.suggestion}
+            <label
+              htmlFor="description"
+              className="font-bold text-gray-700 mb-2"
             >
-              {address}
-            </li>
-          ))}
-        </ul>
+              Item description (optional):
+            </label>
+            <Input
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full mb-4"
+              type="text"
+              placeholder="Ex: Delicious but I don't want it"
+            />
 
-        <button
-          type="button"
-          onClick={handleGetUserLocation}
-          className={`${styles["get-location-button"]} ${styles["blue-text"]}`}
-        >
-          Get My Location
-        </button>
-        <button
-          type="button"
-          onClick={handleAddItem}
-          className={styles["submit-button"]}
-        >
-          Add Item
-        </button>
-      </form>
+            <label htmlFor="quantity" className="font-bold text-gray-700 mb-2">
+              Item quantity:
+            </label>
+            <Input
+              id="quantity"
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+              className="w-full mb-4"
+              type="text"
+              placeholder="Ex: 1,2"
+            />
 
-      <div className={styles["items-list"]}>
-        <h3>Items in Basket:</h3>
-        {items.map((item, index) => (
-          <div key={index} className={styles["item-card"]}>
-            <div className={styles["item-details"]}>
-              <p className={styles["item-name"]}>{item.itemName}</p>
-              <p className={styles["item-quantity"]}>
-                Quantity: {item.quantity}
-              </p>
-              <p className={styles["item-expiration"]}>
-                Expiration Date: {item.expirationDate.toLocaleDateString()}
-              </p>
+            <div className="mb-4 w-full">
+              <label
+                htmlFor="expirationDate"
+                className="font-bold text-gray-700 mb-2 block"
+              >
+                Item expiration date:
+              </label>
+              <DatePicker
+                selected={expirationDate}
+                onChange={(date) => setExpirationDate(date)}
+                dateFormat="MM/dd/yyyy"
+                className="border-0 border-b border-black px-4 py-2 w-full pe-0"
+              />
             </div>
-            <button
-              onClick={() => handleRemoveItem(index)}
-              className={styles["remove-button"]}
+
+            <label
+              htmlFor="userAddress"
+              className="font-bold text-gray-700 mb-2"
             >
-              Remove
-            </button>
-          </div>
-        ))}
-        <button onClick={handleSubmit} className={styles["submit-button"]}>
-          Create Basket
-        </button>
+              Your Address:
+            </label>
+            <Input
+              id="userAddress"
+              value={userAddress}
+              onChange={handleAddressChange}
+              className="w-full mb-4"
+              type="text"
+              placeholder="Enter your address"
+            />
+            <ul className="bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto mb-4">
+              {addressSuggestions.map((address, index) => (
+                <li
+                  key={index}
+                  onClick={() => handleSuggestionClick(address)}
+                  className="p-2 cursor-pointer hover:bg-gray-100"
+                >
+                  {address}
+                </li>
+              ))}
+            </ul>
+            <div
+              id="map"
+              className="bg-gray-200 rounded-lg shadow-lg w-full h-52 mb-20"
+            ></div>
+
+            <Button
+              type="button"
+              onClick={handleGetUserLocation}
+              className="w-full bg-sky-400 shadow-md shadow-sky-500/50 text-white font-bold py-2 px-4 rounded mb-4"
+            >
+              Get My Location
+            </Button>
+            <Button
+              type="button"
+              onClick={handleAddItem}
+              className="w-full bg-sky-400 shadow-md shadow-sky-500/50 text-white font-bold py-2 px-4 rounded"
+            >
+              Add Item
+            </Button>
+          </form>
+        </Card>
+
+        <Card className="flex-grow overflow-y-auto p-5 bg-white rounded-lg shadow-md max-w-[30%] max-h-screen h-fit">
+          <h3 className="text-xl font-bold mb-5 text-gray-700">
+            Items in Basket:
+          </h3>
+          {items.map((item, index) => (
+            <div
+              key={index}
+              className="border border-gray-300 rounded-lg p-4 mb-4 flex items-center"
+            >
+              <div className="flex-grow ml-4">
+                <p className="font-bold text-lg mb-2">{item.itemName}</p>
+                <p className="text-gray-600">Quantity: {item.quantity}</p>
+                <p className="text-gray-600">
+                  Expiration Date: {item.expirationDate.toLocaleDateString()}
+                </p>
+              </div>
+              <Button
+                onClick={() => handleRemoveItem(index)}
+                className="bg-red-400"
+              >
+                <HiOutlineTrash size="22" />
+              </Button>
+            </div>
+          ))}
+          <Button
+            onClick={handleSubmit}
+            className="w-full bg-sky-400 shadow-md shadow-sky-500/50 text-white font-bold py-2 px-4 rounded"
+          >
+            Create Basket
+          </Button>
+        </Card>
       </div>
-      <div id="map" className={styles.map}></div>
     </div>
   );
 }
