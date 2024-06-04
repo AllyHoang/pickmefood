@@ -31,8 +31,8 @@ const SideBar = () => {
   const MenuList = [
     { href: '/dashboard', icon: <RxHome size="20px" />, label: 'Dashboard' },
     { href: '/profile-page', icon: <RxAvatar size="20px" />, label: 'Profile' },
-    { href: '/active-donation', icon: <RxHeart size="20px" />, label: 'My Donations' },
-    { href: '/active-request', icon: <RxRocket size="20px" />, label: 'My Requests' },
+    { href: '/userpage', icon: <RxHeart size="20px" />, label: 'My Donations' },
+    { href: '/userpage', icon: <RxRocket size="20px" />, label: 'My Requests' },
     { href: '/map-view', icon: <RxPaperPlane size="20px" />, label: 'Map' },
     { href: '/chats', icon: <RxEnvelopeClosed size="20px" />, label: 'Notifications' }
   ]
