@@ -18,6 +18,8 @@ export default function AddRequest({ userId }) {
   const [selectedOption, setSelectedOption] = useState(null);
   const [newItemName, setNewItemName] = useState("");
   const [showNewItemInput, setShowNewItemInput] = useState(false);
+  const [emoji, setEmoji] = useState("");
+  const [items, setItems] = useState([]);
   const router = useRouter();
 
   mapboxgl.accessToken =
@@ -149,12 +151,17 @@ export default function AddRequest({ userId }) {
   const handleItemChange = (selectedOption) => {
     if (selectedOption && selectedOption.value === "Add new item") {
       setShowNewItemInput(true);
-      setSelectedOption();
+      setSelectedOption(null);
       setName("");
     } else {
       setShowNewItemInput(false);
       setSelectedOption(selectedOption);
       setName(selectedOption ? selectedOption.value : "");
+
+      const selectedFoodItem = foodItems.find(
+        (item) => item.name === selectedOption.value
+      );
+      setEmoji(selectedFoodItem ? selectedFoodItem.emoji : "");
     }
   };
 
@@ -184,20 +191,45 @@ export default function AddRequest({ userId }) {
     }
 
     try {
+      // Find the emoji
+      const emojiResponse = await fetch(
+        `https://api.api-ninjas.com/v1/emoji?name=${newItemName}`,
+        {
+          headers: {
+            "X-Api-Key": "KqQt1GmjjWZnOrsfFONHLg==TiI6oxPyCe2ozyMh",
+          },
+        }
+      );
+
+      if (!emojiResponse.ok) {
+        throw new Error("Failed to fetch emoji");
+      }
+
+      const emojiData = await emojiResponse.json();
+      const emoji = emojiData.length > 0 ? emojiData[0].character : "";
+
+      // Post the new item
       const res = await fetch(`http://localhost:3000/api/food`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name: capitalizedItemName }),
+        body: JSON.stringify({
+          name: capitalizedItemName,
+          emoji: emoji,
+        }),
       });
 
       if (res.ok) {
-        setFoodItems([...foodItems, { name: capitalizedItemName }]);
+        setFoodItems([
+          ...foodItems,
+          { name: capitalizedItemName, emoji: emoji },
+        ]);
         setSelectedOption({
           value: capitalizedItemName,
-          label: capitalizedItemName,
+          label: `${capitalizedItemName}`,
         });
+        setEmoji(emoji);
         setShowNewItemInput(false);
         setName(capitalizedItemName);
         toast.success("Item added successfully");
@@ -210,33 +242,53 @@ export default function AddRequest({ userId }) {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const handleAddItem = () => {
     if (!itemName || !quantity) {
       toast.error("Please fill in all the required fields");
       return;
     }
+    const newItem = {
+      itemName,
+      reason,
+      quantity,
+      address: userAddress,
+      emoji,
+    };
+    setItems([...items, newItem]);
+    setName("");
+    setReason("");
+    setQuantity("");
+    setSelectedOption(null);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (items.length === 0) {
+      toast.error("Please add at least one item");
+      return;
+    }
+
+    const itemsWithUserIdAndLocation = items.map((item) => ({
+      ...item,
+      userId,
+      location: userAddress,
+    }));
+
     try {
-      const res = await fetch(
-        `http://localhost:3000/api/activeRequest/${userId}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-type": "application/json",
-          },
-          body: JSON.stringify({
-            userId,
-            itemName,
-            reason,
-            quantity,
-            userAddress,
-          }),
-        }
-      );
+      const res = await fetch(`/api/requests`, {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          userId,
+          requests: itemsWithUserIdAndLocation,
+        }),
+      });
 
       if (res.ok) {
-        router.push("/active-donation");
+        router.push("/active-request");
       } else {
         throw new Error("Failed to create an item");
       }
@@ -339,10 +391,39 @@ export default function AddRequest({ userId }) {
         >
           Get My Location
         </button>
-        <button type="submit" className={styles["submit-button"]}>
+        <button
+          type="submit"
+          onClick={handleAddItem}
+          className={styles["submit-button"]}
+        >
           Add Request
         </button>
       </form>
+      <div className={styles["items-list"]}>
+        <h3>Items in Basket:</h3>
+        {items.map((item, index) => (
+          <div key={index} className={styles["item-card"]}>
+            <div className={styles["item-details"]}>
+              <p className={styles["item-name"]}>
+                {item.itemName} {item.emoji}
+              </p>
+              <p className={styles["item-quantity"]}>
+                Quantity: {item.quantity}
+              </p>
+              <p className={styles["item-reason"]}>Reason: {item.reason}</p>
+            </div>
+            <button
+              onClick={() => handleRemoveItem(index)}
+              className={styles["remove-button"]}
+            >
+              Remove
+            </button>
+          </div>
+        ))}
+        <button onClick={handleSubmit} className={styles["submit-button"]}>
+          Submit Basket
+        </button>
+      </div>
       <div id="map" className={styles.map}></div>
     </div>
   );

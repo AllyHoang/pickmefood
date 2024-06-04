@@ -1,0 +1,207 @@
+.confirmationContainer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.leftPanel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 20px; /* Add margin to create gap */
+}
+
+.rightPanel {
+  flex: 1;
+  margin-left: 20px; /* Add margin to create gap */
+}
+
+.mapContainer {
+  width: 100%;
+  height: 50vh;
+}
+
+.map {
+  width: 100%;
+  height: 100%;
+}
+
+.addressContainer {
+  width: 100%;
+  padding: 20px;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-top: 20px;
+}
+
+.label-text {
+  margin-bottom: 5px;
+  display: block;
+}
+
+.input-field {
+  width: calc(100% - 20px);
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.suggestions {
+  margin-top: 10px;
+  list-style: none;
+  padding: 0;
+}
+
+.suggestion {
+  cursor: pointer;
+  padding: 5px;
+}
+
+.get-location-button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.tabsAndCard {
+  display: flex;
+  flex-direction: column;
+}
+
+.itemTabsContainer {
+  width: 100%;
+  padding: 20px;
+  background: linear-gradient(
+    to top left,
+    #ffffff,
+    #ffffff,
+    #ffffff,
+    #ffffff,
+    #ffffff,
+    #ffffff,
+    #ffffff,
+    #ffffff,
+    #e1ecff,
+    #f0effa,
+    #e6e5fb,
+    #d4d6f3
+  );
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.itemTabs {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.itemTab {
+  margin-right: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #ffffff;
+  cursor: pointer;
+}
+
+.itemTab.active {
+  background-color: #000000;
+  color: #ffffff;
+}
+
+.itemCard {
+  width: 100%;
+  margin-top: 20px;
+  padding: 20px;
+  background-image: linear-gradient(
+    to right bottom,
+    #ffffff,
+    #ffffff,
+    #ffffff,
+    #ffffff,
+    #ffffff,
+    #ffffff,
+    #ffffff,
+    #ffffff,
+    #ffffff,
+    #ffffff,
+    #ffffff,
+    #e3e9fc,
+    #d3e2ff
+  );
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.inputField {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.input-field-date {
+  width: calc(100% - 20px);
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.donationModeButton {
+  margin-top: 20px;
+}
+
+.toggleButton {
+  padding: 10px 20px;
+  background-color: #ffffff;
+  color: #000000;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  border-color: #000000;
+}
+
+.toggleButton:hover {
+  box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.2); /* Add a shadow on hover */
+  transform: translateY(-2px); /* Move the button slightly up on hover */
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.submitButton {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.itemTitle {
+  font-size: 24px; /* Adjust font size as needed */
+  color: #333; /* Adjust text color as needed */
+  margin-bottom: 10px; /* Adjust margin bottom as needed */
+  font-weight: bold; /* Adjust font weight as needed */
+}
+
+.itemTitle2 {
+  font-size: 24px; /* Adjust font size as needed */
+  color: #333; /* Adjust text color as needed */
+  margin-bottom: 10px; /* Adjust margin bottom as needed */
+  font-weight: bold; /* Adjust font weight as needed */
+}

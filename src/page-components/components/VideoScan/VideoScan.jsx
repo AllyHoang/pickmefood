@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/router"; // Import useRouter for navigation
 import io from "socket.io-client";
 import styles from "./VideoScan.module.css"; // Import the CSS module
 
@@ -10,6 +11,7 @@ export default function VideoScan() {
   const [detectedItems, setDetectedItems] = useState([]);
   const [confirmedItems, setConfirmedItems] = useState([]);
   const videoRef = useRef(null);
+  const router = useRouter(); // Initialize useRouter
 
   useEffect(() => {
     socket = io("http://localhost:5000"); // Make sure this matches your Flask app's URL
@@ -57,6 +59,15 @@ export default function VideoScan() {
 
   const handleRemoveItem = (item) => {
     setConfirmedItems(confirmedItems.filter((i) => i !== item));
+  };
+
+  const navigateToConfirmation = () => {
+    setProcessing(false);
+    socket.emit("stop_video");
+    router.push({
+      pathname: "/confirmation",
+      query: { confirmedItems: JSON.stringify(confirmedItems) },
+    });
   };
 
   return (
@@ -116,6 +127,9 @@ export default function VideoScan() {
           ))}
         </ul>
       </div>
+      <button onClick={navigateToConfirmation} className={styles.confirmButton}>
+        Confirm Items
+      </button>
     </div>
   );
 }
