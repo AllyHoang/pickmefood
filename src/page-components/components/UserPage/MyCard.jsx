@@ -22,16 +22,15 @@ import { Badge } from "@/components/ui/badge";
 
 const MyCard = ({ item }) => {
   return (
-    <Card
-      key={donation.id}
-      className="flex flex-col bg-white rounded-lg shadow-md"
-    >
+    <Card key={item.id} className="flex flex-col bg-white rounded-lg shadow-md">
       <CardHeader className="flex-col gap-4 items-start">
         <Badge
-          variant="secondary"
-          className="px-3 py-1 rounded-full text-sm font-large text-s"
+          variant={`${item.type === "Request" ? "primary" : "secondary"}`}
+          className={`px-3 py-1 rounded-full text-sm font-large text-s ${
+            item.type === "Request" ? "bg-sky-100" : "bg-emerald-100"
+          }`}
         >
-          {item.type}
+          {item.type === "Request" ? `${item.type} 🤲` : `${item.type} 🚀`}
         </Badge>
 
         <div className="flex flex-row gap-4 items-center">
@@ -41,17 +40,12 @@ const MyCard = ({ item }) => {
         </div>
       </CardHeader>
       <CardContent>
-        {item.type === "Donation"
-          ? `○ Expires: ${item.description}`
-          : `${item.reason}`}{" "}
+        {item.type === "Donation" ? `${item.description}` : `${item.reason}`}{" "}
       </CardContent>
       <CardFooter className="flex justify-between">
         <p className="font-semibold"> ○ {item.location} </p>
         <p className="font-semibold">
-          {" "}
-          {donation.type === "Donation"
-            ? `○ Expires: ${donation.expiryDate}`
-            : ``}{" "}
+          {item.type === "Donation" ? `○ Expires: ${item.expirationDate}` : ``}
         </p>
 
         <Drawer direction="right">
