@@ -46,7 +46,7 @@ const ActiveCardsList = ({ userId }) => {
     return <div>Loading...</div>;
   }
   return (
-    <div className="flex flex-col gap-8 w-10/12 p-3">
+    <div className="grid grid-cols-2 gap-8 w-full p-3">
       {items.map((item) => (
         <MyCard key={item._id} item={item} /> // Use the Card component
       ))}
