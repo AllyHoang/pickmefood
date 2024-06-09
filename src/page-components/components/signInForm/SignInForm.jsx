@@ -2,6 +2,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import styles from "./SignInForm.module.css";
+import Image from "next/image";
+import { signIn } from "next-auth/react";
 
 export default function SignInForm() {
   const [email, setEmail] = useState("");
