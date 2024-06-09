@@ -3,6 +3,7 @@ import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import styles from "./mapComponent.module.css"; // Import the CSS module
 import { useRouter } from "next/router";
+import ToggleView from "../DashboardPage/ToggleView";
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoicGlja21lZm9vZCIsImEiOiJjbHZwbHdyMzgwM2hmMmtvNXJ6ZHU2NXh3In0.aITfZvPY-sKGwepyPVPGOg";
@@ -11,6 +12,7 @@ const MapComponent = () => {
   const [map, setMap] = useState(null);
   const [donations, setDonations] = useState([]);
   const [requests, setRequests] = useState([]);
+  const [viewType, setViewType] = useState("map");
   const [searchValue, setSearchValue] = useState("");
   const [searchError, setSearchError] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -21,6 +23,15 @@ const MapComponent = () => {
   const router = useRouter();
   const [showDonations, setShowDonations] = useState(true); // State to toggle between rendering donations and requests
 
+  const handleToggleView = () => {
+    if (viewType === "list") {
+      setViewType("map");
+      router.push('/map-view', undefined, { shallow: true });
+    } else {
+      setViewType("list");
+      router.push('/dashboard', undefined, { shallow: true });
+    }
+  };
   useEffect(() => {
     if (showDonations) {
       fetchDonations();
@@ -320,18 +331,23 @@ const MapComponent = () => {
           ))}
         </div>
       )}
-      <form className={styles.searchForm} onSubmit={handleSearchSubmit}>
-        <input
-          type="text"
-          value={searchValue}
-          onChange={handleSearchChange}
-          placeholder="Enter Zipcode, City, or State..."
-          className={styles.searchInput}
-        />
-        <button type="submit" className={styles.searchButton}>
-          Search
-        </button>
-      </form>
+      <div className="absolute top-5 left-5 z-10 flex items-center justify-start space-x-2">
+        {/* Add ToggleView components here */}
+        <ToggleView viewType={viewType} handleToggleView={handleToggleView} />
+        <form className="flex items-center" onSubmit={handleSearchSubmit}>
+          <input
+            type="text"
+            value={searchValue}
+            onChange={handleSearchChange}
+            placeholder="Enter Zipcode, City, or State..."
+            className={styles.searchInput}
+          />
+          <button type="submit" className={styles.searchButton}>
+            Search
+          </button>
+        </form>
+      </div>
+
       {suggestions.length > 0 && (
         <ul className={styles.suggestions}>
           {suggestions.map((suggestion, index) => (

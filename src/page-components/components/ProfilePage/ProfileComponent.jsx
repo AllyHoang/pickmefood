@@ -93,14 +93,14 @@ const Profile = ({ userId }) => {
   }
 
   return (
-    <Card className="p-6 max-w-lg">
+    <Card className="p-6 w-1/2">
       <CardHeader
         className="font-bold mb-2 flex flex-col items-center"
         style={{ fontSize: "1.5rem" }}
       >
         Profile Page
       </CardHeader>
-      
+
       <form onSubmit={handleSubmit(updateUser)}>
         <div className="flex flex-col items-center mb-4">
           <img
