@@ -1,7 +1,10 @@
+import { useSelector } from "react-redux";
 
 
 function PointBadge() {
-
+    //Get user state from redux
+    const {loading, error, currentUser} = useSelector((state) => state.user);
+    console.log(currentUser);
     return (
         <div className="col-span-3 md:col-span-1 shadow-sm">
             <div className="overflow-hidden rounded-md bg-white p-6 shadow-lg">
@@ -9,7 +12,7 @@ function PointBadge() {
                     <span className="my-1 grow rounded-md">
                     <div className="text-sm font-medium leading-5 text-gray-500">
                         Your Points:
-                        <p className="inline text-lg leading-5 text-sky-400"> 0</p>
+                        <p className="inline text-lg leading-5 text-sky-400"> {currentUser.points}</p>
                     </div>
                     </span>
                     <span className="my-1 inline-flex grow flex-row-reverse rounded-md">

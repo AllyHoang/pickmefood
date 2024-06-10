@@ -8,18 +8,23 @@ import {
 import { ActiveDonationLayout } from "@/page-components/layouts";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import { Provider } from 'react-redux';
+import { persistor, store } from "@/redux/store";
+import { PersistGate } from "redux-persist/integration/react";
 function App({ Component, pageProps }) {
   const PageLayout =
     Component.Layout || LandingPageLayout || HomeLayout || ActiveDonationLayout;
-
   return (
-    <RootLayout>
-      <PageLayout {...pageProps}>
-        <Component {...pageProps} />
-        <ToastContainer />
-      </PageLayout>
-    </RootLayout>
+    <Provider store={store}>
+      <PersistGate loading ={null} persistor={persistor}>
+        <RootLayout>
+          <PageLayout {...pageProps}>
+            <Component {...pageProps} />
+            <ToastContainer />
+          </PageLayout>
+        </RootLayout>
+      </PersistGate>
+    </Provider>
   );
 }
 
