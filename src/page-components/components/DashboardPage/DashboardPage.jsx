@@ -37,11 +37,9 @@ import PointBadge from "./PointBadge";
 import DashboardHeading from "./DashboardHeading";
 
 function DashboardPage({ userId }) {
-  const [loading, setLoading] = useState(true);
   const [selectedDonation, setSelectedDonation] = useState(null);
   const router = useRouter();
   const [viewType, setViewType] = useState("list");
-  const [user, setUser] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all"); // 'all', 'donations', or 'requests'
   const items = getAllDonations();

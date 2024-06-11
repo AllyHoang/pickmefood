@@ -29,10 +29,21 @@ export default async function handler(req, res) {
       expiresIn: "1d",
     });
 
+    const userData = {
+      id: user._id,
+      username: user.username,
+      firstname: user.firstname, 
+      lastname: user.lastname,
+      email: user.email,
+      points: user.points,
+      profileImage: user.profileImage,
+    };
+
+
     // Set token as a cookie
     res.setHeader("Set-Cookie", `token=${token}; HttpOnly; Path=/`);
     // Send the response to the client
-    return res.status(200).json({ message: "Login successful" });
+    return res.status(200).json({ message: "Login successful", data: userData });
   } else {
     return res.status(405).end(); // Method Not Allowed
   }
