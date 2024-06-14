@@ -1,5 +1,6 @@
+
 import mongoose from "mongoose";
-const { Schema } = mongoose;
+const { Schema, models } = mongoose;
 
 const BasketRequestSchema = new Schema({
   userId: { type: Schema.Types.ObjectId, ref: "User", required: true }, // Reference to User model

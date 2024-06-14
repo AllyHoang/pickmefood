@@ -16,6 +16,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { useSession } from "next-auth/react";
+import { useDispatch } from "react-redux";
+import {
+  signInFailure,
+  signInStart,
+  signInSuccess,
+} from "@/redux/user/userSlice";
 
 const validateEmail = (value) => {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -35,6 +41,7 @@ const validateEmail = (value) => {
 export default function SignInFormTest() {
   const { status, data: session } = useSession();
   const router = useRouter();
+  const dispatch = useDispatch();
   const form = useForm({
     defaultValues: {
       email: "",
@@ -52,6 +59,7 @@ export default function SignInFormTest() {
   async function onSubmit(values) {
     const { email, password } = values;
     try {
+      dispatch(signInStart());
       const res = await fetch("http://localhost:3000/api/users/signin", {
         method: "POST",
         headers: {
@@ -60,11 +68,12 @@ export default function SignInFormTest() {
         body: JSON.stringify({ email, password }),
       });
       if (res.ok) {
-        console.log("Log In successfully");
+        const data = await res.json();
+        dispatch(signInSuccess(data.data));
         router.push("/dashboard");
       } else if (res.status === 401 || res.status === 400) {
         const data = await res.json();
-        alert(data.error);
+        dispatch(signInFailure(data.error));
       } else {
         throw new Error("Failed to log in");
       }
