@@ -8,6 +8,8 @@ import {
 import { ActiveDonationLayout } from "@/page-components/layouts";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { NextAuthProvider } from "@/lib/Providers";
+import { ImageProvider } from "@/lib/ImageContext";
 
 function App({ Component, pageProps }) {
   const PageLayout =
@@ -15,10 +17,14 @@ function App({ Component, pageProps }) {
 
   return (
     <RootLayout>
-      <PageLayout {...pageProps}>
-        <Component {...pageProps} />
-        <ToastContainer />
-      </PageLayout>
+      <NextAuthProvider>
+        <ImageProvider>
+          <PageLayout {...pageProps}>
+            <Component {...pageProps} />
+            <ToastContainer />
+          </PageLayout>
+        </ImageProvider>
+      </NextAuthProvider>
     </RootLayout>
   );
 }

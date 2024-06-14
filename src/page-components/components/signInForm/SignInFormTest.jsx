@@ -13,6 +13,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import Image from "next/image";
+import { signIn } from "next-auth/react";
+import { useSession } from "next-auth/react";
 
 const validateEmail = (value) => {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -30,6 +33,7 @@ const validateEmail = (value) => {
 // };
 
 export default function SignInFormTest() {
+  const { status, data: session } = useSession();
   const router = useRouter();
   const form = useForm({
     defaultValues: {
@@ -68,6 +72,10 @@ export default function SignInFormTest() {
       console.log(error);
       alert("An error occurred. Please try again later.");
     }
+  }
+
+  if (status === "authenticated") {
+    router.push("/dashboard");
   }
 
   return (
@@ -138,6 +146,24 @@ export default function SignInFormTest() {
           <Button type="submit" className="bg-sky-500 font-medium w-1/3">
             Log in to your account
           </Button>
+          <button
+            onClick={() => signIn("google")}
+            className="flex items-center gap-4 shadow-xl rounded-lg pl-3"
+          >
+            <Image src="/google-logo.png" height={30} width={30} />
+            <span className="bg-blue-500 text-white px-4 py-3">
+              Sign in with Google
+            </span>
+          </button>
+          <button
+            onClick={() => signIn("facebook")}
+            className="flex items-center gap-4 shadow-xl rounded-lg pl-3"
+          >
+            <Image src="/facebook-logo.png" height={30} width={30} />
+            <span className="bg-blue-500 text-white px-4 py-3">
+              Sign in with Facebook
+            </span>
+          </button>
         </form>
       </Form>
     </div>

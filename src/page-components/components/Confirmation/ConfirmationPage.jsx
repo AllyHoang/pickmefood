@@ -7,8 +7,10 @@ import styles from "./ConfirmationPage.module.css";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { useImage } from "@/lib/ImageContext";
 
 export default function ConfirmationPage({ userId }) {
+  const { imageUrl } = useImage();
   const router = useRouter();
   const { confirmedItems } = router.query;
   const parsedItems = confirmedItems ? JSON.parse(confirmedItems) : [];
@@ -205,14 +207,13 @@ export default function ConfirmationPage({ userId }) {
         body: JSON.stringify({
           userId, // Include userId in the request body
           [donationMode ? "items" : "requests"]: itemsWithUserIdAndLocation,
+          image: imageUrl,
         }),
       });
 
       if (res.ok) {
         toast.success("Items submitted successfully");
-        donationMode
-          ? router.push("/active-donation")
-          : router.push("/active-request");
+        donationMode ? router.push("/userpage") : router.push("/userpage");
       } else {
         throw new Error("Failed to submit items");
       }

@@ -1,10 +1,9 @@
-import SignInForm from "@/page-components/components/SignInForm/SignInForm";
 import SignInFormTest from "@/page-components/components/signInForm/SignInFormTest";
 import { AuthenticationLayout } from "@/page-components/layouts/AuthenticationLayout";
 
 const SignIn = () => {
-  return <SignInFormTest/>;
+  return <SignInFormTest />;
 };
 
-SignIn.Layout = AuthenticationLayout 
+SignIn.Layout = AuthenticationLayout;
 export default SignIn;
