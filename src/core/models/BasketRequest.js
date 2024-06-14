@@ -1,4 +1,3 @@
-
 import mongoose from "mongoose";
 const { Schema, models } = mongoose;
 
@@ -19,8 +18,7 @@ const BasketRequestSchema = new Schema({
 });
 
 // Use mongoose.models to avoid model re-compilation
-const BasketRequest =
-  mongoose.models.BasketRequest ||
+const BasketRequest = models.BasketRequest ||
   mongoose.model("BasketRequest", BasketRequestSchema);
 
 export default BasketRequest;
