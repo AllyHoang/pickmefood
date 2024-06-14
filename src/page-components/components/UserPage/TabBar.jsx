@@ -5,6 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import ActiveCardsList from "./ActiveCardsList";
 import ProcessingCards from "./ProcessingCards";
+import AddItem from "../addItemForm/addItemForm";
+import AddRequest from "../addRequestForm/addRequestForm";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 import Profile from "../ProfilePage/ProfileComponent";
 import TestProfilePage from "../ProfilePage/TestProfilePage";
@@ -50,21 +53,24 @@ export function TabBar({ userId, firstName, lastName }) {
             className="flex flex-col justify-normal gap-5 "
           >
             <div className="flex items-end gap-5">
-              <div className="flex gap-2 relative top-2">
-                <Button className="bg-sky-400">
-                  {" "}
-                  <Link href="/add-item" className="font-medium">
-                    {" "}
-                    Add a Donation{" "}
-                  </Link>{" "}
-                </Button>
-                <Button className="bg-emerald-400">
-                  {" "}
-                  <Link href="/add-request" className="font-medium">
-                    {" "}
-                    Add a Request{" "}
-                  </Link>{" "}
-                </Button>
+              <div className="flex gap-4 relative top-2">
+                <Dialog>
+                  <DialogTrigger>
+                    <Button className="bg-sky-400">Add a Donation</Button>
+                  </DialogTrigger>
+                  <DialogContent className="min-w-fit w-3/4 h-4/5">
+                    <AddItem userId={userId}></AddItem>
+                  </DialogContent>
+                </Dialog>
+
+                <Dialog>
+                  <DialogTrigger>
+                    <Button className="bg-sky-400">Add a Request</Button>
+                  </DialogTrigger>
+                  <DialogContent className="min-w-fit w-3/4 h-4/5">
+                    <AddRequest userId={userId}></AddRequest>
+                  </DialogContent>
+                </Dialog>
               </div>
             </div>
 

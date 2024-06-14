@@ -12,6 +12,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { HiOutlineTrash } from "react-icons/hi";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 export default function AddItem({ userId }) {
   const [itemName, setName] = useState("");
@@ -215,7 +216,7 @@ export default function AddItem({ userId }) {
       });
 
       if (res.ok) {
-        router.push("/active-donation");
+        router.push("/dashboard");
       } else {
         throw new Error("Failed to create a basket");
       }
@@ -224,12 +225,10 @@ export default function AddItem({ userId }) {
     }
   };
   return (
-    <div className="flex flex-col items-center p-5 gap-2 w-full box-border overflow-hidden">
+    <div className="flex flex-col items-center w-full p-2 gap-2 min-w-fit max-h-max overflow-hidden">
       <ToastContainer />
-      <h1 className="text-4xl font-bold mb-10" style={{ fontSize: "2rem" }}>
-        Add Donation 🚀
-      </h1>
-      <div className="flex justify-between w-full max-w-7xl gap-10 flex-wrap">
+
+      <div className="flex justify-between w-full max-w-fit gap-6 flex-grow overflow-y-auto">
         <Card className="flex-1 flex-col lg:w-1/3 h-auto lg:h-auto max-h-screen">
           <form onSubmit={handleSubmit} className="p-5 bg-white rounded-lg">
             <label htmlFor="name" className="font-bold text-gray-700 mb-2">
@@ -259,32 +258,38 @@ export default function AddItem({ userId }) {
               type="text"
               placeholder="Ex: Delicious but I don't want it"
             />
+            <div className="flex flex-row gap-4">
+              <div className="flex flex-col">
+                <label
+                  htmlFor="quantity"
+                  className="font-bold text-gray-700 mb-2"
+                >
+                  Item quantity:
+                </label>
+                <Input
+                  id="quantity"
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  className="w-full mb-4"
+                  type="text"
+                  placeholder="Ex: 1,2"
+                />
+              </div>
 
-            <label htmlFor="quantity" className="font-bold text-gray-700 mb-2">
-              Item quantity:
-            </label>
-            <Input
-              id="quantity"
-              value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
-              className="w-full mb-4"
-              type="text"
-              placeholder="Ex: 1,2"
-            />
-
-            <div className="mb-4 w-full">
-              <label
-                htmlFor="expirationDate"
-                className="font-bold text-gray-700 mb-2 block"
-              >
-                Item expiration date:
-              </label>
-              <DatePicker
-                selected={expirationDate}
-                onChange={(date) => setExpirationDate(date)}
-                dateFormat="MM/dd/yyyy"
-                className="border-0 border-b border-black px-4 py-2 w-full pe-0"
-              />
+              <div className="flex flex-col">
+                <label
+                  htmlFor="expirationDate"
+                  className="font-bold text-gray-700 mb-2"
+                >
+                  Item expiration date:
+                </label>
+                <DatePicker
+                  selected={expirationDate}
+                  onChange={(date) => setExpirationDate(date)}
+                  dateFormat="MM/dd/yyyy"
+                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors"
+                />
+              </div>
             </div>
 
             <label
@@ -314,47 +319,52 @@ export default function AddItem({ userId }) {
             </ul>
             <div
               id="map"
-              className="bg-gray-200 rounded-lg shadow-lg w-full h-52 mb-20"
+              className="bg-gray-200 rounded-lg shadow-lg h-72 mb-4"
             ></div>
-
-            <Button
-              type="button"
-              onClick={handleGetUserLocation}
-              className="w-full bg-sky-400 shadow-md shadow-sky-500/50 text-white font-bold py-2 px-4 rounded mb-4"
-            >
-              Get My Location
-            </Button>
-            <Button
-              type="button"
-              onClick={handleAddItem}
-              className="w-full bg-sky-400 shadow-md shadow-sky-500/50 text-white font-bold py-2 px-4 rounded"
-            >
-              Add Item
-            </Button>
+            <div className="flex flex-row gap-6">
+              <Button
+                type="button"
+                onClick={handleGetUserLocation}
+                className="w-1/2 bg-sky-400 shadow-md shadow-sky-500/50 text-white font-bold py-2 px-4 rounded mb-4"
+              >
+                Get My Location
+              </Button>
+              <Button
+                type="button"
+                onClick={handleAddItem}
+                className="w-1/2 justify-center bg-sky-400 shadow-md shadow-sky-500/50 text-white font-bold py-2 px-4 rounded"
+              >
+                Add Item
+              </Button>
+            </div>
           </form>
         </Card>
 
-        <Card className="flex-grow overflow-y-auto p-5 bg-white rounded-lg shadow-md max-w-[30%] max-h-screen h-fit">
-          <h3 className="text-xl font-bold mb-5 text-gray-700">
+        <Card className="flex-grow overflow-y-auto p-5 bg-white rounded-lg shadow-md max-w-[30%] max-h-fit w-fit">
+          <h3 className="text-lg font-bold mb-2 text-gray-700">
             Items in Basket:
           </h3>
           {items.map((item, index) => (
             <div
               key={index}
-              className="border border-gray-300 rounded-lg p-4 mb-4 flex items-center"
+              className="border border-gray-300 rounded-lg p-1 mb-4 flex flex-col items-center gap-2"
             >
               <div className="flex-grow ml-4">
-                <p className="font-bold text-lg mb-2">{item.itemName}</p>
+                <p className="font-bold text-lg mb-2">
+                  {item.itemName} {item.emoji}
+                </p>
                 <p className="text-gray-600">Quantity: {item.quantity}</p>
                 <p className="text-gray-600">
                   Expiration Date: {item.expirationDate.toLocaleDateString()}
                 </p>
               </div>
+
               <Button
                 onClick={() => handleRemoveItem(index)}
-                className="bg-red-400"
+                className="bg-black p-1"
+                style={{ width: "30px", height: "30px" }}
               >
-                <HiOutlineTrash size="22" />
+                <HiOutlineTrash size="18" />
               </Button>
             </div>
           ))}
