@@ -5,9 +5,12 @@ import RemoveBtn from "../RemoveButton";
 import { HiPencilAlt } from "react-icons/hi";
 import MyCard from "./MyCard";
 import { GoSearch } from "react-icons/go";
+import { useSelector } from "react-redux";
 
 const ActiveCardsList = ({ userId }) => {
   const [items, setItems] = useState(null);
+  const { loading, error, currentUser } = useSelector((state) => state.user);
+  console.log(currentUser.points);
 
   useEffect(() => {
     const fetchItems = async () => {

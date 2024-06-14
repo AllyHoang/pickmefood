@@ -5,31 +5,37 @@ import Message from "@/core/models/Message";
 
 export default async function handler(req, res) {
   if (req.method === "GET") {
-    await connectToDB();
-    const userId = req.query.userId;
-    const user = await UserModel.findById(userId);
+    try {
+      await connectToDB();
+      const userId = req.query.userId;
+      const user = await UserModel.findById(userId);
 
-    const allChats = await Chat.find({ members: userId })
-      .sort({ lastMessageAt: -1 })
-      .populate({
-        path: "members",
-        model: UserModel,
-      })
-      .populate({
-        path: "messages",
-        model: Message,
-        populate: {
-          path: "sender seenBy",
+      if (!user) {
+        return res.status(404).json({ message: "User Not Found" });
+      }
+
+      const allChats = await Chat.find({ members: userId })
+        .sort({ lastMessageAt: -1 })
+        .populate({
+          path: "members",
           model: UserModel,
-        },
-      })
-      .exec();
+        })
+        .populate({
+          path: "messages",
+          model: Message,
+          populate: {
+            path: "sender seenBy",
+            model: UserModel,
+          },
+        })
+        .exec();
 
-    if (user) {
       res.status(200).json({ user, allChats });
-    } else {
+    } catch (err) {
       console.log(err);
-      res.status(404).json({ message: "User Not Found" });
+      res.status(500).json({ message: "Internal Server Error" });
     }
+  } else {
+    res.status(405).json({ message: "Method Not Allowed" });
   }
 }
