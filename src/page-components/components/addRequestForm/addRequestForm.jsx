@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { HiOutlineTrash } from "react-icons/hi";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 export default function AddRequest({ userId }) {
   const [itemName, setName] = useState("");
@@ -292,7 +293,7 @@ export default function AddRequest({ userId }) {
       });
 
       if (res.ok) {
-        router.push("/active-request");
+        router.push("/dashboard");
       } else {
         throw new Error("Failed to create an item");
       }
@@ -303,142 +304,131 @@ export default function AddRequest({ userId }) {
   };
 
   return (
-    <div className="flex flex-col items-center p-5 gap-2 w-full h-screen box-border overflow-hidden">
+    <div className="flex flex-col items-center w-fit p-2 gap-2 min-w-fit max-h-max overflow-hidden">
       <ToastContainer />
 
-      <h1 className="text-4xl font-bold mb-10"
-  style={{ fontSize: "2rem" }}>
-    Add Request 🤲</h1>
-    <div className="flex justify-between w-full max-w-7xl gap-10 flex-wrap">
-<Card className="flex-1 flex-col lg:w-1/3 h-auto lg:h-auto max-h-screen">
-      <form onSubmit={handleSubmit} className="p-5 bg-white rounded-lg">
-        <label htmlFor="name" className="font-bold text-gray-700 mb-2">
-          Item name:
-        </label>
-        <Select
-          options={[
-            ...foodItems.map((item) => ({
-              value: item.name,
-              label: item.name,
-            })),
-            { value: "Add new item", label: "Add new item" },
-          ]}
-          value={selectedOption}
-          onChange={handleItemChange}
-          className="w-full mb-4"
-        />
-        {showNewItemInput && (
-          <div className={styles["new-item-container"]}>
-            <Input
-              type="text"
-              value={newItemName}
-              onChange={(e) => setNewItemName(e.target.value)}
-              placeholder="Enter new item name"
-              className="border-0 border-b border-black px-4 py-2 w-full"
+      <div className="flex justify-between w-full gap-6 flex-grow overflow-y-auto">
+        <Card className="flex-1 flex-col lg:w-1/3 h-auto lg:h-auto max-h-screen">
+          <form onSubmit={handleSubmit} className="p-5 bg-white rounded-lg">
+            <label htmlFor="name" className="font-bold text-gray-700 mb-2">
+              Item name:
+            </label>
+            <Select
+              options={foodItems.map((item) => ({
+                value: item.name,
+                label: item.name,
+              }))}
+              value={selectedOption}
+              onChange={handleItemChange}
+              className="w-full mb-4"
             />
-            <Button
-              type="button"
-              onClick={handleNewItemSubmit}
-              className={styles["submit-button"]}
+
+            <label htmlFor="reason" className="font-bold text-gray-700 mb-2">
+              Reason for item (optional):
+            </label>
+            <Input
+              id="reason"
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              className="w-full mb-4"
+              type="text"
+              placeholder="Ex: I need it for groceries"
+            />
+
+            <label htmlFor="quantity" className="font-bold text-gray-700 mb-2">
+              Item quantity:
+            </label>
+            <Input
+              id="quantity"
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+              className="w-full mb-4"
+              type="text"
+              placeholder="Ex: 1,2"
+            />
+
+            <label
+              htmlFor="userAddress"
+              className="font-bold text-gray-700 mb-2"
             >
-              Add New Item
-            </Button>
-          </div>
-        )}
-        <label htmlFor="reason" className="font-bold text-gray-700 mb-2">
-          Reason for item (optional):
-        </label>
-        <Input
-          id="reason"
-          value={reason}
-          onChange={(e) => setReason(e.target.value)}
-          className="w-full mb-4"
-          type="text"
-          placeholder="Ex: I need it for groceries"
-        />
-
-        <label htmlFor="quantity" className="font-bold text-gray-700 mb-2">
-          Item quantity:
-        </label>
-        <Input
-          id="quantity"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-          className="w-full mb-4"
-          type="text"
-          placeholder="Ex: 1,2"
-        />
-
-        <label htmlFor="userAddress" className="font-bold text-gray-700 mb-2">
-          Your Address:
-        </label>
-        <Input
-          id="userAddress"
-          value={userAddress}
-          onChange={handleAddressChange}
-          className="w-full mb-4"
-          type="text"
-          placeholder="Enter your address"
-        />
-        <ul className="bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto mb-4">
-          {addressSuggestions.map((address, index) => (
-            <li
-              key={index}
-              onClick={() => handleSuggestionClick(address)}
-              className="p-2 cursor-pointer hover:bg-gray-100"
-            >
-              {address}
-            </li>
-          ))}
-        </ul>
-
-        <div id="map" className="bg-gray-200 rounded-lg shadow-lg w-full h-62 mb-18"></div>
-
-        <Button
-          type="button"
-          onClick={handleGetUserLocation}
-          className="w-full bg-sky-400 shadow-md shadow-sky-500/50 text-white font-bold py-2 px-4 rounded mb-4"
-        >
-          Get My Location
-        </Button>
-
-        <Button
-          type="button"
-          onClick={handleAddItem}
-          className="w-full bg-sky-400 shadow-md shadow-sky-500/50 text-white font-bold py-2 px-4 rounded"
-        >
-          Add Request
-        </Button>
-      </form>
-      </Card>
-
-      <Card className="flex-grow overflow-y-auto p-5 bg-white rounded-lg shadow-md max-w-[30%] max-h-screen h-fit">
-      <h3 className="text-xl font-bold mb-5 text-gray-700">Items in Basket:</h3>
-        {items.map((item, index) => (
-          <div key={index} className="border border-gray-300 rounded-lg p-4 mb-4 flex items-center">
-            <div className="flex-grow ml-4">
-              <p className="font-bold text-lg mb-2">
-                {item.itemName} {item.emoji}
-              </p>
-              <p className="text-gray-600">
-                Quantity: {item.quantity}
-              </p>
-              <p className="text-gray-600">Reason: {item.reason}</p>
+              Your Address:
+            </label>
+            <Input
+              id="userAddress"
+              value={userAddress}
+              onChange={handleAddressChange}
+              className="w-full mb-4"
+              type="text"
+              placeholder="Enter your address"
+            />
+            <ul className="bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto mb-4">
+              {addressSuggestions.map((address, index) => (
+                <li
+                  key={index}
+                  onClick={() => handleSuggestionClick(address)}
+                  className="p-2 cursor-pointer hover:bg-gray-100"
+                >
+                  {address}
+                </li>
+              ))}
+            </ul>
+            <div
+              id="map"
+              className="bg-gray-200 rounded-lg shadow-lg h-72 mb-4"
+            ></div>
+            <div className="flex flex-row gap-6">
+              <Button
+                type="button"
+                onClick={handleGetUserLocation}
+                className="w-1/2 bg-sky-400 shadow-md shadow-sky-500/50 text-white font-bold py-2 px-4 rounded mb-4"
+              >
+                Get My Location
+              </Button>
+              <Button
+                type="button"
+                onClick={handleAddItem}
+                className="w-1/2 justify-center bg-sky-400 shadow-md shadow-sky-500/50 text-white font-bold py-2 px-4 rounded"
+              >
+                Add Request
+              </Button>
             </div>
-            <Button
-              onClick={() => handleRemoveItem(index)}
-              className="bg-red-400"
-            >
-              <HiOutlineTrash size ="22"/>
-            </Button>
-          </div>
-        ))}
-        <Button onClick={handleSubmit} className="w-full bg-sky-400 shadow-md shadow-sky-500/50 text-white font-bold py-2 px-4 rounded">
-          Submit Basket
-        </Button>
+          </form>
         </Card>
-      
-        </div>
+
+        <Card className="flex-grow overflow-y-auto p-5 bg-white rounded-lg shadow-md max-w-[30%] max-h-fit w-fit">
+          <h3 className="text-lg font-bold mb-2 text-gray-700">
+            Items in Basket:
+          </h3>
+          {items.map((item, index) => (
+            <div
+              key={index}
+              className="border border-gray-300 rounded-lg p-1 mb-4 flex flex-col items-center gap-2"
+            >
+              <div className="flex-grow ml-4">
+                <p className="font-bold text-lg mb-2">
+                  {item.itemName} {item.emoji}
+                </p>
+                <p className="text-gray-600">Quantity: {item.quantity}</p>
+                <p className="text-gray-600">Reason: {item.reason}</p>
+              </div>
+
+              <Button
+                onClick={() => handleRemoveItem(index)}
+                className="bg-black p-1"
+                style={{ width: "30px", height: "30px" }}
+              >
+                <HiOutlineTrash size="18" />
+              </Button>
+            </div>
+          ))}
+          <Button
+            onClick={handleSubmit}
+            className="w-full bg-sky-400 shadow-md shadow-sky-500/50 text-white font-bold py-2 px-4 rounded"
+          >
+            Submit Request
+          </Button>
+        </Card>
+      </div>
     </div>
   );
 }
