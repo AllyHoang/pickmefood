@@ -19,8 +19,10 @@ import {
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useSelector } from "react-redux";
 
 const MyCard = ({ item }) => {
+
   return (
     <Card key={item.id} className="flex flex-col bg-white rounded-lg shadow-md">
       <CardHeader className="flex-col gap-4 items-start">

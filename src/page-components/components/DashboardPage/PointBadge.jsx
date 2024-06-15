@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 function PointBadge() {
     //Get user state from redux
     const {loading, error, currentUser} = useSelector((state) => state.user);
-    console.log(currentUser);
     return (
         <div className="col-span-3 md:col-span-1 shadow-sm">
             <div className="overflow-hidden rounded-md bg-white p-6 shadow-lg">
