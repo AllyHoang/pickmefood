@@ -1,49 +1,67 @@
+import NextAuth from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
+import FacebookProvider from "next-auth/providers/facebook";
 import connectToDB from "@/core/db/mongodb";
 import { UserModel } from "@/core/models/User";
-import NextAuth from "next-auth/next";
-import GoogleProvider from "next-auth/providers/google";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
-const authOptions = {
-  providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
-  ],
-  callbacks: {
-    async signIn({ user, account }) {
-      if (account.provider === "google") {
-        const { name, email } = user;
-        try {
-          await connectToDB();
-          const userExists = await UserModel.findOne({ email });
+const nextAuthOptions = (req, res) => {
+  return {
+    providers: [
+      GoogleProvider({
+        clientId: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      }),
+      FacebookProvider({
+        clientId: process.env.FACEBOOK_CLIENT_ID,
+        clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
+      }),
+    ],
+    callbacks: {
+      async signIn({ user, account, profile, email, credentials }) {
+        if (account.provider === "google" || account.provider === "facebook") {
+          const { name, email } = user;
+          try {
+            await connectToDB();
+            let userExists = await UserModel.findOne({ email });
 
-          if (!userExists) {
-            const res = await fetch("/api/users/signup", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
+            if (!userExists) {
+              const randomPassword = Math.random().toString(36).substring(7);
+              const hashedPassword = await bcrypt.hash(randomPassword, 10);
+
+              userExists = await UserModel.create({
                 name,
                 email,
-              }),
+                password: hashedPassword,
+              });
+            }
+
+            // Create token data
+            const tokenData = {
+              id: userExists._id,
+              email: userExists.email,
+            };
+
+            const token = jwt.sign(tokenData, process.env.SECRET_KEY, {
+              expiresIn: "1d",
             });
 
-            if (res.ok) {
-              return user;
-            }
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      }
+            // Set token as a cookie
+            res.setHeader("Set-Cookie", `token=${token}; HttpOnly; Path=/`);
 
-      return user;
+            return user;
+          } catch (error) {
+            console.error(error);
+            return false;
+          }
+        }
+        return true;
+      },
     },
-  },
+  };
 };
 
-const handler = NextAuth(authOptions);
-
-export { handler as GET, handler as POST };
+export default (req, res) => {
+  return NextAuth(req, res, nextAuthOptions(req, res));
+};

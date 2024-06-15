@@ -1,4 +1,3 @@
-import ForgetPasswordForm from "@/page-components/components/ForgetPasswordForm/ForgetPasswordForm";
 import ForgetPasswordFormTest from "@/page-components/components/forgetPasswordForm/forgetPasswordFormTest";
 import { ForgetPasswordLayout } from "@/page-components/layouts";
 

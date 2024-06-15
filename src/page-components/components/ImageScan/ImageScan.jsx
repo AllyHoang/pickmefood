@@ -1,13 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CldUploadButton } from "next-cloudinary";
 import { useRouter } from "next/router";
 import styles from "./ImageScan.module.css";
+import { useImage } from "@/lib/ImageContext";
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const ImageScan = () => {
-  const [imageUrl, setImageUrl] = useState("");
+  const { setImageUrl } = useImage();
   const [detectedItems, setDetectedItems] = useState([]);
-  const [confirmedItems, setConfirmedItems] = useState([]);
+  const [confirmedItems, setConfirmedItems] = useState(new Set());
   const [currentPage, setCurrentPage] = useState(0);
+  const [uploadedImage, setUploadedImage] = useState(null);
+  const [useReplicate, setUseReplicate] = useState(false); // State for the Replicate checkbox
+  const [prediction, setPrediction] = useState(null);
+  const [error, setError] = useState(null);
   const router = useRouter();
 
   const itemsPerPage = 10;
@@ -18,7 +25,9 @@ const ImageScan = () => {
     const APP_ID = "main";
     const MODEL_ID = "food-item-recognition";
     const MODEL_VERSION_ID = "1d5fd481e0cf4826aa72ec3ff049e044";
-    const IMAGE_URL = "https://samples.clarifai.com/metro-north.jpg";
+    const DEFAULT_IMAGE_URL = "https://samples.clarifai.com/metro-north.jpg";
+
+    const imageUrl = uploadedImage || DEFAULT_IMAGE_URL;
 
     const raw = JSON.stringify({
       user_app_id: {
@@ -29,7 +38,7 @@ const ImageScan = () => {
         {
           data: {
             image: {
-              url: imageUrl || IMAGE_URL,
+              url: imageUrl,
             },
           },
         },
@@ -40,7 +49,7 @@ const ImageScan = () => {
       method: "POST",
       headers: {
         Accept: "application/json",
-        Authorization: "Key " + PAT,
+        Authorization: `Key ${PAT}`,
         "Content-Type": "application/json",
       },
       body: raw,
@@ -53,6 +62,7 @@ const ImageScan = () => {
       );
       const data = await response.json();
       console.log(data);
+
       // Extract detected items from 'data' and update 'detectedItems' state
       const concepts = data.outputs[0].data.concepts.map(
         (concept) => concept.name
@@ -65,13 +75,15 @@ const ImageScan = () => {
   };
 
   const handleItemCheck = (item) => {
-    if (!confirmedItems.includes(item)) {
-      setConfirmedItems([...confirmedItems, item]);
-    }
+    setConfirmedItems((prev) => new Set(prev).add(item));
   };
 
   const handleItemUncheck = (item) => {
-    setConfirmedItems(confirmedItems.filter((i) => i !== item));
+    setConfirmedItems((prev) => {
+      const updatedSet = new Set(prev);
+      updatedSet.delete(item);
+      return updatedSet;
+    });
   };
 
   const handleNextPage = () => {
@@ -86,17 +98,74 @@ const ImageScan = () => {
     }
   };
 
-  const redirectToConfirmationPage = () => {
+  // Function to call Replicate API
+  const generateReplicateImage = async (prompt) => {
+    try {
+      const response = await fetch("/api/replicate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate image with Replicate API");
+      }
+      let prediction = await response.json();
+      console.log(prediction);
+      if (response.status !== 201) {
+        setError(prediction.detail);
+        return;
+      }
+      setPrediction(prediction);
+
+      while (
+        prediction.status !== "succeeded" &&
+        prediction.status !== "failed"
+      ) {
+        await sleep(1000);
+        const response = await fetch("/api/replicate/" + prediction.id);
+        prediction = await response.json();
+        if (response.status !== 200) {
+          setError(prediction.detail);
+          return;
+        }
+        console.log({ prediction });
+        setPrediction(prediction);
+      }
+      if (prediction.status == "succeeded") {
+        setImageUrl(prediction.output[prediction.output.length - 1]);
+      }
+    } catch (error) {
+      console.error("Error generating image with Replicate:", error);
+      return null;
+    }
+  };
+
+  const redirectToConfirmationPage = async () => {
+    if (useReplicate) {
+      const prompt = `Generate an image that includes the following items: ${[
+        ...confirmedItems,
+      ].join(", ")}`;
+      generateReplicateImage(prompt);
+    }
+
+    setImageUrl(uploadedImage);
+
+    // Redirect to the confirmation page
     router.push({
       pathname: "/confirmation",
-      query: { confirmedItems: JSON.stringify(confirmedItems) },
+      query: {
+        confirmedItems: JSON.stringify([...confirmedItems]),
+      },
     });
   };
 
-  const paginatedItems = detectedItems.slice(
-    currentPage * itemsPerPage,
-    (currentPage + 1) * itemsPerPage
-  );
+  const handleUploadSuccess = (result) => {
+    const uploadedUrl = result?.info?.secure_url;
+    setUploadedImage(uploadedUrl);
+  };
 
   return (
     <div className={styles.container}>
@@ -105,7 +174,7 @@ const ImageScan = () => {
         <CldUploadButton
           options={{ maxFiles: 1 }}
           folder="images"
-          onSuccess={(result) => setImageUrl(result?.info?.secure_url)}
+          onSuccess={handleUploadSuccess}
           onFailure={(error) =>
             console.error("Cloudinary upload error:", error)
           }
@@ -115,9 +184,9 @@ const ImageScan = () => {
         </CldUploadButton>
         <button
           onClick={runClarifai}
-          disabled={!imageUrl}
+          disabled={!uploadedImage}
           className={`${styles.runButton} ${
-            !imageUrl ? styles.runButtonDisabled : ""
+            !uploadedImage ? styles.runButtonDisabled : ""
           }`}
         >
           Scan
@@ -125,9 +194,13 @@ const ImageScan = () => {
       </div>
       <div className={styles.content}>
         <div className={styles.leftSection}>
-          {imageUrl && (
+          {uploadedImage && (
             <div className={styles.imageContainer}>
-              <img src={imageUrl} alt="Uploaded" className={styles.image} />
+              <img
+                src={uploadedImage}
+                alt="Uploaded"
+                className={styles.image}
+              />
             </div>
           )}
         </div>
@@ -136,23 +209,29 @@ const ImageScan = () => {
             <div className={styles.section}>
               <h2>Detected Items</h2>
               <ul className={styles.list}>
-                {paginatedItems.map((item, index) => (
-                  <li key={index} className={styles.listItem}>
-                    <input
-                      type="checkbox"
-                      id={`item-${index}`}
-                      onChange={(e) =>
-                        e.target.checked
-                          ? handleItemCheck(item)
-                          : handleItemUncheck(item)
-                      }
-                      className={styles.checkbox}
-                    />
-                    <label htmlFor={`item-${index}`} className={styles.label}>
-                      {item}
-                    </label>
-                  </li>
-                ))}
+                {detectedItems
+                  .slice(
+                    currentPage * itemsPerPage,
+                    (currentPage + 1) * itemsPerPage
+                  )
+                  .map((item, index) => (
+                    <li key={item} className={styles.listItem}>
+                      <input
+                        type="checkbox"
+                        id={`item-${index}`}
+                        checked={confirmedItems.has(item)}
+                        onChange={(e) =>
+                          e.target.checked
+                            ? handleItemCheck(item)
+                            : handleItemUncheck(item)
+                        }
+                        className={styles.checkbox}
+                      />
+                      <label htmlFor={`item-${index}`} className={styles.label}>
+                        {item}
+                      </label>
+                    </li>
+                  ))}
               </ul>
               <div className={styles.paginationButtons}>
                 <button
@@ -176,12 +255,26 @@ const ImageScan = () => {
             <div className={styles.section}>
               <h2>Confirmed Items</h2>
               <ul className={styles.list}>
-                {confirmedItems.map((item, index) => (
-                  <li key={index} className={styles.listItem}>
+                {[...confirmedItems].map((item) => (
+                  <li key={item} className={styles.listItem}>
                     {item}
                   </li>
                 ))}
               </ul>
+              {confirmedItems.size > 0 && (
+                <div className={styles.checkboxContainer}>
+                  <input
+                    type="checkbox"
+                    id="useReplicate"
+                    checked={useReplicate}
+                    onChange={(e) => setUseReplicate(e.target.checked)}
+                    className={styles.checkbox}
+                  />
+                  <label htmlFor="useReplicate" className={styles.label}>
+                    Use Replicate to generate image?
+                  </label>
+                </div>
+              )}
               <button
                 onClick={redirectToConfirmationPage}
                 className={styles.confirmationButton}
