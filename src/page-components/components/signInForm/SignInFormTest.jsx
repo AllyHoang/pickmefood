@@ -22,6 +22,7 @@ import {
   signInStart,
   signInSuccess,
 } from "@/redux/user/userSlice";
+import { cn } from "@/lib/utils";
 
 const validateEmail = (value) => {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -90,18 +91,19 @@ export default function SignInFormTest() {
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-2">
-        <Label className=" text-2xl font-bold"> Log In to Pick Me Food </Label>
-        <Label className=" text-base font-normal text-slate-500">
+        <Label className=" text-heading2-bold font-bold">
           {" "}
+          Log In to Pick Me Food{" "}
+        </Label>
+        <Label className=" text-base font-normal text-slate-500">
           Don't have an account? Sign up{" "}
           <Link className="underline" href="/sign-up">
-            {" "}
             here
           </Link>
         </Label>
       </div>
       <Form {...form}>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <FormField
             control={control}
             name="email"
@@ -115,6 +117,7 @@ export default function SignInFormTest() {
                     type="email"
                     placeholder="example@example.com"
                     {...field}
+                    className="w-3/4"
                   />
                 </FormControl>
                 <FormDescription>
@@ -134,45 +137,74 @@ export default function SignInFormTest() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="********" {...field} />
+                  <Input
+                    type="password"
+                    placeholder="********"
+                    {...field}
+                    className="w-3/4"
+                  />
                 </FormControl>
-                <div className="flex flex-row justify-between">
-                  <FormDescription>
-                    Your password must be at least 6 characters.
-                  </FormDescription>
-
+                <div className="flex flex-row justify-between items-center w-3/4">
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="checkbox"
+                      id="rememberMe"
+                      className="w-3 h-3 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500"
+                    />
+                    <label
+                      htmlFor="rememberMe"
+                      className="text-x-small text-gray-600"
+                    >
+                      Remember me
+                    </label>
+                  </div>
                   <FormDescription className="underline">
                     <Link href="/forget-password"> Forgot password? </Link>
                   </FormDescription>
                 </div>
-
                 {errors.password && (
                   <FormMessage>{errors.password.message}</FormMessage>
                 )}
               </FormItem>
             )}
           />
-          <Button type="submit" className="bg-sky-500 font-medium w-1/3">
-            Log in to your account
+          <Button
+            type="submit"
+            className="bg-sky-500 font-medium w-3/4 shadow-lg"
+          >
+            Sign In
           </Button>
-          <button
-            onClick={() => signIn("google")}
-            className="flex items-center gap-4 shadow-xl rounded-lg pl-3"
-          >
-            <Image src="/google-logo.png" height={30} width={30} />
-            <span className="bg-blue-500 text-white px-4 py-3">
-              Sign in with Google
-            </span>
-          </button>
-          <button
-            onClick={() => signIn("facebook")}
-            className="flex items-center gap-4 shadow-xl rounded-lg pl-3"
-          >
-            <Image src="/facebook-logo.png" height={30} width={30} />
-            <span className="bg-blue-500 text-white px-4 py-3">
-              Sign in with Facebook
-            </span>
-          </button>
+          <div className="flex items-center my-4 w-3/4 ">
+            <div className="flex-grow border-t border-gray-300"></div>
+            <span className="mx-4 text-gray-500">or</span>
+            <div className="flex-grow border-t border-gray-300"></div>
+          </div>
+          <div className="flex flex-col gap-4 font-medium">
+            <button
+              onClick={() => signIn("google")}
+              className="flex items-center gap-2 shadow-md rounded-lg pl-3 py-2 w-3/4 border border-gray-200 justify-center"
+            >
+              <Image
+                src="/google-logo.png"
+                height={24}
+                width={24}
+                alt="Google Logo"
+              />
+              <span className="text-gray-700">Sign in with Google</span>
+            </button>
+            <button
+              onClick={() => signIn("facebook")}
+              className="flex items-center gap-2 shadow-md rounded-lg pl-3 py-2 w-3/4 border border-gray-200 justify-center"
+            >
+              <Image
+                src="/facebook-logo.png"
+                height={24}
+                width={24}
+                alt="Facebook Logo"
+              />
+              <span className="text-gray-700">Sign in with Facebook</span>
+            </button>
+          </div>
         </form>
       </Form>
     </div>
