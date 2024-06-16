@@ -79,21 +79,6 @@
 .itemTabsContainer {
   width: 100%;
   padding: 20px;
-  background: linear-gradient(
-    to top left,
-    #ffffff,
-    #ffffff,
-    #ffffff,
-    #ffffff,
-    #ffffff,
-    #ffffff,
-    #ffffff,
-    #ffffff,
-    #e1ecff,
-    #f0effa,
-    #e6e5fb,
-    #d4d6f3
-  );
   border: 1px solid #ccc;
   border-radius: 5px;
 }
@@ -122,22 +107,6 @@
   width: 100%;
   margin-top: 20px;
   padding: 20px;
-  background-image: linear-gradient(
-    to right bottom,
-    #ffffff,
-    #ffffff,
-    #ffffff,
-    #ffffff,
-    #ffffff,
-    #ffffff,
-    #ffffff,
-    #ffffff,
-    #ffffff,
-    #ffffff,
-    #ffffff,
-    #e3e9fc,
-    #d3e2ff
-  );
   border: 1px solid #ccc;
   border-radius: 5px;
 }
@@ -166,10 +135,19 @@
   padding: 10px 20px;
   background-color: #ffffff;
   color: #000000;
-  border: none;
+  border: 1px solid #ccc; /* Add a 1px solid black border */
   border-radius: 5px;
   cursor: pointer;
-  border-color: #000000;
+}
+
+.saveButton {
+  margin-left: 170px;
+  padding: 10px 20px;
+  background-color: #000000;
+  color: #ffffff;
+  border: 1px solid #ccc; /* Add a 1px solid black border */
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .toggleButton:hover {

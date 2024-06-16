@@ -12,10 +12,6 @@ const ItemSchema = new Schema(
       require: true,
       default: "",
     },
-    description: {
-      type: String,
-      default: "",
-    },
     quantity: {
       type: Number,
       require: true,

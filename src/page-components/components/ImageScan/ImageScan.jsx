@@ -13,6 +13,9 @@ const ImageScan = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [uploadedImage, setUploadedImage] = useState(null);
   const [useReplicate, setUseReplicate] = useState(false); // State for the Replicate checkbox
+  const [useCloudinary, setUseCloudinary] = useState(false);
+  const [firstImageUploaded, setFirstImageUploaded] = useState(false); // Track first image upload
+  const [secondImageUploaded, setSecondImageUploaded] = useState(false); // Track second image upload
   const [prediction, setPrediction] = useState(null);
   const [error, setError] = useState(null);
   const router = useRouter();
@@ -73,7 +76,6 @@ const ImageScan = () => {
       console.error("Error:", error);
     }
   };
-
   const handleItemCheck = (item) => {
     setConfirmedItems((prev) => new Set(prev).add(item));
   };
@@ -98,7 +100,6 @@ const ImageScan = () => {
     }
   };
 
-  // Function to call Replicate API
   const generateReplicateImage = async (prompt) => {
     try {
       const response = await fetch("/api/replicate", {
@@ -134,13 +135,26 @@ const ImageScan = () => {
         console.log({ prediction });
         setPrediction(prediction);
       }
-      if (prediction.status == "succeeded") {
+      if (prediction.status === "succeeded") {
         setImageUrl(prediction.output[prediction.output.length - 1]);
       }
     } catch (error) {
       console.error("Error generating image with Replicate:", error);
       return null;
     }
+  };
+
+  const handleFirstUploadSuccess = (result) => {
+    const uploadedUrl = result?.info?.secure_url;
+    setUploadedImage(uploadedUrl);
+    setFirstImageUploaded(true);
+  };
+
+  const handleSecondUploadSuccess = (result) => {
+    const uploadedUrl = result?.info?.secure_url;
+    setUploadedImage(uploadedUrl);
+    setFirstImageUploaded(true);
+    setSecondImageUploaded(true);
   };
 
   const redirectToConfirmationPage = async () => {
@@ -153,7 +167,6 @@ const ImageScan = () => {
 
     setImageUrl(uploadedImage);
 
-    // Redirect to the confirmation page
     router.push({
       pathname: "/confirmation",
       query: {
@@ -162,26 +175,38 @@ const ImageScan = () => {
     });
   };
 
-  const handleUploadSuccess = (result) => {
-    const uploadedUrl = result?.info?.secure_url;
-    setUploadedImage(uploadedUrl);
-  };
-
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Image Recognition</h1>
       <div className={styles.uploadSection}>
-        <CldUploadButton
-          options={{ maxFiles: 1 }}
-          folder="images"
-          onSuccess={handleUploadSuccess}
-          onFailure={(error) =>
-            console.error("Cloudinary upload error:", error)
-          }
-          uploadPreset="zoa1vsa7"
-        >
-          <p className={styles.uploadButton}>Upload Image</p>
-        </CldUploadButton>
+        {!firstImageUploaded && ( // Render first Cloudinary upload button if first image is not uploaded
+          <CldUploadButton
+            options={{ maxFiles: 1 }}
+            folder="images"
+            onSuccess={handleFirstUploadSuccess}
+            onFailure={(error) =>
+              console.error("Cloudinary upload error:", error)
+            }
+            uploadPreset="zoa1vsa7"
+          >
+            <p className={styles.uploadButton}>Upload Image</p>
+          </CldUploadButton>
+        )}
+        {firstImageUploaded &&
+          useCloudinary &&
+          !secondImageUploaded && ( // Render second Cloudinary upload button if first image uploaded and useCloudinary checked
+            <CldUploadButton
+              options={{ maxFiles: 1 }}
+              folder="images"
+              onSuccess={handleSecondUploadSuccess}
+              onFailure={(error) =>
+                console.error("Cloudinary upload error:", error)
+              }
+              uploadPreset="zoa1vsa7"
+            >
+              <p className={styles.uploadButton}>Upload Another Image</p>
+            </CldUploadButton>
+          )}
         <button
           onClick={runClarifai}
           disabled={!uploadedImage}
@@ -270,8 +295,18 @@ const ImageScan = () => {
                     onChange={(e) => setUseReplicate(e.target.checked)}
                     className={styles.checkbox}
                   />
-                  <label htmlFor="useReplicate" className={styles.label}>
+                  <label htmlFor="useReplicate" className={styles.replicate}>
                     Use Replicate to generate image?
+                  </label>
+                  <input
+                    type="checkbox"
+                    id="useCloudinary"
+                    checked={useCloudinary}
+                    onChange={(e) => setUseCloudinary(e.target.checked)}
+                    className={styles.checkbox}
+                  />
+                  <label htmlFor="useCloudinary" className={styles.replicate}>
+                    Upload another image?
                   </label>
                 </div>
               )}

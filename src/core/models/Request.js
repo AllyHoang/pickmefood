@@ -7,10 +7,6 @@ const RequestSchema = new Schema(
       require: true,
       default: "",
     },
-    reason: {
-      type: String,
-      default: "",
-    },
     emoji: {
       type: String,
       require: true,

@@ -1,3 +1,5 @@
+/* VideoScan.module.css */
+
 .videoScanContainer {
   font-family: "Roboto", sans-serif;
   padding: 20px;
@@ -81,18 +83,41 @@
   background-color: #c82333;
 }
 
+.uploadReplicateSection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.uploadButton,
+.replicateButton,
 .confirmButton {
-  display: block;
-  margin: 0 auto;
   padding: 10px 20px;
-  background-color: #28a745;
-  color: #fff;
+  font-size: 16px;
+  margin: 0 10px;
+  cursor: pointer;
   border: none;
   border-radius: 5px;
-  cursor: pointer;
   transition: background-color 0.3s;
 }
 
-.confirmButton:hover {
-  background-color: #218838;
+.uploadButton {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.replicateButton {
+  background-color: #ffc107;
+  color: #333;
+}
+
+.confirmButton {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.orText {
+  font-size: 16px;
+  margin: 0 10px;
 }

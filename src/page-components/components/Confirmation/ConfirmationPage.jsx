@@ -12,6 +12,7 @@ import { useImage } from "@/lib/ImageContext";
 export default function ConfirmationPage({ userId }) {
   const { imageUrl } = useImage();
   const router = useRouter();
+  const [title, setTitle] = useState("");
   const { confirmedItems } = router.query;
   const parsedItems = confirmedItems ? JSON.parse(confirmedItems) : [];
   const [userAddress, setUserAddress] = useState("");
@@ -21,10 +22,8 @@ export default function ConfirmationPage({ userId }) {
   const [itemDetails, setItemDetails] = useState(
     parsedItems.map((item) => ({
       item,
-      description: "",
       quantity: "",
       expirationDate: null,
-      reason: "",
       emoji: "",
     }))
   );
@@ -32,6 +31,8 @@ export default function ConfirmationPage({ userId }) {
   const [donationMode, setDonationMode] = useState(true); // true for donation, false for request
   const [activeItemIndex, setActiveItemIndex] = useState(0);
   const [items, setItems] = useState([]);
+  const [basketDescription, setBasketDescription] = useState(""); // For donation
+  const [basketReason, setBasketReason] = useState(""); // For request
 
   const mapContainerRef = useRef(null);
 
@@ -207,7 +208,11 @@ export default function ConfirmationPage({ userId }) {
         body: JSON.stringify({
           userId, // Include userId in the request body
           [donationMode ? "items" : "requests"]: itemsWithUserIdAndLocation,
+          [donationMode ? "description" : "reason"]: donationMode
+            ? basketDescription
+            : basketReason, // Add basketDescription or basketReason based on mode
           image: imageUrl,
+          title,
         }),
       });
 
@@ -288,37 +293,50 @@ export default function ConfirmationPage({ userId }) {
             </div>
           </div>
           <div className={styles.itemCard}>
+            <label htmlFor="basketTitle" className={styles["label-text"]}>
+              Basket name:
+            </label>
+            <input
+              id="basketTitle"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className={styles["input-field"]}
+              placeholder={"Enter a name"}
+              type="text"
+            />
+            <div className={styles.basketDescription}>
+              <label className={styles["label-text"]}>
+                {donationMode ? "Basket Description" : "Basket Reason"}:
+              </label>
+              <input
+                value={donationMode ? basketDescription : basketReason}
+                onChange={(e) =>
+                  donationMode
+                    ? setBasketDescription(e.target.value)
+                    : setBasketReason(e.target.value)
+                }
+                placeholder={
+                  donationMode ? "Enter a description" : "Enter a reason"
+                }
+                className={styles["input-field"]}
+              />
+            </div>
+          </div>
+          <div className={styles.itemCard}>
             <div className={styles.itemTitle2}>
               <p>{capitalizeFirstLetter(parsedItems[activeItemIndex])}</p>
             </div>
-            {donationMode ? (
+            <input
+              type="text"
+              placeholder="Quantity"
+              value={itemDetails[activeItemIndex]?.quantity || ""}
+              onChange={(e) =>
+                handleInputChange(activeItemIndex, "quantity", e.target.value)
+              }
+              className={styles.inputField}
+            />
+            {donationMode && (
               <>
-                <input
-                  type="text"
-                  placeholder="Description"
-                  value={itemDetails[activeItemIndex]?.description || ""}
-                  onChange={(e) =>
-                    handleInputChange(
-                      activeItemIndex,
-                      "description",
-                      e.target.value
-                    )
-                  }
-                  className={styles.inputField}
-                />
-                <input
-                  type="text"
-                  placeholder="Quantity"
-                  value={itemDetails[activeItemIndex]?.quantity || ""}
-                  onChange={(e) =>
-                    handleInputChange(
-                      activeItemIndex,
-                      "quantity",
-                      e.target.value
-                    )
-                  }
-                  className={styles.inputField}
-                />
                 <label
                   htmlFor="expirationDate"
                   className={styles["label-text"]}
@@ -336,31 +354,6 @@ export default function ConfirmationPage({ userId }) {
                   className={styles["input-field-date"]}
                 />
               </>
-            ) : (
-              <>
-                <input
-                  type="text"
-                  placeholder="Reason"
-                  value={itemDetails[activeItemIndex]?.reason || ""}
-                  onChange={(e) =>
-                    handleInputChange(activeItemIndex, "reason", e.target.value)
-                  }
-                  className={styles.inputField}
-                />
-                <input
-                  type="text"
-                  placeholder="Quantity"
-                  value={itemDetails[activeItemIndex]?.quantity || ""}
-                  onChange={(e) =>
-                    handleInputChange(
-                      activeItemIndex,
-                      "quantity",
-                      e.target.value
-                    )
-                  }
-                  className={styles.inputField}
-                />
-              </>
             )}
             <div className={styles.donationModeButton}>
               <button
@@ -369,11 +362,11 @@ export default function ConfirmationPage({ userId }) {
               >
                 Switch to {donationMode ? "Request" : "Donation"} Mode
               </button>
+              <button onClick={handleSaveItem} className={styles.saveButton}>
+                Save Item
+              </button>
             </div>
           </div>
-          <button onClick={handleSaveItem} className={styles.saveButton}>
-            Save Item
-          </button>
         </div>
         <div className={styles.buttonContainer}>
           <button onClick={handleSubmit} className={styles.submitButton}>

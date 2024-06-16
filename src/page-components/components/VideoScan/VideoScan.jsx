@@ -1,3 +1,5 @@
+// VideoScan.js
+
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import io from "socket.io-client";
@@ -15,6 +17,7 @@ const VideoScan = () => {
   const [processing, setProcessing] = useState(false);
   const [detectedItems, setDetectedItems] = useState([]);
   const [confirmedItems, setConfirmedItems] = useState([]);
+  const [uploadImageChecked, setUploadImageChecked] = useState(false);
   const videoRef = useRef(null);
   const [prediction, setPrediction] = useState(null);
   const [error, setError] = useState(null);
@@ -113,12 +116,21 @@ const VideoScan = () => {
     }
   };
 
+  const handleCheckboxChange = (e) => {
+    setUploadImageChecked(e.target.checked);
+  };
+
   const navigateToConfirmation = async () => {
     if (confirmedItems.length > 0 && generatedImageUrl == null) {
-      const prompt = `Generate an image that includes the following items: ${confirmedItems.join(
-        ", "
-      )}`;
-      generateReplicateImage(prompt);
+      if (uploadImageChecked) {
+        // Handle upload image logic here
+        console.log("Upload image checked");
+      } else {
+        const prompt = `Generate an image that includes the following items: ${confirmedItems.join(
+          ", "
+        )}`;
+        generateReplicateImage(prompt);
+      }
     }
     setProcessing(false);
     socket.emit("stop_video");
@@ -193,17 +205,28 @@ const VideoScan = () => {
           ))}
         </ul>
         <div className={styles.uploadReplicateSection}>
-          <CldUploadButton
-            options={{ maxFiles: 1 }}
-            folder="images"
-            onSuccess={handleUploadSuccess}
-            onFailure={(error) =>
-              console.error("Cloudinary upload error:", error)
-            }
-            uploadPreset="zoa1vsa7"
-          >
-            <div className={styles.uploadButton}>Upload Image</div>
-          </CldUploadButton>
+          <div className={styles.checkboxContainer}>
+            <input
+              type="checkbox"
+              id="uploadImageCheckbox"
+              checked={uploadImageChecked}
+              onChange={handleCheckboxChange}
+            />
+            <label htmlFor="uploadImageCheckbox">Upload Image</label>
+          </div>
+          {uploadImageChecked && (
+            <CldUploadButton
+              options={{ maxFiles: 1 }}
+              folder="images"
+              onSuccess={handleUploadSuccess}
+              onFailure={(error) =>
+                console.error("Cloudinary upload error:", error)
+              }
+              uploadPreset="zoa1vsa7"
+            >
+              <div className={styles.uploadButton}>Upload Image</div>
+            </CldUploadButton>
+          )}
           <p className={styles.orText}>or</p>
           <button
             onClick={navigateToConfirmation}

@@ -2,6 +2,14 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const BasketSchema = new Schema({
+  title: {
+    type: String,
+    required: true, // Title is required
+  },
+  description: {
+    type: String,
+    trim: true, // Remove whitespace from the description
+  },
   userId: { type: Schema.Types.ObjectId, ref: "User", required: true }, // Reference to User model
   items: [{ type: Schema.Types.ObjectId, ref: "Item" }], // Reference to Item model
   image: {

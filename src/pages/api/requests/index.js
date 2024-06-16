@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   if (req.method === "POST") {
     // Process a POST request
     console.log(req.body);
-    const { userId, requests, image } = req.body;
+    const { userId, requests, image, title, reason } = req.body;
 
     try {
       await connectToDB();
@@ -22,6 +22,8 @@ export default async function handler(req, res) {
         userId,
         requests: requestIds,
         image,
+        title,
+        reason,
       });
 
       await basket.save();

@@ -10,9 +10,14 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { HiOutlineTrash } from "react-icons/hi";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { CldUploadButton } from "next-cloudinary";
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export default function AddRequest({ userId }) {
+  const [uploadedUrl, setUploadedUrl] = useState("");
   const [itemName, setName] = useState("");
+  const [title, setTitle] = useState("");
   const [reason, setReason] = useState("");
   const [quantity, setQuantity] = useState("");
   const [userAddress, setUserAddress] = useState("");
@@ -26,6 +31,8 @@ export default function AddRequest({ userId }) {
   const [emoji, setEmoji] = useState("");
   const [items, setItems] = useState([]);
   const router = useRouter();
+  const [prediction, setPrediction] = useState(null);
+  const [error, setError] = useState(null);
 
   mapboxgl.accessToken =
     "pk.eyJ1IjoicGlja21lZm9vZCIsImEiOiJjbHZwbHdyMzgwM2hmMmtvNXJ6ZHU2NXh3In0.aITfZvPY-sKGwepyPVPGOg";
@@ -176,6 +183,11 @@ export default function AddRequest({ userId }) {
     setItems(updatedItems);
   };
 
+  const handleUploadSuccess = (result) => {
+    const uploadedUrl = result?.info?.secure_url;
+    setUploadedUrl(uploadedUrl);
+  };
+
   const handleNewItemSubmit = async () => {
     if (!newItemName.trim()) {
       toast.error("Item name cannot be empty");
@@ -247,6 +259,50 @@ export default function AddRequest({ userId }) {
     }
   };
 
+  const generateReplicateImage = async (prompt) => {
+    try {
+      const response = await fetch("/api/replicate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate image with Replicate API");
+      }
+      let prediction = await response.json();
+      console.log(prediction);
+      if (response.status !== 201) {
+        setError(prediction.detail);
+        return;
+      }
+      setPrediction(prediction);
+
+      while (
+        prediction.status !== "succeeded" &&
+        prediction.status !== "failed"
+      ) {
+        await sleep(1000);
+        const response = await fetch("/api/replicate/" + prediction.id);
+        prediction = await response.json();
+        if (response.status !== 200) {
+          setError(prediction.detail);
+          return;
+        }
+        console.log({ prediction });
+        setPrediction(prediction);
+      }
+      if (prediction.status == "succeeded") {
+        setUploadedUrl(prediction.output[prediction.output.length - 1]);
+      }
+    } catch (error) {
+      console.error("Error generating image with Replicate:", error);
+      return null;
+    }
+  };
+
   const handleAddItem = () => {
     if (!itemName || !quantity) {
       toast.error("Please fill in all the required fields");
@@ -254,7 +310,6 @@ export default function AddRequest({ userId }) {
     }
     const newItem = {
       itemName,
-      reason,
       quantity,
       address: userAddress,
       emoji,
@@ -269,18 +324,37 @@ export default function AddRequest({ userId }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (items.length === 0) {
-      toast.error("Please add at least one item");
-      return;
-    }
-
-    const itemsWithUserIdAndLocation = items.map((item) => ({
-      ...item,
-      userId,
-      location: userAddress,
-    }));
-
     try {
+      // Check if an image has been uploaded or generated
+      if (!uploadedUrl) {
+        // If not, generate the image
+        const prompt = `Generate an image that includes the following items: ${items
+          .map((item) => item.itemName)
+          .join(", ")}`;
+        await generateReplicateImage(prompt);
+      }
+
+      // Validate again if uploadedUrl is available after generation
+      if (!uploadedUrl) {
+        toast.error("Image generation failed or is still in progress.");
+        return;
+      }
+
+      // Check if items array is empty
+      if (items.length === 0) {
+        toast.error("Please add at least one item");
+        return;
+      }
+
+      // Prepare items with additional data
+      const itemsWithUserIdAndLocation = items.map((item) => ({
+        ...item,
+        userId,
+        location: userAddress,
+        emoji: item.emoji || "", // Ensure emoji is provided
+      }));
+
+      // Submit request to API
       const res = await fetch(`/api/requests`, {
         method: "POST",
         headers: {
@@ -289,17 +363,20 @@ export default function AddRequest({ userId }) {
         body: JSON.stringify({
           userId,
           requests: itemsWithUserIdAndLocation,
+          title,
+          reason,
+          uploadedUrl,
         }),
       });
 
       if (res.ok) {
         router.push("/dashboard");
       } else {
-        throw new Error("Failed to create an item");
+        throw new Error("Failed to create request");
       }
     } catch (error) {
-      console.error("Error:", error);
-      toast.error("Error creating item");
+      console.error("Error submitting request:", error);
+      toast.error("Error submitting request");
     }
   };
 
@@ -322,19 +399,6 @@ export default function AddRequest({ userId }) {
               onChange={handleItemChange}
               className="w-full mb-4"
             />
-
-            <label htmlFor="reason" className="font-bold text-gray-700 mb-2">
-              Reason for item (optional):
-            </label>
-            <Input
-              id="reason"
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              className="w-full mb-4"
-              type="text"
-              placeholder="Ex: I need it for groceries"
-            />
-
             <label htmlFor="quantity" className="font-bold text-gray-700 mb-2">
               Item quantity:
             </label>
@@ -346,7 +410,6 @@ export default function AddRequest({ userId }) {
               type="text"
               placeholder="Ex: 1,2"
             />
-
             <label
               htmlFor="userAddress"
               className="font-bold text-gray-700 mb-2"
@@ -399,6 +462,34 @@ export default function AddRequest({ userId }) {
           <h3 className="text-lg font-bold mb-2 text-gray-700">
             Items in Basket:
           </h3>
+          <div className="mb-4">
+            <label
+              htmlFor="basketTitle"
+              className="font-bold text-gray-700 mb-2"
+            >
+              Basket name:
+            </label>
+            <Input
+              id="basketTitle"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full mb-4"
+              type="text"
+            />
+            <label
+              htmlFor="basketReason"
+              className="font-bold text-gray-700 mb-2"
+            >
+              Basket reason:
+            </label>
+            <Input
+              id="basketReason"
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              className="w-full mb-4"
+              type="text"
+            />
+          </div>
           {items.map((item, index) => (
             <div
               key={index}
@@ -421,6 +512,17 @@ export default function AddRequest({ userId }) {
               </Button>
             </div>
           ))}
+          <CldUploadButton
+            options={{ maxFiles: 1 }}
+            folder="images"
+            onSuccess={handleUploadSuccess}
+            onFailure={(error) =>
+              console.error("Cloudinary upload error:", error)
+            }
+            uploadPreset="zoa1vsa7"
+          >
+            <div className={styles.uploadButton}>Upload Image</div>
+          </CldUploadButton>
           <Button
             onClick={handleSubmit}
             className="w-full bg-sky-400 shadow-md shadow-sky-500/50 text-white font-bold py-2 px-4 rounded"

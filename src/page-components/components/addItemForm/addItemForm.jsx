@@ -1,4 +1,3 @@
-// components/AddItemForm.js
 import { useState, useEffect } from "react";
 import mapboxgl from "mapbox-gl";
 import { useRouter } from "next/router";
@@ -12,11 +11,14 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { HiOutlineTrash } from "react-icons/hi";
+import { CldUploadButton } from "next-cloudinary";
 import "mapbox-gl/dist/mapbox-gl.css";
 
 export default function AddItem({ userId }) {
+  const [uploadedUrl, setUploadedUrl] = useState("");
   const [itemName, setName] = useState("");
   const [emoji, setEmoji] = useState("");
+  const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [quantity, setQuantity] = useState("");
   const [expirationDate, setExpirationDate] = useState(null);
@@ -28,6 +30,8 @@ export default function AddItem({ userId }) {
   const [selectedOption, setSelectedOption] = useState(null);
   const [items, setItems] = useState([]);
   const router = useRouter();
+  const [prediction, setPrediction] = useState(null);
+  const [error, setError] = useState(null);
 
   mapboxgl.accessToken =
     "pk.eyJ1IjoicGlja21lZm9vZCIsImEiOiJjbHZwbHdyMzgwM2hmMmtvNXJ6ZHU2NXh3In0.aITfZvPY-sKGwepyPVPGOg";
@@ -168,7 +172,6 @@ export default function AddItem({ userId }) {
     }
     const newItem = {
       itemName,
-      description,
       quantity,
       expirationDate,
       address: userAddress,
@@ -177,7 +180,6 @@ export default function AddItem({ userId }) {
 
     setItems([...items, newItem]);
     setName("");
-    setDescription("");
     setQuantity("");
     setExpirationDate(null);
     setSelectedOption(null);
@@ -189,8 +191,77 @@ export default function AddItem({ userId }) {
     setItems(updatedItems);
   };
 
+  const handleUploadSuccess = (result) => {
+    const uploadedUrl = result?.info?.secure_url;
+    setUploadedUrl(uploadedUrl);
+  };
+
+  const generateReplicateImage = async (prompt) => {
+    try {
+      const response = await fetch("/api/replicate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate image with Replicate API");
+      }
+      let prediction = await response.json();
+      console.log(prediction);
+      if (response.status !== 201) {
+        setError(prediction.detail);
+        return;
+      }
+      setPrediction(prediction);
+
+      while (
+        prediction.status !== "succeeded" &&
+        prediction.status !== "failed"
+      ) {
+        await sleep(1000);
+        const response = await fetch("/api/replicate/" + prediction.id);
+        prediction = await response.json();
+        if (response.status !== 200) {
+          setError(prediction.detail);
+          return;
+        }
+        console.log({ prediction });
+        setPrediction(prediction);
+      }
+      if (prediction.status == "succeeded") {
+        setUploadedUrl(prediction.output[prediction.output.length - 1]);
+      }
+    } catch (error) {
+      console.error("Error generating image with Replicate:", error);
+      return null;
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Check if an image has been uploaded or generated
+    if (!uploadedUrl) {
+      // If not, generate the image
+      const prompt = `Generate an image that includes the following items: ${items
+        .map((item) => item.itemName)
+        .join(", ")}`;
+      await generateReplicateImage(prompt);
+    }
+
+    // Validate again if uploadedUrl is available after generation
+    if (!uploadedUrl) {
+      toast.error("Image generation failed or is still in progress.");
+      return;
+    }
+
+    if (!title) {
+      toast.error("Please provide a basket name");
+      return;
+    }
 
     if (items.length === 0) {
       toast.error("Please add at least one item");
@@ -200,7 +271,7 @@ export default function AddItem({ userId }) {
     const itemsWithUserIdAndLocation = items.map((item) => ({
       ...item,
       userId,
-      location: userAddress, // Ensure location is provided for each item
+      location: userAddress,
     }));
 
     try {
@@ -212,6 +283,9 @@ export default function AddItem({ userId }) {
         body: JSON.stringify({
           userId,
           items: itemsWithUserIdAndLocation,
+          description,
+          title,
+          uploadedUrl,
         }),
       });
 
@@ -224,6 +298,7 @@ export default function AddItem({ userId }) {
       console.error("Error:", error);
     }
   };
+
   return (
     <div className="flex flex-col items-center w-full p-2 gap-2 min-w-fit max-h-max overflow-hidden">
       <ToastContainer />
@@ -231,6 +306,7 @@ export default function AddItem({ userId }) {
       <div className="flex justify-between w-full max-w-fit gap-6 flex-grow overflow-y-auto">
         <Card className="flex-1 flex-col lg:w-1/3 h-auto lg:h-auto max-h-screen">
           <form onSubmit={handleSubmit} className="p-5 bg-white rounded-lg">
+            {/* Always show title and description fields */}
             <label htmlFor="name" className="font-bold text-gray-700 mb-2">
               Item name:
             </label>
@@ -242,21 +318,6 @@ export default function AddItem({ userId }) {
               value={selectedOption}
               onChange={handleItemChange}
               className="w-full mb-4"
-            />
-
-            <label
-              htmlFor="description"
-              className="font-bold text-gray-700 mb-2"
-            >
-              Item description (optional):
-            </label>
-            <Input
-              id="description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full mb-4"
-              type="text"
-              placeholder="Ex: Delicious but I don't want it"
             />
             <div className="flex flex-row gap-4">
               <div className="flex flex-col">
@@ -275,7 +336,6 @@ export default function AddItem({ userId }) {
                   placeholder="Ex: 1,2"
                 />
               </div>
-
               <div className="flex flex-col">
                 <label
                   htmlFor="expirationDate"
@@ -342,6 +402,37 @@ export default function AddItem({ userId }) {
 
         <Card className="flex-grow overflow-y-auto p-5 bg-white rounded-lg shadow-md max-w-[30%] max-h-fit w-fit">
           <h3 className="text-lg font-bold mb-2 text-gray-700">
+            Basket Details:
+          </h3>
+          <div className="mb-4">
+            <label
+              htmlFor="basketTitle"
+              className="font-bold text-gray-700 mb-2"
+            >
+              Basket name:
+            </label>
+            <Input
+              id="basketTitle"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full mb-4"
+              type="text"
+            />
+            <label
+              htmlFor="basketDescription"
+              className="font-bold text-gray-700 mb-2"
+            >
+              Basket description:
+            </label>
+            <Input
+              id="basketDescription"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="w-full mb-4"
+              type="text"
+            />
+          </div>
+          <h3 className="text-lg font-bold mb-2 text-gray-700">
             Items in Basket:
           </h3>
           {items.map((item, index) => (
@@ -368,6 +459,17 @@ export default function AddItem({ userId }) {
               </Button>
             </div>
           ))}
+          <CldUploadButton
+            options={{ maxFiles: 1 }}
+            folder="images"
+            onSuccess={handleUploadSuccess}
+            onFailure={(error) =>
+              console.error("Cloudinary upload error:", error)
+            }
+            uploadPreset="zoa1vsa7"
+          >
+            <div className={styles.uploadButton}>Upload Image</div>
+          </CldUploadButton>
           <Button
             onClick={handleSubmit}
             className="w-full bg-sky-400 shadow-md shadow-sky-500/50 text-white font-bold py-2 px-4 rounded"

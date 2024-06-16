@@ -113,6 +113,12 @@
   color: #555;
 }
 
+.replicate {
+  margin-top: 20px;
+  font-size: 1rem;
+  color: #555;
+}
+
 .paginationButtons {
   display: flex;
   justify-content: space-between;
