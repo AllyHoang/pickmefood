@@ -11,8 +11,13 @@ import {
   navigationMenuTriggerStyle,
 } from '@/page-components/shadcn/navigation-menu';
 import { RxAvatar, RxChevronUp, RxEnvelopeClosed, RxHome, RxPaperPlane, RxRocket, RxPinRight, RxChatBubble, RxHeart } from 'react-icons/rx';
+import { FiCreditCard } from "react-icons/fi";
+import { AiOutlineTrophy } from "react-icons/ai";
+import { FiBell } from "react-icons/fi";
 import { MdOutlineLeaderboard } from "react-icons/md";
 import { useSelector } from "react-redux";
+
+
 const handleLogout = async () => {
   try {
     await fetch("/api/users/signout", {
@@ -28,44 +33,46 @@ const handleLogout = async () => {
 
 const SideBar = () => {
   const router = useRouter();
-  //reusable menu
+  const [activeItem, setActiveItem] = React.useState(router.pathname);
+
   const MenuList = [
     { href: '/dashboard', icon: <RxHome size="20px" />, label: 'Dashboard' },
     { href: '/map-view', icon: <RxPaperPlane size="20px" />, label: 'Map' },
     { href: '/userpage', icon: <RxAvatar size="20px" />, label: 'Profile' },
-    { href: '/leaderboard', icon: <MdOutlineLeaderboard size="20px" />, label: 'Leaderboard' },
-    { href: '/chats', icon: <RxEnvelopeClosed size="20px" />, label: 'Notifications' }
+    { href: '/transactions', icon: <FiCreditCard size="20px" />, label: 'Transaction' },
+    { href: '/leaderboard', icon: <AiOutlineTrophy size="21px" />, label: 'Leaderboard' },
+    { href: '/chats', icon: <FiBell size="20px" />, label: 'Notifications' }
   ]
 
-  // Function to determine if the link is active
-  const isActive = (path) => router.pathname === path;
-  //Get user state from redux
-  const {loading, error, currentUser} = useSelector((state) => state.user);
+  const isActive = (path) => activeItem === path;
+  const { loading, error, currentUser } = useSelector((state) => state.user);
 
   return (
     <>
       <NavigationMenu className="border shadow-md h-screen">
         <NavigationMenuList className="flex flex-col items-start md:h-[100vh] space-y-6 pt-6 justify-between">
           <div>
-              <NavigationMenuItem className="flex items-center align-center pl-2 pr-6">
-                <Link href="/" legacyBehavior passHref>
-                  <NavigationMenuLink className={`text-heading3-bold }`}>
-                    PICK ME FOOD
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
+            <NavigationMenuItem className="flex items-center align-center pl-2 pr-6">
+              <Link href="/" legacyBehavior passHref>
+                <NavigationMenuLink className={`text-heading3-bold`}>
+                  PICK ME FOOD
+                </NavigationMenuLink>
+              </Link>
+            </NavigationMenuItem>
             <hr className="my-2 border-t-2 border-gray-200"></hr>
 
             <div className="flex flex-col justify-between space-y-2">
               {MenuList.map((item) => (
                 <NavigationMenuItem key={item.label} className="w-[100%]">
-                  <Link className={`${isActive(item.href) ? 'bg-sky-200' : 'text-gray-700 hover:bg-sky-100'}`} href={item.href} legacyBehavior passHref>
-                  <NavigationMenuLink
-                  className={`relative pl-4 flex items-center gap-3 h-12 w-full text-xl p-3 cursor-pointer ${isActive(item.href) ? 'bg-sky-200' : 'text-gray-700 hover:bg-sky-100'} `}
-                >
-                  {/* Left bar indicator */}
-                  {isActive(item.href) && <span className={`absolute left-0 top-0 w-1 h-full ${isActive(item.href) ? 'bg-sky-700' : 'bg-sky-200'}`} aria-hidden="true"></span>}
-                      {item.icon}
+                  <Link href={item.href} legacyBehavior passHref>
+                    <NavigationMenuLink
+                      className={`relative pl-4 flex items-center gap-3 h-12 w-full text-xl p-3 cursor-pointer group ${isActive(item.href) ? 'bg-sky-200' : 'text-gray-700 hover:bg-sky-100'}`}
+                      onClick={() => setActiveItem(item.href)}
+                    >
+                      {isActive(item.href) && <span className={`absolute left-0 top-0 w-1 h-full bg-sky-700`} aria-hidden="true"></span>}
+                      <span className={`transition-transform ${isActive(item.href) ? 'rotate-oscillate' : ''}`}>
+                        {item.icon}
+                      </span>
                       {item.label}
                     </NavigationMenuLink>
                   </Link>
@@ -74,7 +81,7 @@ const SideBar = () => {
             </div>
           </div>
           <div>
-          <hr className="border"></hr>
+            <hr className="border"></hr>
             <div className="flex align-middle justify-start">  
               <NavigationMenuItem>
                 <div className="flex align-start justify-between pt-2 pb-2">
