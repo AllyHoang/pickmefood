@@ -145,3 +145,15 @@
 .remove-button:hover {
   background-color: #ff7875;
 }
+
+.uploadButton {
+  background-color: #007bff;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 9999; /* Ensure it is high enough */
+  position: relative; /* This allows it to be above other content */
+  text-align: center;
+  display: inline-block;
+}

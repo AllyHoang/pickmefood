@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tab } from "@mui/material";
 import Link from "next/link";
@@ -8,13 +9,18 @@ import ProcessingCards from "./ProcessingCards";
 import AddItem from "../addItemForm/addItemForm";
 import AddRequest from "../addRequestForm/addRequestForm";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-
-import Profile from "../ProfilePage/ProfileComponent";
 import TestProfilePage from "../ProfilePage/TestProfilePage";
+import { CldUploadButton } from "next-cloudinary";
 
 export function TabBar({ userId, firstName, lastName }) {
   const router = useRouter();
   const { tab } = router.query;
+  const [uploadedUrl, setUploadedUrl] = useState("");
+
+  const handleUploadSuccess = (result) => {
+    const uploadedUrl = result?.info?.secure_url;
+    setUploadedUrl(uploadedUrl);
+  };
 
   return (
     <div className="flex flex-col overflow-hidden gap-5 pt-5 pl-5 ">
@@ -54,7 +60,7 @@ export function TabBar({ userId, firstName, lastName }) {
           >
             <div className="flex items-end gap-5">
               <div className="flex gap-4 relative top-2">
-                <Dialog>
+                <Dialog model={false}>
                   <DialogTrigger>
                     <Button className="bg-sky-400">Add a Donation</Button>
                   </DialogTrigger>
@@ -69,6 +75,17 @@ export function TabBar({ userId, firstName, lastName }) {
                   </DialogTrigger>
                   <DialogContent className="min-w-fit w-3/4 h-4/5">
                     <AddRequest userId={userId}></AddRequest>
+                    <CldUploadButton
+                      options={{ maxFiles: 1 }}
+                      folder="images"
+                      onSuccess={handleUploadSuccess}
+                      onFailure={(error) =>
+                        console.error("Cloudinary upload error:", error)
+                      }
+                      uploadPreset="zoa1vsa7"
+                    >
+                      <div>Upload Image</div>
+                    </CldUploadButton>
                   </DialogContent>
                 </Dialog>
               </div>

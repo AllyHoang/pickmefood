@@ -1,5 +1,5 @@
 "use client";
-
+import { Video, X } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import Loader from "../Loader";
 import { AddPhotoAlternate, Dataset } from "@mui/icons-material";
@@ -7,8 +7,10 @@ import Link from "next/link";
 import { CldUploadButton } from "next-cloudinary";
 import MessageBox from "./MessageBox";
 import { pusherClient } from "@/lib/pusher";
+import { useRoomID } from "@/lib/RoomIDContext";
 
 const ChatDetails = ({ chatId, userId }) => {
+  const { roomID } = useRoomID();
   const [loading, setLoading] = useState(true);
   const [chat, setChat] = useState({});
   const [otherMembers, setOtherMembers] = useState([]);
@@ -140,6 +142,9 @@ const ChatDetails = ({ chatId, userId }) => {
               <div className="text">
                 <p>{otherMembers[0].username}</p>
               </div>
+              <Link href={`/video-call?chatId=${chatId}`}>
+                <Video size={23} style={{ marginLeft: "470px" }} />
+              </Link>
             </>
           )}
         </div>
