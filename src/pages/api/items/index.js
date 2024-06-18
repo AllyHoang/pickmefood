@@ -3,6 +3,7 @@
 import connectToDB from "@/core/db/mongodb";
 import ItemModel from "@/core/models/Item";
 import BasketModel from "@/core/models/Basket";
+import { Status } from "@/lib/utils";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
@@ -19,6 +20,7 @@ export default async function handler(req, res) {
       const itemIds = createdItems.map((item) => item._id);
 
       // Create the basket with the item IDs
+        // This array should match the enum in the schema
       const basket = new BasketModel({
         userId,
         items: itemIds,
@@ -26,14 +28,12 @@ export default async function handler(req, res) {
         title,
         description,
       });
-
       await basket.save();
 
       // Populate items field before sending response
       const populatedBasket = await BasketModel.findById(basket._id).populate(
         "items"
       );
-
       res
         .status(201)
         .json({ message: "Basket Created", data: { basket: populatedBasket } });

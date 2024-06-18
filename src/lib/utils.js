@@ -17,3 +17,13 @@ export function randomID(len) {
   }
   return result;
 }
+
+// Define the Status enum
+const Status = {
+  INITIATED: "initiated",
+  PENDING: "pending",
+  ACCEPTED: "accepted",
+  CANCELED: "canceled"
+};
+
+export {Status}

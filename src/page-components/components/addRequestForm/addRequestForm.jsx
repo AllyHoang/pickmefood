@@ -365,7 +365,7 @@ export default function AddRequest({ userId }) {
           requests: itemsWithUserIdAndLocation,
           title,
           reason,
-          uploadedUrl,
+          image: uploadedUrl,
         }),
       });
 

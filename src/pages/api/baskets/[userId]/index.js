@@ -18,12 +18,12 @@ export default async function handler(req, res) {
       // Fetch full item information for each basket
       const populatedBaskets = await Promise.all(
         baskets.map(async (basket) => {
-          const Items = await ItemModel.find({
+          const items = await ItemModel.find({
             _id: { $in: basket.items },
           }).lean();
           return {
             ...basket,
-            Items,
+            items,
           };
         })
       );

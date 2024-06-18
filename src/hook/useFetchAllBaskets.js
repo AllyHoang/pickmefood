@@ -1,21 +1,25 @@
 import { useState, useEffect } from 'react';
 
-function useFetchAll() {
-  const [items, setItems] = useState([]);
+/**
+ * Custom React hook to fetch all baskets and requestbaskets
+ * @returns {Object} - An object containing the list of baskets and requestBaskets
+ */
+function useFetchAllBaskets() {
+  const [baskets, setBaskets] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchItems = async () => {
+    const fetchBaskets = async () => {
       setIsLoading(true);
       setError(null);
 
       try {
         const [donationRes, requestRes] = await Promise.all([
-          fetch('/api/items', {
+          fetch('/api/baskets', {
             cache: 'no-store',
           }),
-          fetch('/api/requests', {
+          fetch('/api/basketrequests', {
             cache: 'no-store',
           }),
         ]);
@@ -28,13 +32,14 @@ function useFetchAll() {
           donationRes.json(),
           requestRes.json(),
         ]);
+        console.log(donationData, requestData);
 
-        const combinedItems = [
-          ...donationData.items.map(item => ({ ...item, type: 'Donation' })),
-          ...requestData.requests.map(item => ({ ...item, type: 'Request' })),
+        const combinedBaskets = [
+          ...donationData.baskets,
+          ...requestData.baskets,
         ];
 
-        setItems(combinedItems);
+        setBaskets(combinedBaskets);
       } catch (error) {
         setError(error);
         console.error(error);
@@ -43,10 +48,10 @@ function useFetchAll() {
       }
     };
 
-    fetchItems();
+    fetchBaskets();
   }, []);
 
-  return { items, isLoading, error };
+  return { baskets, isLoading, error };
 }
 
-export default useFetchAll;
+export default useFetchAllBaskets;

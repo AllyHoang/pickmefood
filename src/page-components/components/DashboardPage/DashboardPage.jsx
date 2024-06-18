@@ -7,18 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-// import {
-//   Drawer,
-//   DrawerClose,
-//   DrawerContent,
-//   DrawerDescription,
-//   DrawerFooter,
-//   DrawerHeader,
-//   DrawerTitle,
-//   DrawerTrigger,
-// } from "@/components/ui/drawer";
-// import { RxClock } from "react-icons/rx";
-// import { IoIosArrowBack } from "react-icons/io";
 import { GoSearch } from "react-icons/go";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -30,18 +18,19 @@ import ToggleView from "./ToggleView";
 import { useRouter } from "next/router";
 import PointBadge from "./PointBadge";
 import DashboardHeading from "./DashboardHeading";
-import useFetchAll from "@/hook/useFetchAll";
+import useFetchAllBaskets from "@/hook/useFetchAllBaskets";
 import DialogComponent from "./DialogComponent";
 import DrawerComponent from "./DrawerComponent";
+import { Status } from "@/lib/utils";
 
 
 function DashboardPage({ userId }) {
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedBasket, setSelectedBasket] = useState(null);
   const router = useRouter();
   const [viewType, setViewType] = useState("list");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all"); // 'all', 'donations', or 'requests'
-  const {items, isLoading } = useFetchAll();
+  const {baskets, isLoading } = useFetchAllBaskets();
   const [openDialog, setOpenDialog] = useState(false);
 
 
@@ -63,9 +52,9 @@ const handleToggleView = () => {
   }
 
   const truncateDescription = (description, maxWords) => {
-    const words = description.split(" ");
-    if (words.length > maxWords) {
-      return words.slice(0, maxWords).join(" ") + "...";
+    const words = description?.split(" ");
+    if (words?.length > maxWords) {
+      return words?.slice(0, maxWords)?.join(" ") + "...";
     }
     return description;
   };
@@ -73,10 +62,10 @@ const handleToggleView = () => {
 
   useEffect(() => {
     if (router.query.id) {
-      const item = items.find(item => item._id === router.query.id);
-      setSelectedItem(item);
+      const basket = baskets.find(basket => basket._id === router.query.id);
+      setSelectedBasket(basket);
     }
-  }, [router.query.id, items]);
+  }, [router.query.id, baskets]);
 
 
 
@@ -125,58 +114,58 @@ const handleToggleView = () => {
             </select>
           </div>
         </div><div className="grid grid-cols-2 gap-8">
-            {items?.map((item) => (
+            {baskets?.map((basket) => (
               <Card
-                key={item.id}
+                key={basket._id}
                 className="flex flex-col bg-white rounded-lg shadow-lg"
               >
                 <CardHeader className="flex-col gap-4 items-start">
                   <Badge
-                    variant={`${item.type === "Request" ? "primary" : "secondary"}`}
-                    className={`px-3 py-1 rounded-full text-sm font-large text-s ${item.type === "Request" ? "bg-sky-100" : "bg-emerald-100"}`}
+                    variant={`${basket.type === "Request" ? "primary" : "secondary"}`}
+                    className={`px-3 py-1 rounded-full text-sm font-large text-s ${basket.type === "Request" ? "bg-sky-100" : "bg-emerald-100"}`}
                   >
-                    {item.type === "Request"
-                      ? `${item.type} 🤲`
-                      : `${item.type} 🚀`}
+                    {basket.type === "Request"
+                      ? `${basket.type} 🤲`
+                      : `${basket.type} 🚀`}
                   </Badge>
 
                   <div className="flex flex-row gap-4 items-center">
                     <Avatar>
                       <AvatarImage
-                        src={`/images/${item.image}`}
+                        src={`${basket?.userId?.profileImage}`}
                         alt="Donation Image" />
-                      <AvatarFallback>{item.type === "Donation" ? item?.description.slice(0, 2) : item?.reason.slice(0, 2)}</AvatarFallback>
+                      <AvatarFallback>
+                      </AvatarFallback>
 
                     </Avatar>
                     <div>
-                      <CardTitle className="text-xl">{item?.title}</CardTitle>
-                      <CardDescription>{item?.ownerName}</CardDescription>
+                      <CardTitle className="text-xl">{basket?.title}</CardTitle>
+                      <CardDescription>{basket.type === "Donation" ? basket?.description?.slice(0, 2) : basket?.reason?.slice(0, 2)}</CardDescription>
                     </div>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p>{truncateDescription(item.type === "Donation" ? item?.description : item?.reason, 15)}</p>
+                  <p>{truncateDescription(basket.type === "Donation" ? basket?.description : basket?.reason, 15)}</p>
                 </CardContent>
                 <CardFooter className="flex justify-between">
                   <div className="flex items-center gap-1 align-center">
                     <BiMap></BiMap>
-                    <p className="font-medium text-sm"> {item?.location} </p>
+                    <p className="font-medium text-sm"> {basket?.location} </p>
                   </div>
 
-                  <p className="font-medium text-sm">
+                  {/* <p className="font-medium text-sm">
                     {" "}
-                    {item.type === "Donation"
-                      ? `○ Expires: ${item?.expiryDate}`
+                    {basket.type === "Donation"
+                      ? `○ Expires: ${basket?.expiryDate}`
                       : ``}{" "}
-                  </p>
-                  <DrawerComponent id={item._id} handleOpenDialog={setOpenDialog} selectedItem={selectedItem}></DrawerComponent>
+                  </p> */}
+                  <DrawerComponent id={basket._id} handleOpenDialog={setOpenDialog} selectedBasket={selectedBasket}></DrawerComponent>
                 </CardFooter>
               </Card>
               
             ))}
-;
             {/* Dialog UI */}
-            {selectedItem && openDialog &&  <DialogComponent itemKey={JSON.stringify(selectedItem)} openDialog={openDialog} handleCloseModal={handleCloseModal} otherItem={selectedItem}></DialogComponent>}
+            {selectedBasket && openDialog &&  <DialogComponent itemKey={JSON.stringify(selectedBasket)} openDialog={openDialog} handleCloseModal={handleCloseModal} otherBasket={selectedBasket}></DialogComponent>}
 
           </div></> :
     <div>

@@ -1,3 +1,4 @@
+import { Status } from "@/lib/utils";
 import mongoose from "mongoose";
 const { Schema, models } = mongoose;
 
@@ -13,6 +14,11 @@ const BasketRequestSchema = new Schema({
   },
   userId: { type: Schema.Types.ObjectId, ref: "User", required: true }, // Reference to User model
   requests: [{ type: Schema.Types.ObjectId, ref: "Request" }], // Reference to Request model
+  status: {
+    type: String,
+    enum: Object.values(Status),
+    default: Status.INITIATED,
+},
   image: {
     type: String,
     validate: {
@@ -23,6 +29,11 @@ const BasketRequestSchema = new Schema({
       },
       message: (props) => `${props.value} is not a valid image URL!`,
     },
+  },
+  type: {
+    type: String,
+    default: "Request",
+    immutable: true  // This makes the field unchangeable after the document is created
   },
 });
 

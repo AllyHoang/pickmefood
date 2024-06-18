@@ -1,12 +1,7 @@
+import { Status } from "@/lib/utils";
 import { Schema, model, models } from "mongoose";
 
-// Define the Status enum
-const Status = {
-    INITIATED: "initiated",
-    PENDING: "pending",
-    COMPLETED: "completed",
-    CANCELED: "canceled"
-};
+
 
 
 const TransactionSchema = new Schema({
@@ -14,18 +9,18 @@ const TransactionSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "User",
     },
-    requestId: {
+    basketrequestId: {
         type: Schema.Types.ObjectId,
-        ref: "Request",
+        ref: "BasketRequest",
 
     },
     donorId: {
         type: Schema.Types.ObjectId,
         ref: "User",
     },
-    itemId: {
+    basketId: {
         type: Schema.Types.ObjectId,
-        ref: "Item",
+        ref: "Basket",
     },
     createdAt: {
         type: Date,
@@ -52,4 +47,3 @@ const TransactionSchema = new Schema({
 });
 
 export const TransactionModel = models?.Transaction || model("Transaction", TransactionSchema);
-export { Status };
