@@ -5,7 +5,6 @@ import BasketRequest from "@/core/models/BasketRequest";
 export default async function handler(req, res) {
   if (req.method === "POST") {
     // Process a POST request
-    console.log(req.body);
     const { userId, requests, image, title, reason } = req.body;
 
     try {

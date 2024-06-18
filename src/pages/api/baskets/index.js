@@ -6,8 +6,9 @@ export default async function handler(req, res) {
   if (req.method === "GET") {
     try {
       await connectToDB();
-      const baskets = await BasketModel.find().lean();
-      // Fetch full item information for each basket
+      // Fetch all baskets and populate the user information as well as items
+      const baskets = await BasketModel.find().populate('userId').lean();
+      //Fetch full item infor for each basket
       const populatedBaskets = await Promise.all(
         baskets.map(async (basket) => {
           const items = await ItemModel.find({

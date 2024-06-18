@@ -28,7 +28,7 @@ import {
 import { useSelector } from "react-redux";
 import useUser from "@/hook/useUser";
 
-function DialogComponent({ handleCloseModal, otherItem, openDialog, keyItem }) {
+function DialogComponent({ handleCloseModal, otherBasket, openDialog, keyItem }) {
   // Get user state from redux
   const { loading, error, currentUser } = useSelector((state) => state.user);
   const [items, setItems] = useState([]);
@@ -38,64 +38,71 @@ function DialogComponent({ handleCloseModal, otherItem, openDialog, keyItem }) {
   const [submissionAttempted, setSubmissionAttempted] = useState(false);
   // user is other user
   // currentUser is user who is authenticated
-  const { user } = useUser(otherItem.userId);
+  const user = otherBasket.userId;
   const handleCreateTransaction = async (e) => {
     e.preventDefault();
-    const urlCreateTransaction = otherItem.type === "Donation" ? "request" : "item";
+    const urlCreateTransaction = otherBasket.type === "Donation" ? "request" : "item";
     let transactionData;
     let testTransaction;
-    console.log(otherItem);
     //US is a donor
-    if (otherItem.type === "Request") {
+    
+    if (otherBasket.type === "Request") {
       transactionData = {
         userId: currentUser.id,
-        itemId: value || null,
+        basketId: value || null,
         otherUserId: user._id,
-        requestId: otherItem.id,
+        basketrequestId: otherBasket._id,
+        title: otherBasket.title,
+        description: otherBasket.description,
+        items: otherBasket.requests
       };
-      if(!value){
-        transactionData.quantity = otherItem.quantity;
-        transactionData.description = otherItem.reason;
-      } 
+      // if(!value){
+      //   transactionData.quantity = otherBasket.quantity;
+      //   transactionData.description = otherBasket.reason;
+      // } 
       //testTransaction is only for debugging purpose
-      testTransaction = {
-        type: "You are Donation",
-        donorId: currentUser.id,
-        donorName: currentUser.username,
-        donationId: value || null,
-        requesterId: user._id,
-        requesterName: user?.username,
-        requestId: otherItem.id,
-        requestName: otherItem.itemName,
-      }
+      // testTransaction = {
+      //   type: "You are Donation",
+      //   donorId: currentUser.id,
+      //   donorName: currentUser.username,
+      //   basketId: value || null,
+      //   basketrequesterId: user._id,
+      //   requesterName: user?.username,
+      //   basketrequestId: otherBasket._id,
+      //   basketrequestName: otherBasket.title,
+      // }
       
     } else {
       //US is a requestor
       transactionData = {
         userId: currentUser.id,
-        itemId: otherItem.id,
+        basketId: otherBasket._id,
         otherUserId: user._id,
-        requestId: value || null,
+        basketrequestId: value || null,
+        description: otherBasket.description,
+        title: otherBasket.title,
+        image: otherBasket.image,
+        items: otherBasket.items
       };
-      if(!value){
-        transactionData.quantity = otherItem.quantity;
-        transactionData.description = otherItem.description;
-        transactionData.itemName = otherItem.itemName;
-        transactionData.emoji = otherItem.emoji;
-      } 
+      // if(!value){
+      //   transactionData.quantity = otherBasket.quantity;
+      //   transactionData.description = otherBasket.description;
+      //   transactionData.itemName = otherBasket.itemName;
+      //   transactionData.emoji = otherBasket.emoji;
+      // } 
       //testTransaction is only for debugging purpose
-      testTransaction = {
-        type: "You are Requester",
-        donorId: user._id,
-        donorName: user?.username,
-        donationId: otherItem.id,
-        donationName: otherItem.itemName,
-        requesterId: currentUser.id,
-        requesterName: currentUser.username,
-        requestId: value || null,
-      }
+      // testTransaction = {
+      //   type: "You are Requester",
+      //   donorId: user._id,
+      //   donorName: user?.username,
+      //   basketId: otherItem.id,
+      //   basketName: otherBasket.itemName,
+      //   requesterId: currentUser.id,
+      //   requesterName: currentUser.username,
+      //   basketrequestId: value || null,
+      // }
     }
-    console.log("Test Transaction", testTransaction);
+    // console.log("Test Transaction", testTransaction);
   
     // Ensure this log runs
     try {
@@ -130,22 +137,22 @@ function DialogComponent({ handleCloseModal, otherItem, openDialog, keyItem }) {
   
   //Fetch CurrentUser's donations
   useEffect(() => {
-    if(otherItem.type === "Request"){
+    if(otherBasket.type === "Request"){
       const fetchItems = async () => {
         try {
-          const donationRes = await fetch(`/api/activeItem/${currentUser.id}`, {
+          const donationRes = await fetch(`/api/baskets/${currentUser.id}`, {
             cache: "no-store",
           });
           if (!donationRes.ok) {
             throw new Error("Failed to fetch items");
           }
-  
           const donationData = await donationRes.json();
+          console.log(donationData);
           setItems(
-            donationData.items.map((item, index) => ({
+            donationData.baskets.map((item, index) => ({
               ...item,
               value: item._id,
-              label: `${item.emoji} ${item.itemName}: ${item.description} (Quantity: ${item.quantity})`,
+              label: `${item?.title}: ${item?.description}`,
             }))
           );
         } catch (error) {
@@ -157,18 +164,19 @@ function DialogComponent({ handleCloseModal, otherItem, openDialog, keyItem }) {
     else{
       const fetchRequests = async () => {
         try {
-          const requestRes = await fetch(`/api/activeRequest/${currentUser.id}`, {
+          const requestRes = await fetch(`/api/basketrequests/${currentUser.id}`, {
             cache: "no-store",
           });
           if (!requestRes.ok) {
             throw new Error("Failed to fetch items");
           }
           const requestData = await requestRes.json();
+          console.log(requestData);
           setRequests(
-            requestData.requests.map((request, index) => ({
+            requestData.baskets.map((request, index) => ({
               ...request,
               value: request._id,
-              label: `${request.emoji} ${request.itemName}: ${request.reason} (Quantity: ${request.quantity})`,
+              label: `${request.title}: ${request.reason}`,
             }))
           );
         } catch (error) {
@@ -177,7 +185,7 @@ function DialogComponent({ handleCloseModal, otherItem, openDialog, keyItem }) {
       };
       fetchRequests();
     }
-  }, [currentUser.id]);
+  }, [currentUser]);
 
   return (
     <Dialog open={openDialog} className="relative z-50">
@@ -223,12 +231,12 @@ function DialogComponent({ handleCloseModal, otherItem, openDialog, keyItem }) {
 
                 <div className="mb-4">
                   <div className="mb-4">
-                    <label htmlFor="item-name" className="block text-sm font-medium text-gray-700">Item Name</label>
+                    <label htmlFor="item-name" className="block text-sm font-medium text-gray-700">Name</label>
                     <input
                       type="text"
                       id="item-name"
                       className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
-                      defaultValue={otherItem?.itemName}
+                      defaultValue={otherBasket?.title}
                       readOnly
                     />
                   </div>
@@ -238,7 +246,7 @@ function DialogComponent({ handleCloseModal, otherItem, openDialog, keyItem }) {
                       id="description"
                       className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
                       rows="3"
-                      defaultValue={otherItem?.type === "Donation" ? otherItem?.description : otherItem?.reason}
+                      defaultValue={otherBasket?.type === "Donation" ? otherBasket?.description : otherBasket?.reason}
                       readOnly
                     />
                   </div>
@@ -248,12 +256,12 @@ function DialogComponent({ handleCloseModal, otherItem, openDialog, keyItem }) {
                       type="number"
                       id="quantity"
                       className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
-                      defaultValue={otherItem?.quantity}
+                      defaultValue={otherBasket?.quantity}
                       readOnly
                     />
                   </div>
                 </div>
-                <h4 className="text-md font-semibold text-gray-800 mb-2">Existing {otherItem.type ==="Request" ? "Donation 🚀" : "Request 🤲"}</h4>
+                <h4 className="text-md font-semibold text-gray-800 mb-2">Existing {otherBasket.type ==="Request" ? "Donation 🚀" : "Request 🤲"}</h4>
                 <Popover open={open} onOpenChange={setOpen}>
                   <PopoverTrigger asChild>
                     <Button
@@ -263,7 +271,7 @@ function DialogComponent({ handleCloseModal, otherItem, openDialog, keyItem }) {
                       className="w-full justify-between bg-gray-50 border border-gray-300 rounded-md px-4 py-2 text-left"
                     >
                       
-                      {otherItem.type === "Request" 
+                      {otherBasket.type === "Request" 
                         ? (value ? items.find((item) => item.value === value)?.label : "Select Your Donation")
                         : (value ? requests.find((request) => request.value === value)?.label : "Select Your Request")
                       }
@@ -274,10 +282,10 @@ function DialogComponent({ handleCloseModal, otherItem, openDialog, keyItem }) {
                   <PopoverContent className="w-full p-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-72 overflow-y-auto">
                     <Command>
                       <CommandInput placeholder="Search existing request" className="border-b border-gray-200 p-2" />
-                      <CommandEmpty className="p-2 text-center text-gray-500">No {otherItem.type ==="Request" ? "donation" : "request"} found.</CommandEmpty>
+                      <CommandEmpty className="p-2 text-center text-gray-500">No {otherBasket.type ==="Request" ? "donation" : "request"} found.</CommandEmpty>
                       <CommandGroup>
                         <ScrollArea className="h-48 rounded-md">
-                          {otherItem.type === "Request" 
+                          {otherBasket.type === "Request" 
                             ? items.map((item) => (
                                 <CommandItem
                                   key={item.value}

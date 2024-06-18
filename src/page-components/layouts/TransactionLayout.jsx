@@ -8,9 +8,9 @@ export const TransactionLayout = ({ children }) => {
       <Head>
         <title>PickMeFood | Transaction</title>
       </Head>
-      <div className="grid grid-cols-[auto,1fr]">
-        <SideBar className="border-r border-black-200 pr-4" />
-        <main className="p-6">{children}</main>
+      <div className="grid grid-cols-[auto,1fr] h-screen overflow-hidden">
+        <SideBar className="border-r border-black-200 fixed pr-4 w-80" />
+        <main className="flex-1 p-6 overflow-y-auto">{children}</main>
       </div>
     </>
   );

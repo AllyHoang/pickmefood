@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { HiOutlineTrash } from "react-icons/hi";
 import { CldUploadButton } from "next-cloudinary";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { Status } from "@/lib/utils";
 
 export default function AddItem({ userId }) {
   const [uploadedUrl, setUploadedUrl] = useState("");
@@ -285,7 +286,7 @@ export default function AddItem({ userId }) {
           items: itemsWithUserIdAndLocation,
           description,
           title,
-          uploadedUrl,
+          image: uploadedUrl,
         }),
       });
 

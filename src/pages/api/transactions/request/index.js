@@ -1,6 +1,9 @@
 import connectToDB from "@/core/db/mongodb";
+import BasketModel from "@/core/models/Basket";
+import BasketRequest from "@/core/models/BasketRequest";
 import RequestModel from "@/core/models/Request";
-import { Status, TransactionModel } from "@/core/models/Transaction";
+import {TransactionModel } from "@/core/models/Transaction";
+import { Status } from "@/lib/utils";
 
 export default async function handler(req, res) {
   const { method } = req;
@@ -9,29 +12,30 @@ export default async function handler(req, res) {
 
   if (method === 'POST') {
     try {
-      const { userId, requestId, otherUserId, itemId, quantity, description, itemName, emoji } = req.body;
+      const { userId, basketrequestId, otherUserId, basketId, description, title, image, items } = req.body;
 
       const existingTransaction = await TransactionModel.findOne({
         requesterId: userId,
-        requestId: requestId,
+        basketrequestId: basketrequestId,
         donorId: otherUserId,
-        itemId: itemId
+        basketId: basketId
       });
 
       if (existingTransaction) {
         return res.status(409).json({ message: 'Transaction with the same fields already exists', data: { transaction: existingTransaction } });
       }
 
-      let finalRequestId = requestId; 
-      if (!requestId) {
+      let finalRequestId = basketrequestId; 
+      if (!basketrequestId) {
         const newRequest = await RequestModel.create({
           userId: userId,
-        //TODO: Might add location field to User Schema
-          location: "Default Location",
+          //TODO: Might consider adding location field to User Schema
           reason: description,
-          quantity: quantity,
-          itemName: itemName,
-          emoji: emoji,
+          title,
+          image,
+          type: "Request",
+          requests: items,
+          status: Status.PENDING
         });
         console.log(newRequest);
         finalRequestId = newRequest._id;
@@ -39,15 +43,17 @@ export default async function handler(req, res) {
 
       const newTransaction = await TransactionModel.create({
         requesterId: userId,
-        requestId: finalRequestId,
+        basketrequestId: finalRequestId,
         donorId: otherUserId,
-        itemId: itemId,
+        basketId: basketId,
         createdAt: new Date(),
         matchedAt: null,
-        status: Status.INITIATED,
+        status: Status.PENDING,
         agreedByRequester: false,
         agreedByDonor : false,
       });
+      await BasketModel.findByIdAndUpdate(basketId, { status: Status.PENDING });
+      await BasketRequest.findByIdAndUpdate(basketrequestId, {status: Status.PENDING});
 
       res.status(201).json({ message: 'Transaction successfully created for requester' , data: { transaction: newTransaction}});
     } catch (error) {
