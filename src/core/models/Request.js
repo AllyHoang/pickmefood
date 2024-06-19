@@ -27,11 +27,6 @@ const RequestSchema = new Schema(
       required: true,
       default: "",
     },
-    location: {
-      type: String,
-      required: true,
-      default: "",
-    },
   },
   {
     toJSON: { virtuals: true },

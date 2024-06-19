@@ -8,7 +8,7 @@ import { Status } from "@/lib/utils";
 export default async function handler(req, res) {
   if (req.method === "POST") {
     // Process a POST request
-    const { userId, items, image, description, title } = req.body;
+    const { userId, items, image, description, title, location } = req.body;
 
     try {
       await connectToDB();
@@ -20,13 +20,14 @@ export default async function handler(req, res) {
       const itemIds = createdItems.map((item) => item._id);
 
       // Create the basket with the item IDs
-        // This array should match the enum in the schema
+      // This array should match the enum in the schema
       const basket = new BasketModel({
         userId,
         items: itemIds,
         image,
         title,
         description,
+        location,
       });
       await basket.save();
 

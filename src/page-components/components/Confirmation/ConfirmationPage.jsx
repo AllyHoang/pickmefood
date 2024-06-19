@@ -194,7 +194,6 @@ export default function ConfirmationPage({ userId }) {
     const itemsWithUserIdAndLocation = items.map((item) => ({
       ...item,
       userId, // Include userId for each item
-      location: userAddress, // Ensure location is provided for each item
     }));
 
     try {
@@ -213,6 +212,7 @@ export default function ConfirmationPage({ userId }) {
             : basketReason, // Add basketDescription or basketReason based on mode
           image: imageUrl,
           title,
+          location: userAddress,
         }),
       });
 

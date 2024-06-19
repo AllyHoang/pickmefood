@@ -5,7 +5,6 @@ export default async function handler(req, res) {
   if (req.method === "POST") {
     // Process a POST request
     await connectToDB();
-    const location = req.body.userAddress;
     const userId = req.body.userId;
     const itemName = req.body.itemName;
     const description = req.body.description;
@@ -17,7 +16,6 @@ export default async function handler(req, res) {
       description,
       quantity,
       expirationDate,
-      location,
     });
     await newItem.save();
     res.status(201).json({ message: "Item Created", data: { item: newItem } });

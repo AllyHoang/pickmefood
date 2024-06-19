@@ -4,7 +4,6 @@ import RequestModel from "@/core/models/Request";
 export default async function handler(req, res) {
   if (req.method == "POST") {
     await connectToDB();
-    const location = req.body.userAddress;
     const userId = req.body.userId;
     const itemName = req.body.itemName;
     const reason = req.body.reason;
@@ -14,7 +13,6 @@ export default async function handler(req, res) {
       itemName,
       reason,
       quantity,
-      location,
     });
     await newRequest.save();
     res

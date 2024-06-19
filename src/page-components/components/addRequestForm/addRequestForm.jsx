@@ -311,7 +311,6 @@ export default function AddRequest({ userId }) {
     const newItem = {
       itemName,
       quantity,
-      address: userAddress,
       emoji,
     };
     setItems([...items, newItem]);
@@ -350,7 +349,6 @@ export default function AddRequest({ userId }) {
       const itemsWithUserIdAndLocation = items.map((item) => ({
         ...item,
         userId,
-        location: userAddress,
         emoji: item.emoji || "", // Ensure emoji is provided
       }));
 
@@ -365,6 +363,7 @@ export default function AddRequest({ userId }) {
           requests: itemsWithUserIdAndLocation,
           title,
           reason,
+          location: userAddress,
           image: uploadedUrl,
         }),
       });

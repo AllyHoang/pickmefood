@@ -5,7 +5,7 @@ import BasketRequest from "@/core/models/BasketRequest";
 export default async function handler(req, res) {
   if (req.method === "POST") {
     // Process a POST request
-    const { userId, requests, image, title, reason } = req.body;
+    const { userId, requests, image, title, reason, location } = req.body;
 
     try {
       await connectToDB();
@@ -23,6 +23,7 @@ export default async function handler(req, res) {
         image,
         title,
         reason,
+        location,
       });
 
       await basket.save();

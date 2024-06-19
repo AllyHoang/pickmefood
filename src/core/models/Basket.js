@@ -11,13 +11,18 @@ const BasketSchema = new Schema({
     type: String,
     trim: true, // Remove whitespace from the description
   },
+  location: {
+    type: String,
+    required: true,
+    default: "",
+  },
   userId: { type: Schema.Types.ObjectId, ref: "User", required: true }, // Reference to User model
   items: [{ type: Schema.Types.ObjectId, ref: "Item" }], // Reference to Item model
   status: {
     type: String,
     enum: Object.values(Status),
     default: Status.INITIATED,
-},
+  },
   image: {
     type: String,
     validate: {
@@ -32,7 +37,7 @@ const BasketSchema = new Schema({
   type: {
     type: String,
     default: "Donation",
-    immutable: true  // This makes the field unchangeable after the document is created
+    immutable: true, // This makes the field unchangeable after the document is created
   },
 });
 

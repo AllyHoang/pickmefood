@@ -175,7 +175,6 @@ export default function AddItem({ userId }) {
       itemName,
       quantity,
       expirationDate,
-      address: userAddress,
       emoji: emoji,
     };
 
@@ -272,7 +271,6 @@ export default function AddItem({ userId }) {
     const itemsWithUserIdAndLocation = items.map((item) => ({
       ...item,
       userId,
-      location: userAddress,
     }));
 
     try {
@@ -286,6 +284,7 @@ export default function AddItem({ userId }) {
           items: itemsWithUserIdAndLocation,
           description,
           title,
+          location: userAddress,
           image: uploadedUrl,
         }),
       });
