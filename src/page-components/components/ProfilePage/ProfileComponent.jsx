@@ -6,6 +6,7 @@ import { PersonOutline } from "@mui/icons-material";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+
 const Profile = ({ userId }) => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
@@ -93,25 +94,9 @@ const Profile = ({ userId }) => {
   }
 
   return (
-    <Card className="p-6 w-1/2">
-      <CardHeader
-        className="font-bold mb-2 flex flex-col items-center"
-        style={{ fontSize: "1.5rem" }}
-      >
-        Profile Page
-      </CardHeader>
-
+    <Card className="p-6 mt-3">
       <form onSubmit={handleSubmit(updateUser)}>
         <div className="flex flex-col items-center mb-4">
-          <img
-            src={
-              watch("profileImage") ||
-              user?.profileImage ||
-              "/assets/person.jpg"
-            }
-            alt="profile"
-            className="w-40 h-40 rounded-full mb-2"
-          />
           <CldUploadButton
             options={{ maxFiles: 1 }}
             folder="profile_images"
@@ -123,13 +108,15 @@ const Profile = ({ userId }) => {
             }
             uploadPreset="zoa1vsa7"
           >
-            <Button
-              variant="outline"
-              className="bg-black text-white mb-2"
-              style={{ fontSize: "0.85rem" }}
-            >
-              Upload new photo
-            </Button>
+            <img
+              src={
+                watch("profileImage") ||
+                user?.profileImage ||
+                "/assets/person.jpg"
+              }
+              alt="profile"
+              className="w-40 h-40 rounded-full mb-2"
+            />
           </CldUploadButton>
         </div>
 
@@ -195,21 +182,8 @@ const Profile = ({ userId }) => {
           )}
         </div>
 
-        <div className="mb-4">
-          <label htmlFor="points" className="block font-bold mb-1">
-            Points
-          </label>
-          <Input
-            id="points"
-            type="text"
-            {...register("points")}
-            defaultValue={user?.points || 0}
-            readOnly
-          />
-        </div>
-
-        <div className="flex justify-center">
-          <Button type="submit" className="w-half">
+        <div className="flex justify-center mt-3">
+          <Button type="submit" className="w-half bg-sky-400">
             Save Changes
           </Button>
         </div>
@@ -219,3 +193,4 @@ const Profile = ({ userId }) => {
 };
 
 export default Profile;
+

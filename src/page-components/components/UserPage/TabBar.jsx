@@ -1,5 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tab } from "@mui/material";
 import Link from "next/link";
@@ -8,19 +7,16 @@ import ActiveCardsList from "./ActiveCardsList";
 import ProcessingCards from "./ProcessingCards";
 import AddItem from "../addItemForm/addItemForm";
 import AddRequest from "../addRequestForm/addRequestForm";
+import ImageScan from "../ImageScan/ImageScan";
+
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+
+import Profile from "../ProfilePage/ProfileComponent";
 import TestProfilePage from "../ProfilePage/TestProfilePage";
-import { CldUploadButton } from "next-cloudinary";
 
 export function TabBar({ userId, firstName, lastName }) {
   const router = useRouter();
   const { tab } = router.query;
-  const [uploadedUrl, setUploadedUrl] = useState("");
-
-  const handleUploadSuccess = (result) => {
-    const uploadedUrl = result?.info?.secure_url;
-    setUploadedUrl(uploadedUrl);
-  };
 
   return (
     <div className="flex flex-col overflow-hidden gap-5 pt-5 pl-5 ">
@@ -60,34 +56,30 @@ export function TabBar({ userId, firstName, lastName }) {
           >
             <div className="flex items-end gap-5">
               <div className="flex gap-4 relative top-2">
-                <Dialog model={false}>
+                <Dialog>
                   <DialogTrigger>
                     <Button className="bg-sky-400">Add a Donation</Button>
                   </DialogTrigger>
-                  <DialogContent className="min-w-fit w-3/4 h-4/5">
-                    <AddItem userId={userId}></AddItem>
-                  </DialogContent>
-                </Dialog>
+                  {/* <DialogContent className="min-w-fit w-3/4 h-4/5">
+                  <AddItem userId={userId}></AddItem> */}
+                  <DialogContent className="min-w-fit w-fit h-fit flex flex-col items-center gap-4">
+                    <h1 className=" font-sans font-bold text-gray-700 mt-3">
+                      Choose a method to add Donation
+                    </h1>
+                    <div className="flex flex-row items-center gap-8">
+                      <Link href="add-item">
+                        <Button className="bg-sky-400">Add Manually</Button>
+                      </Link>
 
-                <Dialog>
-                  <DialogTrigger>
-                    <Button className="bg-sky-400">Add a Request</Button>
-                  </DialogTrigger>
-                  <DialogContent className="min-w-fit w-3/4 h-4/5">
-                    <AddRequest userId={userId}></AddRequest>
-                    <CldUploadButton
-                      options={{ maxFiles: 1 }}
-                      folder="images"
-                      onSuccess={handleUploadSuccess}
-                      onFailure={(error) =>
-                        console.error("Cloudinary upload error:", error)
-                      }
-                      uploadPreset="zoa1vsa7"
-                    >
-                      <div>Upload Image</div>
-                    </CldUploadButton>
+                      <Link href="image-scan">
+                        <Button className="bg-sky-400">Scan items</Button>
+                      </Link>
+                    </div>
                   </DialogContent>
                 </Dialog>
+                <Link href="add-request">
+                  <Button className="bg-sky-400">Add Request</Button>
+                </Link>
               </div>
             </div>
 
@@ -105,3 +97,4 @@ export function TabBar({ userId, firstName, lastName }) {
     </div>
   );
 }
+
