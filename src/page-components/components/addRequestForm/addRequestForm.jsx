@@ -311,11 +311,11 @@ export default function AddRequest({ userId }) {
     const newItem = {
       itemName,
       quantity,
+      address: userAddress,
       emoji,
     };
     setItems([...items, newItem]);
     setName("");
-    setReason("");
     setQuantity("");
     setSelectedOption(null);
   };
@@ -346,7 +346,7 @@ export default function AddRequest({ userId }) {
       }
 
       // Prepare items with additional data
-      const itemsWithUserIdAndLocation = items.map((item) => ({
+      const itemsWithUserId = items.map((item) => ({
         ...item,
         userId,
         emoji: item.emoji || "", // Ensure emoji is provided
@@ -360,7 +360,7 @@ export default function AddRequest({ userId }) {
         },
         body: JSON.stringify({
           userId,
-          requests: itemsWithUserIdAndLocation,
+          requests: itemsWithUserId,
           title,
           reason,
           location: userAddress,
@@ -380,10 +380,16 @@ export default function AddRequest({ userId }) {
   };
 
   return (
-    <div className="flex flex-col items-center w-fit p-2 gap-2 min-w-fit max-h-max overflow-hidden">
+    <div className="flex flex-col items-center w-full p-2 gap-2 min-w-fit max-h-max overflow-auto">
       <ToastContainer />
+      <h1
+        className="self-start font-bold text-gray-700 mb-4"
+        style={{ fontSize: "22px" }}
+      >
+        Add Request🤲
+      </h1>
 
-      <div className="flex justify-between w-full gap-6 flex-grow overflow-y-auto">
+      <div className="flex justify-between w-full max-w-fit gap-6 flex-grow overflow-y-auto">
         <Card className="flex-1 flex-col lg:w-1/3 h-auto lg:h-auto max-h-screen">
           <form onSubmit={handleSubmit} className="p-5 bg-white rounded-lg">
             <label htmlFor="name" className="font-bold text-gray-700 mb-2">
@@ -442,14 +448,14 @@ export default function AddRequest({ userId }) {
               <Button
                 type="button"
                 onClick={handleGetUserLocation}
-                className="w-1/2 bg-sky-400 shadow-md shadow-sky-500/50 text-white font-bold py-2 px-4 rounded mb-4"
+                className="w-1/2 bg-sky-400 shadow-md shadow-sky-500/50 text-white py-2 px-4 rounded mb-4"
               >
                 Get My Location
               </Button>
               <Button
                 type="button"
                 onClick={handleAddItem}
-                className="w-1/2 justify-center bg-sky-400 shadow-md shadow-sky-500/50 text-white font-bold py-2 px-4 rounded"
+                className="w-1/2 justify-center bg-sky-400 shadow-md shadow-sky-500/50 text-white py-2 px-4 rounded"
               >
                 Add Request
               </Button>
@@ -466,13 +472,13 @@ export default function AddRequest({ userId }) {
               htmlFor="basketTitle"
               className="font-bold text-gray-700 mb-2"
             >
-              Basket name:
+              Basket title:
             </label>
             <Input
               id="basketTitle"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full mb-4"
+              className="w-full mb-2"
               type="text"
             />
             <label
@@ -485,10 +491,25 @@ export default function AddRequest({ userId }) {
               id="basketReason"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              className="w-full mb-4"
+              className="w-full mb-2"
               type="text"
             />
           </div>
+          <CldUploadButton
+            className="flex flex-col w-full mb-4"
+            options={{ maxFiles: 1 }}
+            folder="images"
+            onSuccess={handleUploadSuccess}
+            onFailure={(error) =>
+              console.error("Cloudinary upload error:", error)
+            }
+            uploadPreset="zoa1vsa7"
+          >
+            <Button className="w-full bg-sky-400 shadow-md shadow-sky-500/50 text-white px-4 rounded">
+              Upload Image
+            </Button>
+          </CldUploadButton>
+
           {items.map((item, index) => (
             <div
               key={index}
@@ -499,7 +520,6 @@ export default function AddRequest({ userId }) {
                   {item.itemName} {item.emoji}
                 </p>
                 <p className="text-gray-600">Quantity: {item.quantity}</p>
-                <p className="text-gray-600">Reason: {item.reason}</p>
               </div>
 
               <Button
@@ -511,20 +531,10 @@ export default function AddRequest({ userId }) {
               </Button>
             </div>
           ))}
-          <CldUploadButton
-            options={{ maxFiles: 1 }}
-            folder="images"
-            onSuccess={handleUploadSuccess}
-            onFailure={(error) =>
-              console.error("Cloudinary upload error:", error)
-            }
-            uploadPreset="zoa1vsa7"
-          >
-            <div className={styles.uploadButton}>Upload Image</div>
-          </CldUploadButton>
+
           <Button
             onClick={handleSubmit}
-            className="w-full bg-sky-400 shadow-md shadow-sky-500/50 text-white font-bold py-2 px-4 rounded"
+            className="w-full bg-sky-400 shadow-md shadow-sky-500/50 text-white px-4 rounded"
           >
             Submit Request
           </Button>
@@ -533,3 +543,4 @@ export default function AddRequest({ userId }) {
     </div>
   );
 }
+
