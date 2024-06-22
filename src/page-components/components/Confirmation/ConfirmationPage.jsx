@@ -8,12 +8,15 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useImage } from "@/lib/ImageContext";
-
-export default function ConfirmationPage({ userId }) {
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+const ConfirmationPage = ({ userId }) => {
   const { imageUrl } = useImage();
   const router = useRouter();
   const [title, setTitle] = useState("");
   const { confirmedItems } = router.query;
+  console.log(userId);
   const parsedItems = confirmedItems ? JSON.parse(confirmedItems) : [];
   const [userAddress, setUserAddress] = useState("");
   const [addressSuggestions, setAddressSuggestions] = useState([]);
@@ -27,6 +30,8 @@ export default function ConfirmationPage({ userId }) {
       emoji: "",
     }))
   );
+
+  console.log("UserId: " + userId);
   const [foodItems, setFoodItems] = useState([]);
   const [donationMode, setDonationMode] = useState(true); // true for donation, false for request
   const [activeItemIndex, setActiveItemIndex] = useState(0);
@@ -191,7 +196,7 @@ export default function ConfirmationPage({ userId }) {
   };
 
   const handleSubmit = async () => {
-    const itemsWithUserIdAndLocation = items.map((item) => ({
+    const itemsWithUserId = items.map((item) => ({
       ...item,
       userId, // Include userId for each item
     }));
@@ -206,7 +211,7 @@ export default function ConfirmationPage({ userId }) {
         },
         body: JSON.stringify({
           userId, // Include userId in the request body
-          [donationMode ? "items" : "requests"]: itemsWithUserIdAndLocation,
+          [donationMode ? "items" : "requests"]: itemsWithUserId,
           [donationMode ? "description" : "reason"]: donationMode
             ? basketDescription
             : basketReason, // Add basketDescription or basketReason based on mode
@@ -230,150 +235,155 @@ export default function ConfirmationPage({ userId }) {
 
   // Helper function to capitalize the first letter of each word
   const capitalizeFirstLetter = (string) => {
+    if (typeof string != "string" || !string.length) {
+      return string;
+    }
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
   return (
-    <div className={styles.confirmationContainer}>
+    <div className="flex flex-row justify-center gap-8">
       <ToastContainer />
-      <div className={styles.leftPanel}>
-        <div className={styles.mapContainer}>
-          <div id="map" ref={mapContainerRef} className={styles.map}></div>
-        </div>
-        <div className={styles.addressContainer}>
-          <label htmlFor="userAddress" className={styles["label-text"]}>
+      <div className="flex flex-col gap-4">
+        <div
+          className="bg-gray-200 rounded-lg shadow-lg h-64"
+          style={{ width: "34rem" }}
+          ref={mapContainerRef}
+          id="map"
+        ></div>
+
+        <Card className="px-4 py-4 flex flex-col" style={{ width: "34rem" }}>
+          <label htmlFor="userAddress" className="text-gray-700 font-bold mb-2">
             Your Address:
           </label>
-          <input
+          <Input
             id="userAddress"
             value={userAddress}
             onChange={handleAddressChange}
-            className={styles["input-field"]}
+            className="w-full p-2 border border-gray-300 rounded"
             type="text"
             placeholder="Enter your address"
           />
-          <ul className={styles.suggestions}>
+          <ul className="space-y-1">
             {addressSuggestions.map((address, index) => (
               <li
                 key={index}
                 onClick={() => handleSuggestionClick(address)}
-                className={styles.suggestion}
+                className="cursor-pointer p-2 border border-gray-300 rounded"
               >
                 {address}
               </li>
             ))}
           </ul>
-          <button
-            type="button"
-            onClick={handleGetUserLocation}
-            className={`${styles["get-location-button"]} ${styles["blue-text"]}`}
-          >
+          <Button onClick={handleGetUserLocation} className="bg-sky-400 mt-3">
             Get My Location
-          </button>
-        </div>
+          </Button>
+        </Card>
       </div>
-      <div className={styles.rightPanel}>
-        <div className={styles.tabsAndCard}>
-          <div className={styles.itemTabsContainer}>
-            <div className={styles.itemTitle}>
-              <p>Item Tabs</p>
-            </div>
-            <div className={styles.itemTabs}>
-              {parsedItems.map((item, index) => (
-                <button
-                  key={index}
-                  className={`${styles.itemTab} ${
-                    activeItemIndex === index ? styles.active : ""
-                  }`}
-                  onClick={() => setActiveItemIndex(index)}
-                >
-                  {capitalizeFirstLetter(item)}
-                </button>
-              ))}
-            </div>
+
+      <div className="flex flex-col gap-4">
+        <Card className="px-4 py-4" style={{ width: "34rem" }}>
+          <h1 className="text-gray-700 font-bold">Item Selection</h1>
+          <div className="mt-2 flex gap-3 flex-wrap">
+            {parsedItems.map((item, index) => (
+              <Button
+                key={index}
+                className={`${
+                  activeItemIndex === index
+                    ? "bg-black text-white"
+                    : "bg-white text-black border-1"
+                }`}
+                onClick={() => setActiveItemIndex(index)}
+              >
+                {capitalizeFirstLetter(item)}
+              </Button>
+            ))}
           </div>
-          <div className={styles.itemCard}>
-            <label htmlFor="basketTitle" className={styles["label-text"]}>
-              Basket name:
+        </Card>
+
+        <Card className="p-4 flex flex-col gap-2" style={{ width: "34rem" }}>
+          <div className="flex flex-col gap-2">
+            <label htmlFor="basketTitle" className="text-gray-700 font-bold">
+              Basket Title:
             </label>
-            <input
+            <Input
               id="basketTitle"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className={styles["input-field"]}
-              placeholder={"Enter a name"}
+              className="w-full p-2 border border-gray-300 rounded"
+              placeholder="Enter a name"
               type="text"
             />
-            <div className={styles.basketDescription}>
-              <label className={styles["label-text"]}>
-                {donationMode ? "Basket Description" : "Basket Reason"}:
+            <label className="text-gray-700 font-bold">
+              {donationMode ? "Basket Description" : "Basket Reason"}:
+            </label>
+            <Input
+              value={donationMode ? basketDescription : basketReason}
+              onChange={(e) =>
+                donationMode
+                  ? setBasketDescription(e.target.value)
+                  : setBasketReason(e.target.value)
+              }
+              placeholder={
+                donationMode ? "Enter a description" : "Enter a reason"
+              }
+              className="w-full p-2 border border-gray-300 rounded"
+            />
+          </div>
+          <div className="flex flex-row gap-4">
+            <div>
+              <label className="block text-gray-700 mb-2 font-bold">
+                {capitalizeFirstLetter(parsedItems[activeItemIndex])}
               </label>
-              <input
-                value={donationMode ? basketDescription : basketReason}
+              <Input
+                type="text"
+                placeholder="Quantity"
+                value={itemDetails[activeItemIndex]?.quantity || ""}
                 onChange={(e) =>
-                  donationMode
-                    ? setBasketDescription(e.target.value)
-                    : setBasketReason(e.target.value)
+                  handleInputChange(activeItemIndex, "quantity", e.target.value)
                 }
-                placeholder={
-                  donationMode ? "Enter a description" : "Enter a reason"
-                }
-                className={styles["input-field"]}
+                className="p-2 border border-gray-300 rounded"
               />
             </div>
-          </div>
-          <div className={styles.itemCard}>
-            <div className={styles.itemTitle2}>
-              <p>{capitalizeFirstLetter(parsedItems[activeItemIndex])}</p>
+            <div>
+              {donationMode && (
+                <>
+                  <label
+                    htmlFor="expirationDate"
+                    className="block text-gray-700 mb-2 font-bold"
+                  >
+                    Expiration Date:
+                  </label>
+                  <DatePicker
+                    selected={
+                      itemDetails[activeItemIndex]?.expirationDate || null
+                    }
+                    onChange={(date) =>
+                      handleInputChange(activeItemIndex, "expirationDate", date)
+                    }
+                    dateFormat="MM/dd/yyyy"
+                    className="w-full h-9 p-2 border border-gray-300 rounded"
+                    placeholder="Choose a date"
+                  />
+                </>
+              )}
             </div>
-            <input
-              type="text"
-              placeholder="Quantity"
-              value={itemDetails[activeItemIndex]?.quantity || ""}
-              onChange={(e) =>
-                handleInputChange(activeItemIndex, "quantity", e.target.value)
-              }
-              className={styles.inputField}
-            />
-            {donationMode && (
-              <>
-                <label
-                  htmlFor="expirationDate"
-                  className={styles["label-text"]}
-                >
-                  Expiration date:
-                </label>
-                <DatePicker
-                  selected={
-                    itemDetails[activeItemIndex]?.expirationDate || null
-                  }
-                  onChange={(date) =>
-                    handleInputChange(activeItemIndex, "expirationDate", date)
-                  }
-                  dateFormat="MM/dd/yyyy"
-                  className={styles["input-field-date"]}
-                />
-              </>
-            )}
-            <div className={styles.donationModeButton}>
-              <button
-                onClick={handleModeToggle}
-                className={styles.toggleButton}
-              >
+          </div>
+          <div className="flex justify-center gap-4 mt-2">
+            {/* <Button onClick={handleModeToggle} className="bg-sky-400">
                 Switch to {donationMode ? "Request" : "Donation"} Mode
-              </button>
-              <button onClick={handleSaveItem} className={styles.saveButton}>
-                Save Item
-              </button>
-            </div>
+              </Button> */}
+            <Button onClick={handleSaveItem} className="bg-sky-400 w-1/2">
+              Save Item
+            </Button>
+            <Button onClick={handleSubmit} className="bg-sky-400 w-1/2">
+              Submit Items
+            </Button>
           </div>
-        </div>
-        <div className={styles.buttonContainer}>
-          <button onClick={handleSubmit} className={styles.submitButton}>
-            Submit Items
-          </button>
-        </div>
+        </Card>
       </div>
     </div>
   );
-}
+};
+
+export default ConfirmationPage;
