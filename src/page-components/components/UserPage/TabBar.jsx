@@ -63,20 +63,28 @@ export function TabBar({ userId, firstName, lastName }) {
                   {/* <DialogContent className="min-w-fit w-3/4 h-4/5">
                   <AddItem userId={userId}></AddItem> */}
                   <DialogContent className="min-w-fit w-fit h-fit flex flex-col items-center gap-4">
-                    <h1 className=" font-sans font-bold text-gray-700 mt-3">
-                      Choose a method to add Donation
-                    </h1>
-                    <div className="flex flex-row items-center gap-8">
+                    <div className="flex flex-col items-center gap-4 mt-3">
                       <Link href="add-item">
-                        <Button className="bg-sky-400">Add Manually</Button>
+                        <Button className="bg-sky-400">
+                          Add Items Manually
+                        </Button>
                       </Link>
 
                       <Link href="image-scan">
-                        <Button className="bg-sky-400">Scan items</Button>
+                        <Button className="bg-sky-400 px-6">
+                          Image Scan Items
+                        </Button>
+                      </Link>
+
+                      <Link href="video-scan">
+                        <Button className="bg-sky-400 px-6">
+                          Video Scan Items
+                        </Button>
                       </Link>
                     </div>
                   </DialogContent>
                 </Dialog>
+
                 <Link href="add-request">
                   <Button className="bg-sky-400">Add Request</Button>
                 </Link>
@@ -97,4 +105,3 @@ export function TabBar({ userId, firstName, lastName }) {
     </div>
   );
 }
-
