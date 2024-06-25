@@ -380,7 +380,7 @@ export default function AddRequest({ userId }) {
   };
 
   return (
-    <div className="flex flex-col items-center w-full p-2 gap-2 min-w-fit max-h-max overflow-auto">
+    <div className="flex flex-col items-center p-2 gap-2 overflow-auto">
       <ToastContainer />
       <h1
         className="self-start font-bold text-gray-700 mb-4"
@@ -389,8 +389,8 @@ export default function AddRequest({ userId }) {
         Add Request🤲
       </h1>
 
-      <div className="flex justify-between w-full max-w-fit gap-6 flex-grow overflow-y-auto">
-        <Card className="flex-1 flex-col lg:w-1/3 h-auto lg:h-auto max-h-screen">
+      <div className="grid grid-cols-2 w-[90%] self-center gap-8">
+        <Card className="flex flex-col h-fit w-full">
           <form onSubmit={handleSubmit} className="p-5 bg-white rounded-lg">
             <label htmlFor="name" className="font-bold text-gray-700 mb-2">
               Item name:
@@ -463,7 +463,7 @@ export default function AddRequest({ userId }) {
           </form>
         </Card>
 
-        <Card className="flex-grow overflow-y-auto p-5 bg-white rounded-lg shadow-md max-w-[30%] max-h-fit w-fit">
+        <Card className="flex flex-col overflow-y-auto h-fit w-full p-5">
           <h3 className="text-lg font-bold mb-2 text-gray-700">
             Items in Basket:
           </h3>
@@ -513,7 +513,7 @@ export default function AddRequest({ userId }) {
           {items.map((item, index) => (
             <div
               key={index}
-              className="border border-gray-300 rounded-lg p-1 mb-4 flex flex-col items-center gap-2"
+              className="border border-gray-300 rounded-lg p-1 mb-4 self-center gap-2 w-[60%]"
             >
               <div className="flex-grow ml-4">
                 <p className="font-bold text-lg mb-2">
@@ -522,13 +522,15 @@ export default function AddRequest({ userId }) {
                 <p className="text-gray-600">Quantity: {item.quantity}</p>
               </div>
 
-              <Button
-                onClick={() => handleRemoveItem(index)}
-                className="bg-black p-1"
-                style={{ width: "30px", height: "30px" }}
-              >
-                <HiOutlineTrash size="18" />
-              </Button>
+              <div className="flex flex-col">
+                <Button
+                  onClick={() => handleRemoveItem(index)}
+                  className="bg-black p-1 self-center"
+                  style={{ width: "30px", height: "30px" }}
+                >
+                  <HiOutlineTrash size="18" />
+                </Button>
+              </div>
             </div>
           ))}
 
@@ -543,4 +545,3 @@ export default function AddRequest({ userId }) {
     </div>
   );
 }
-
