@@ -16,13 +16,14 @@ import Link from "next/link";
 import { RxSewingPin } from "react-icons/rx";
 import { RxPerson } from "react-icons/rx";
 import { Button } from "@/components/ui/button";
-import { Router } from "lucide-react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { Separator } from "@/components/ui/separator";
-import { MdDescription } from "react-icons/md";
+import useUser from "@/hook/useUser";
+import RemoveBtn from "../RemoveButton";
+import RemoveRequestsBtn from "../RemoveRequestsButton";
 
-function DrawerComponent({ selectedBasket, id, handleOpenDialog }) {
+function MyDrawer({ selectedBasket, id, handleOpenDialog, type }) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   function extractStateAndZip(location) {
@@ -33,7 +34,6 @@ function DrawerComponent({ selectedBasket, id, handleOpenDialog }) {
     const regex = /,\s*([A-Za-z\s]+)\s+(\d{5}),\s*United States$/;
 
     const match = location.match(regex);
-    console.log(match);
 
     if (match) {
       const state = match[1].trim();
@@ -50,12 +50,34 @@ function DrawerComponent({ selectedBasket, id, handleOpenDialog }) {
     const dayDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
     return dayDifference;
   };
+
+  const handleDeleteBasket = async () => {
+    try {
+      const response = await fetch(`/api/baskets/${selectedBasket._id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        // Basket deleted successfully, navigate back to user page or refresh the list
+        router.push("/userpage");
+      } else {
+        const errorData = await response.json();
+        console.error("Error deleting basket:", errorData.message);
+      }
+    } catch (error) {
+      console.error("Error deleting basket:", error);
+    }
+  };
+
   return (
     <Drawer
       onOpenChange={(open) => {
         setOpen(open);
         if (!open) {
-          router.push("/dashboard");
+          router.push("/userpage");
         }
       }}
       direction="right"
@@ -63,7 +85,7 @@ function DrawerComponent({ selectedBasket, id, handleOpenDialog }) {
       <DrawerTrigger asChild>
         {/* //item._id */}
         <Link
-          href={{ pathname: "/dashboard", query: { id: id } }}
+          href={{ pathname: "/userpage", query: { id: id } }}
           shallow={true}
         >
           <Button className="">View Details</Button>
@@ -121,7 +143,7 @@ function DrawerComponent({ selectedBasket, id, handleOpenDialog }) {
         <div className="flex gap-2">
           <Avatar>
             <AvatarImage
-              src={`${selectedBasket?.userId?.profileImage}`}
+              src={useUser(selectedBasket?.userId).user.profileImage}
               alt="Donation Image"
             />
             <AvatarFallback></AvatarFallback>
@@ -129,7 +151,7 @@ function DrawerComponent({ selectedBasket, id, handleOpenDialog }) {
 
           <div className="font-bold">
             {" "}
-            Created by {selectedBasket?.userId.username}{" "}
+            Created by {useUser(selectedBasket?.userId).user.username}{" "}
           </div>
         </div>
 
@@ -162,15 +184,16 @@ function DrawerComponent({ selectedBasket, id, handleOpenDialog }) {
           </div>
         )}
 
-        <div className="mt-4" onClick={() => handleOpenDialog(true)}>
-          {selectedBasket?.type === "Request" ? (
-            <button className="w-full bg-sky-500 hover:bg-sky-400 text-white py-2 rounded transition duration-150 ease-in-out fixed bottom-2">
-              Donate
-            </button>
+        <div className="mt-4 flex-col" onClick={() => handleOpenDialog(true)}>
+          <Button className="w-10/12 self fixed bottom-12 left-10 bg-sky-400">
+            {" "}
+            Edit{" "}
+          </Button>
+
+          {type === "Donation" ? (
+            <RemoveBtn id={selectedBasket?._id} />
           ) : (
-            <button className="w-full bg-emerald-500 hover:bg-emerald-400 text-white py-2 rounded transition duration-150 ease-in-out fixed bottom-2">
-              Request
-            </button>
+            <RemoveRequestsBtn id={selectedBasket?._id} />
           )}
         </div>
       </DrawerContent>
@@ -178,4 +201,4 @@ function DrawerComponent({ selectedBasket, id, handleOpenDialog }) {
   );
 }
 
-export default DrawerComponent;
+export default MyDrawer;

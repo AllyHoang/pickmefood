@@ -1,58 +1,54 @@
 // components/MyDonationsRequests.js
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
-import RemoveBtn from "../RemoveButton";
-import { HiPencilAlt } from "react-icons/hi";
 import MyCard from "./MyCard";
-import { GoSearch } from "react-icons/go";
-import { useSelector } from "react-redux";
+import useFetchUserBaskets from "@/hook/useFetchUserBaskets";
+import { Router } from "lucide-react";
+import { useRouter } from "next/router";
 
-const ActiveCardsList = ({ userId }) => {
-  const [items, setItems] = useState(null);
-  const { loading, error, currentUser } = useSelector((state) => state.user);
-  console.log(currentUser.points);
+const ActiveCardsList = ({ userId, type }) => {
+  const { donationBaskets, requestBaskets, loading, error } =
+    useFetchUserBaskets((userId = userId));
+  const baskets = [...donationBaskets, ...requestBaskets];
+  const [selectedBasket, setSelectedBasket] = useState(null);
+  const [openDialog, setOpenDialog] = useState(false);
+  const router = useRouter();
 
-  useEffect(() => {
-    const fetchItems = async () => {
-      try {
-        const [donationRes, requestRes] = await Promise.all([
-          fetch(`http://localhost:3000/api/activeItem/${userId}`, {
-            cache: "no-store",
-          }),
-          fetch(`http://localhost:3000/api/activeRequest/${userId}`, {
-            cache: "no-store",
-          }),
-        ]);
-
-        if (!donationRes.ok || !requestRes.ok) {
-          throw new Error("Failed to fetch items");
-        }
-        const [donationData, requestData] = await Promise.all([
-          donationRes.json(),
-          requestRes.json(),
-        ]);
-
-        const combinedItems = [
-          ...donationData.items.map((item) => ({ ...item, type: "Donation" })),
-          ...requestData.requests.map((item) => ({ ...item, type: "Request" })),
-        ];
-
-        await setItems(combinedItems);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchItems();
-  }, []);
-
-  if (!items) {
+  if (!donationBaskets || !requestBaskets) {
     return <div>Loading...</div>;
   }
+
+  const handleCloseModal = () => {
+    setOpenDialog(false);
+  };
+
+  useEffect(() => {
+    if (router.query.id) {
+      const basket = baskets.find((basket) => basket._id === router.query.id);
+      setSelectedBasket(basket);
+    }
+  }, [router.query.id, baskets]);
+
   return (
     <div className="grid grid-cols-2 gap-8 w-full p-3">
-      {items.map((item) => (
-        <MyCard key={item._id} item={item} /> // Use the Card component
-      ))}
+      {type === "Donation"
+        ? donationBaskets?.map((basket) => (
+            <MyCard
+              key={basket._id}
+              basket={basket}
+              setOpenDialog={setOpenDialog}
+              selectedBasket={selectedBasket}
+              type = "Donation"
+            />
+          ))
+        : requestBaskets?.map((basket) => (
+            <MyCard
+              key={basket._id}
+              basket={basket}
+              setOpenDialog={setOpenDialog}
+              selectedBasket={selectedBasket}
+              type = "Request"
+            />
+          ))}
     </div>
   );
 };
