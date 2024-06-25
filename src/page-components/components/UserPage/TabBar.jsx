@@ -4,7 +4,6 @@ import { Tab } from "@mui/material";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import ActiveCardsList from "./ActiveCardsList";
-import ProcessingCards from "./ProcessingCards";
 import AddItem from "../addItemForm/addItemForm";
 import AddRequest from "../addRequestForm/addRequestForm";
 import ImageScan from "../ImageScan/ImageScan";
@@ -27,31 +26,31 @@ export function TabBar({ userId, firstName, lastName }) {
         className="w-full flex flex-col h-screen"
       >
         <TabsList className="flex bg-white justify-start gap-20 ">
-          <TabsTrigger value="active">
+          <TabsTrigger value="my-requests">
             <Link
               href={{
                 pathname: "/userpage",
                 // query: { tab: "active-cards" },
               }}
             >
-              My Active Cards
+              My Requests
             </Link>
           </TabsTrigger>
-          <TabsTrigger value="processing">
+          <TabsTrigger value="my-donations">
             <Link
               href={{
                 pathname: "/userpage",
-                query: { tab: "processing-cards" },
+                query: { tab: "my-donations" },
               }}
             >
-              My Processing Cards
+              My Donations
             </Link>{" "}
           </TabsTrigger>
         </TabsList>
 
         <div className="overflow-y-auto h-screen">
           <TabsContent
-            value="active"
+            value="my-requests"
             className="flex flex-col justify-normal gap-5 "
           >
             <div className="flex items-end gap-5">
@@ -91,14 +90,14 @@ export function TabBar({ userId, firstName, lastName }) {
               </div>
             </div>
 
-            <ActiveCardsList userId={userId}></ActiveCardsList>
+            <ActiveCardsList userId={userId} type="Request" />
           </TabsContent>
 
           <TabsContent
-            value="processing"
+            value="my-donations"
             className="flex justify-normal gap-10 "
           >
-            <ProcessingCards> </ProcessingCards>
+            <ActiveCardsList userId={userId} type="Donation" />
           </TabsContent>
         </div>
       </Tabs>

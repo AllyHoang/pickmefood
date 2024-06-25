@@ -1,6 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap");
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
 
 @layer base {
   :root {
@@ -299,10 +307,9 @@ a {
   @apply bottom-0 sticky px-10 py-5 flex items-center justify-between sm:hidden;
 }
 
-
-
 @keyframes rotateOscillate {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(0deg);
   }
   25% {
