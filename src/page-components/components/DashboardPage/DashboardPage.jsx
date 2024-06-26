@@ -15,6 +15,10 @@ import { useSelector } from "react-redux";
 import PreferenceModal from "./PreferenceModal";
 import CardComponent from "./CardComponent";
 import useUser from "@/hook/useUser";
+import { BiMap } from "react-icons/bi";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 function DashboardPage({ userId }) {
   const [selectedBasket, setSelectedBasket] = useState(null);
@@ -32,6 +36,15 @@ function DashboardPage({ userId }) {
     urgency: 0.3,
     points: 0.1,
   });
+
+  const truncateDescription = (description, maxWords) => {
+    const words = description?.split(" ");
+    if (words?.length > maxWords) {
+      return words?.slice(0, maxWords)?.join(" ") + "...";
+    }
+    return description;
+  };
+
 
   const handleOpenPreferenceModal = () => {
     setIsPreferenceModalOpen(true);
@@ -163,10 +176,10 @@ function DashboardPage({ userId }) {
                       <CardHeader className="flex-col gap-4 items-start">
                         <Badge
                           variant={`${
-                            match.type === "Request" ? "primary" : "secondary"
+                            match?.type === "Request" ? "primary" : "secondary"
                           }`}
                           className={`px-3 py-1 rounded-full text-sm font-large text-s ${
-                            match.type === "Request"
+                            match?.type === "Request"
                               ? "bg-sky-100"
                               : "bg-emerald-100"
                           }`}
@@ -258,17 +271,17 @@ function DashboardPage({ userId }) {
                 <CardHeader className="flex-col gap-4 items-start">
                   <Badge
                     variant={`${
-                      basket.type === "Request" ? "primary" : "secondary"
+                      basket?.type === "Request" ? "primary" : "secondary"
                     }`}
                     className={`px-3 py-1 rounded-full text-sm font-large text-s ${
-                      basket.type === "Request"
+                      basket?.type === "Request"
                         ? "bg-sky-100"
                         : "bg-emerald-100"
                     }`}
                   >
-                    {basket.type === "Request"
-                      ? `${basket.type} 🤲`
-                      : `${basket.type} 🚀`}
+                    {basket?.type === "Request"
+                      ? `${basket?.type} 🤲`
+                      : `${basket?.type} 🚀`}
                   </Badge>
 
                   <div className="flex flex-row gap-4 items-center">
@@ -282,7 +295,7 @@ function DashboardPage({ userId }) {
                     <div>
                       <CardTitle className="text-xl">{basket?.title}</CardTitle>
                       <CardDescription>
-                        {basket.type === "Donation"
+                        {basket?.type === "Donation"
                           ? basket?.description?.slice(0, 2)
                           : basket?.reason?.slice(0, 2)}
                       </CardDescription>
@@ -292,7 +305,7 @@ function DashboardPage({ userId }) {
                 <CardContent>
                   <p>
                     {truncateDescription(
-                      basket.type === "Donation"
+                      basket?.type === "Donation"
                         ? basket?.description
                         : basket?.reason,
                       15
@@ -304,7 +317,7 @@ function DashboardPage({ userId }) {
                     <BiMap></BiMap>
                     <p className="font-medium text-sm"> {basket?.location} </p>
                   </div>
-                  {basket.status === "initiated" ||
+                  {basket?.status === "initiated" ||
                   basket?.status == undefined ? (
                     <DrawerComponent
                       id={basket._id}
