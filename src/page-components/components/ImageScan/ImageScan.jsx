@@ -3,10 +3,15 @@ import { CldUploadButton } from "next-cloudinary";
 import { useRouter } from "next/router";
 import styles from "./ImageScan.module.css";
 import { useImage } from "@/lib/ImageContext";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Car } from "lucide-react";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import ConfirmationPage from "../Confirmation/ConfirmationPage";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-const ImageScan = () => {
+const ImageScan = ({ userId }) => {
   const { setImageUrl } = useImage();
   const [detectedItems, setDetectedItems] = useState([]);
   const [confirmedItems, setConfirmedItems] = useState(new Set());
@@ -19,6 +24,8 @@ const ImageScan = () => {
   const [prediction, setPrediction] = useState(null);
   const [error, setError] = useState(null);
   const router = useRouter();
+
+  console.log(userId);
 
   const itemsPerPage = 10;
 
@@ -168,7 +175,7 @@ const ImageScan = () => {
     setImageUrl(uploadedImage);
 
     router.push({
-      pathname: "/confirmation",
+      pathname: "",
       query: {
         confirmedItems: JSON.stringify([...confirmedItems]),
       },
@@ -176,10 +183,15 @@ const ImageScan = () => {
   };
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>Image Recognition</h1>
-      <div className={styles.uploadSection}>
-        {!firstImageUploaded && ( // Render first Cloudinary upload button if first image is not uploaded
+    <div className="flex flex-col gap-6 overflow-auto">
+      <h1
+        className="self-start font-bold text-gray-700"
+        style={{ fontSize: "20px" }}
+      >
+        Scan Image To Add Donation🤳🏽
+      </h1>
+      <div className="self-center flex gap-4">
+        {!firstImageUploaded && (
           <CldUploadButton
             options={{ maxFiles: 1 }}
             folder="images"
@@ -189,136 +201,152 @@ const ImageScan = () => {
             }
             uploadPreset="zoa1vsa7"
           >
-            <p className={styles.uploadButton}>Upload Image</p>
+            <Button className="bg-sky-400">Upload Image</Button>
           </CldUploadButton>
         )}
-        {firstImageUploaded &&
-          useCloudinary &&
-          !secondImageUploaded && ( // Render second Cloudinary upload button if first image uploaded and useCloudinary checked
-            <CldUploadButton
-              options={{ maxFiles: 1 }}
-              folder="images"
-              onSuccess={handleSecondUploadSuccess}
-              onFailure={(error) =>
-                console.error("Cloudinary upload error:", error)
-              }
-              uploadPreset="zoa1vsa7"
-            >
-              <p className={styles.uploadButton}>Upload Another Image</p>
-            </CldUploadButton>
-          )}
-        <button
-          onClick={runClarifai}
-          disabled={!uploadedImage}
-          className={`${styles.runButton} ${
-            !uploadedImage ? styles.runButtonDisabled : ""
-          }`}
-        >
-          Scan
-        </button>
+        {firstImageUploaded && useCloudinary && !secondImageUploaded && (
+          <CldUploadButton
+            options={{ maxFiles: 1 }}
+            folder="images"
+            onSuccess={handleSecondUploadSuccess}
+            onFailure={(error) =>
+              console.error("Cloudinary upload error:", error)
+            }
+            uploadPreset="zoa1vsa7"
+          >
+            <Button className="bg-sky-400">Upload Another Image</Button>
+          </CldUploadButton>
+        )}
+        {uploadedImage && (
+          <Button onClick={runClarifai} className="bg-sky-400">
+            Scan Image
+          </Button>
+        )}
       </div>
-      <div className={styles.content}>
-        <div className={styles.leftSection}>
+      <div className="grid grid-cols-2 max-w-[90%] self-center gap-4">
+        <Card className="max-h-72 overflow-hidden">
           {uploadedImage && (
-            <div className={styles.imageContainer}>
-              <img
-                src={uploadedImage}
-                alt="Uploaded"
-                className={styles.image}
-              />
+            <div className="overflow-hidden">
+              <img src={uploadedImage} alt="Uploaded" />
+            </div>
+          )}
+        </Card>
+
+        <div>
+          {detectedItems.length > 0 && (
+            <div className="flex flex-col gap-3">
+              <Card className="flex flex-col mx-3 max-h-72 overflow-auto">
+                <h2 className="text-xl self-center font-bold my-2">
+                  Detected Items
+                </h2>
+                <ul className="list-none p-0 m-0">
+                  {detectedItems
+                    .slice(
+                      currentPage * itemsPerPage,
+                      (currentPage + 1) * itemsPerPage
+                    )
+                    .map((item, index) => (
+                      <li
+                        key={item}
+                        className="flex items-center pl-4 py-2 border-b border-gray-300"
+                      >
+                        <input
+                          type="checkbox"
+                          id={`item-${index}`}
+                          checked={confirmedItems.has(item)}
+                          onChange={(e) =>
+                            e.target.checked
+                              ? handleItemCheck(item)
+                              : handleItemUncheck(item)
+                          }
+                          className="mr-2"
+                        />
+                        <label
+                          htmlFor={`item-${index}`}
+                          className="text-gray-700"
+                        >
+                          {item}
+                        </label>
+                      </li>
+                    ))}
+                </ul>
+                <div className="flex justify-between my-3 mx-3">
+                  <Button
+                    onClick={handlePrevPage}
+                    disabled={currentPage === 0}
+                    className="bg-sky-400 text-white rounded transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  >
+                    Previous
+                  </Button>
+                  <Button
+                    onClick={handleNextPage}
+                    disabled={
+                      (currentPage + 1) * itemsPerPage >= detectedItems.length
+                    }
+                    className="bg-sky-400 text-white rounded transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  >
+                    Next
+                  </Button>
+                </div>
+              </Card>
+              <Card className="flex flex-col mx-3 mb-3">
+                <h2 className="text-xl self-center font-bold my-2">
+                  Confirmed Items
+                </h2>
+                <ul className="list-none p-0 m-0">
+                  {[...confirmedItems].map((item) => (
+                    <li
+                      key={item}
+                      className="py-2 border-b pl-4 border-gray-300"
+                    >
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                {confirmedItems.size > 0 && (
+                  <div className="mt-4 pl-4 mb-2">
+                    <input
+                      type="checkbox"
+                      id="useReplicate"
+                      checked={useReplicate}
+                      onChange={(e) => setUseReplicate(e.target.checked)}
+                      className="mr-2"
+                    />
+                    <label htmlFor="useReplicate" className="text-gray-700">
+                      Use Replicate to generate image?
+                    </label>
+                    <div className="mt-2">
+                      <input
+                        type="checkbox"
+                        id="useCloudinary"
+                        checked={useCloudinary}
+                        onChange={(e) => setUseCloudinary(e.target.checked)}
+                        className="mr-2"
+                      />
+                      <label htmlFor="useCloudinary" className="text-gray-700">
+                        Upload another image?
+                      </label>
+                    </div>
+                  </div>
+                )}
+
+                <Dialog>
+                  <DialogTrigger>
+                    <Button
+                      onClick={redirectToConfirmationPage}
+                      className=" bg-sky-400 mb-4 w-[93%]"
+                    >
+                      Go to Confirmation Page
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="min-w-[80%] min-h-fit overflow-auto">
+                    <ConfirmationPage userId={userId}></ConfirmationPage>
+                  </DialogContent>
+                </Dialog>
+              </Card>
             </div>
           )}
         </div>
-        {detectedItems.length > 0 && (
-          <div className={styles.rightSection}>
-            <div className={styles.section}>
-              <h2>Detected Items</h2>
-              <ul className={styles.list}>
-                {detectedItems
-                  .slice(
-                    currentPage * itemsPerPage,
-                    (currentPage + 1) * itemsPerPage
-                  )
-                  .map((item, index) => (
-                    <li key={item} className={styles.listItem}>
-                      <input
-                        type="checkbox"
-                        id={`item-${index}`}
-                        checked={confirmedItems.has(item)}
-                        onChange={(e) =>
-                          e.target.checked
-                            ? handleItemCheck(item)
-                            : handleItemUncheck(item)
-                        }
-                        className={styles.checkbox}
-                      />
-                      <label htmlFor={`item-${index}`} className={styles.label}>
-                        {item}
-                      </label>
-                    </li>
-                  ))}
-              </ul>
-              <div className={styles.paginationButtons}>
-                <button
-                  onClick={handlePrevPage}
-                  disabled={currentPage === 0}
-                  className={styles.paginationButton}
-                >
-                  Previous
-                </button>
-                <button
-                  onClick={handleNextPage}
-                  disabled={
-                    (currentPage + 1) * itemsPerPage >= detectedItems.length
-                  }
-                  className={styles.paginationButton}
-                >
-                  Next
-                </button>
-              </div>
-            </div>
-            <div className={styles.section}>
-              <h2>Confirmed Items</h2>
-              <ul className={styles.list}>
-                {[...confirmedItems].map((item) => (
-                  <li key={item} className={styles.listItem}>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              {confirmedItems.size > 0 && (
-                <div className={styles.checkboxContainer}>
-                  <input
-                    type="checkbox"
-                    id="useReplicate"
-                    checked={useReplicate}
-                    onChange={(e) => setUseReplicate(e.target.checked)}
-                    className={styles.checkbox}
-                  />
-                  <label htmlFor="useReplicate" className={styles.replicate}>
-                    Use Replicate to generate image?
-                  </label>
-                  <input
-                    type="checkbox"
-                    id="useCloudinary"
-                    checked={useCloudinary}
-                    onChange={(e) => setUseCloudinary(e.target.checked)}
-                    className={styles.checkbox}
-                  />
-                  <label htmlFor="useCloudinary" className={styles.replicate}>
-                    Upload another image?
-                  </label>
-                </div>
-              )}
-              <button
-                onClick={redirectToConfirmationPage}
-                className={styles.confirmationButton}
-              >
-                Go to Confirmation Page
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

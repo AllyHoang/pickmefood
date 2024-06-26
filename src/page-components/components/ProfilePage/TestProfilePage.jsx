@@ -75,13 +75,8 @@ const TestProfilePage = ({ userId }) => {
           donationRes.json(),
           requestRes.json(),
         ]);
-        console.log(donationData);
-        console.log(requestData);
-
         setNumDonation(donationData.items.length);
         setNumRequests(requestData.requests.length);
-        console.log(numDonation);
-        console.log(numRequests);
       } catch (error) {
         console.log(error);
       }
@@ -143,4 +138,3 @@ const TestProfilePage = ({ userId }) => {
 };
 
 export default TestProfilePage;
-

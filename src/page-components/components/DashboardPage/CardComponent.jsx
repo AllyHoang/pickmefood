@@ -10,11 +10,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BiMap } from "react-icons/bi";
+import DrawerComponent from "./DrawerComponent";
 import Link from "next/link";
-import MyDrawer from "./MyDrawer";
-import useUser from "@/hook/useUser";
 
-function MyCard({ basket, setOpenDialog, selectedBasket, type }) {
+function CardComponent({ basket, setOpenDialog, selectedBasket }) {
   const truncateDescription = (description, maxWords) => {
     const words = description?.split(" ");
     if (words?.length > maxWords) {
@@ -40,6 +39,7 @@ function MyCard({ basket, setOpenDialog, selectedBasket, type }) {
     return "";
   }
 
+
   return (
     <Card
       key={basket._id}
@@ -62,7 +62,7 @@ function MyCard({ basket, setOpenDialog, selectedBasket, type }) {
             <div className="flex flex-row gap-4 items-center">
               <Avatar>
                 <AvatarImage
-                  src={useUser(basket?.userId).user.profileImage}
+                  src={`${basket?.userId?.profileImage}`}
                   alt="Donation Image"
                 />
                 <AvatarFallback></AvatarFallback>
@@ -72,7 +72,7 @@ function MyCard({ basket, setOpenDialog, selectedBasket, type }) {
                   {basket?.title}
                 </CardTitle>
                 <CardDescription>
-                  {useUser(basket?.userId).user.username}
+                  {basket.userId.username}
                 </CardDescription>
               </div>
             </div>
@@ -124,11 +124,10 @@ function MyCard({ basket, setOpenDialog, selectedBasket, type }) {
         </div>
 
         {basket.status === "initiated" || basket?.status == undefined ? (
-          <MyDrawer
+          <DrawerComponent
             id={basket._id}
             handleOpenDialog={setOpenDialog}
             selectedBasket={selectedBasket}
-            type = {type}
           />
         ) : basket.status === "accepted" ? (
           <Button className="bg-green-500">Accepted</Button>
@@ -143,4 +142,4 @@ function MyCard({ basket, setOpenDialog, selectedBasket, type }) {
     </Card>
   );
 }
-export default MyCard;
+export default CardComponent;

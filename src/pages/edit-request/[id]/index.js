@@ -9,5 +9,4 @@ const EditRequestIndex = () => {
 };
 
 EditRequestIndex.Layout = EditRequestLayout;
-
 export default EditRequestIndex;

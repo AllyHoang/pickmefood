@@ -1,6 +1,6 @@
-import * as React from 'react';
-import { Drawer as DrawerPrimitive } from 'vaul'; // Assuming 'vaul' is your UI library
-import { cn } from '@/lib/utils'; // Utility for class names
+import * as React from "react";
+import { Drawer as DrawerPrimitive } from "vaul"; // Assuming 'vaul' is your UI library
+import { cn } from "@/lib/utils"; // Utility for class names
 
 const Drawer = ({ shouldScaleBackground = true, ...props }) => (
   <DrawerPrimitive.Root
@@ -19,31 +19,36 @@ const DrawerClose = DrawerPrimitive.Close;
 const DrawerOverlay = React.forwardRef(({ className, ...props }, ref) => (
   <DrawerPrimitive.Overlay
     ref={ref}
-    className={cn("fixed inset-0 z-50 bg-black bg-opacity-40 backdrop-blur-sm", className)}
+    className={cn(
+      "fixed inset-0 z-50 bg-black bg-opacity-40 backdrop-blur-sm",
+      className
+    )}
     {...props}
   />
 ));
 DrawerOverlay.displayName = "DrawerOverlay";
 
-const DrawerContent = React.forwardRef(({ className, title, subtitle, children, ...props }, ref) => (
-  <DrawerPortal>
-    <DrawerOverlay />
-    <DrawerPrimitive.Content
-      ref={ref}
-      className={cn(
-        "fixed bottom-0 z-50 mt-24 flex flex-col w-full max-w-md rounded-t-lg border bg-white shadow-lg",
-        className
-      )}
-      {...props}
-    >
-      <div className="px-4 py-2 border-b">
-        {title && <h3 className="text-xl font-semibold">{title}</h3>}
-        {subtitle && <p className="text-sm text-gray-600">{subtitle}</p>}
-      </div>
-      {children}
-    </DrawerPrimitive.Content>
-  </DrawerPortal>
-));
+const DrawerContent = React.forwardRef(
+  ({ className, title, subtitle, children, ...props }, ref) => (
+    <DrawerPortal>
+      <DrawerOverlay />
+      <DrawerPrimitive.Content
+        ref={ref}
+        className={cn(
+          "fixed bottom-0 z-50 mt-24 flex flex-col w-full max-w-md rounded-t-lg ",
+          className
+        )}
+        {...props}
+      >
+        <div className="-mt-5">
+          {title && <h3 className="text-xl font-semibold">{title}</h3>}
+          {subtitle && <p className="text-sm text-gray-600">{subtitle}</p>}
+        </div>
+        {children}
+      </DrawerPrimitive.Content>
+    </DrawerPortal>
+  )
+);
 DrawerContent.displayName = "DrawerContent";
 
 const DrawerHeader = ({ children, className, ...props }) => (

@@ -1,18 +1,6 @@
 import { useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { GoSearch } from "react-icons/go";
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { BiMap } from "react-icons/bi";
 import MapComponent from "../MapDonation/mapComponent";
 import ToggleView from "./ToggleView";
 import { useRouter } from "next/router";
@@ -25,6 +13,8 @@ import { Status } from "@/lib/utils";
 import Link from "next/link";
 import { useSelector } from "react-redux";
 import PreferenceModal from "./PreferenceModal";
+import CardComponent from "./CardComponent";
+import useUser from "@/hook/useUser";
 
 function DashboardPage({ userId }) {
   const [selectedBasket, setSelectedBasket] = useState(null);
@@ -66,21 +56,12 @@ function DashboardPage({ userId }) {
     }
   };
 
-  const handleSearchSubmit = () => {};
-
   const handleCloseModal = () => {
     setOpenDialog(false);
   };
 
-  const truncateDescription = (description, maxWords) => {
-    const words = description?.split(" ");
-    if (words?.length > maxWords) {
-      return words?.slice(0, maxWords)?.join(" ") + "...";
-    }
-    return description;
-  };
-
   useEffect(() => {
+    console.log(router.query);
     if (router.query.id) {
       const basket = baskets.find((basket) => basket._id === router.query.id);
       setSelectedBasket(basket);
@@ -111,7 +92,7 @@ function DashboardPage({ userId }) {
           <div className="container mx-auto px-4 mt-6">
             <div className="grid grid-cols-3 items-center gap-4 mb-5">
               {/* Heading */}
-              <DashboardHeading></DashboardHeading>
+              <DashboardHeading userId={userId}></DashboardHeading>
               {/* Point Badge */}
               <PointBadge></PointBadge>
             </div>
@@ -270,7 +251,7 @@ function DashboardPage({ userId }) {
           </div>
           <div className="grid grid-cols-3 gap-4">
             {baskets?.map((basket) => (
-              <Card
+              <CardComponent
                 key={basket._id}
                 className="flex flex-col bg-white rounded-lg shadow-lg"
               >
@@ -343,6 +324,7 @@ function DashboardPage({ userId }) {
               </Card>
             ))}
             {/* Dialog UI */}
+
             {selectedBasket && openDialog && (
               <DialogComponent
                 itemKey={JSON.stringify(selectedBasket)}
