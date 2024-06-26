@@ -25,14 +25,14 @@ const ChatPage = ({ userId, chatId }) => {
   }, [userId, chatId]);
 
   return (
-    <div className="main-container">
-      <div className="w-1/3 max-lg:hidden">
+    <div
+      className="grid grid-cols-3 p-6 gap-6"
+      style={{ background: "#edf2f7" }}
+    >
+      <div>
         <ChatList currentChatId={chatId} userId={userId} />
       </div>
-      <div
-        className="w-2/3 max-lg:w-full overflow-y-scroll"
-        style={{ scrollbarWidth: "none" }}
-      >
+      <div className="col-span-2">
         <ChatDetails userId={userId} chatId={chatId} />
       </div>
     </div>
