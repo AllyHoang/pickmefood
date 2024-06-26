@@ -39,13 +39,14 @@ function DialogComponent({ handleCloseModal, otherBasket, openDialog, keyItem })
   // user is other user
   // currentUser is user who is authenticated
   const user = otherBasket.userId;
+  console.log(otherBasket);
+  
+
   const handleCreateTransaction = async (e) => {
     e.preventDefault();
     const urlCreateTransaction = otherBasket.type === "Donation" ? "request" : "item";
     let transactionData;
-    let testTransaction;
     //US is a donor
-    
     if (otherBasket.type === "Request") {
       transactionData = {
         userId: currentUser.id,
@@ -54,7 +55,8 @@ function DialogComponent({ handleCloseModal, otherBasket, openDialog, keyItem })
         basketrequestId: otherBasket._id,
         title: otherBasket.title,
         description: otherBasket.description,
-        items: otherBasket.requests
+        items: otherBasket.requests,
+        location: otherBasket.location,
       };
       // if(!value){
       //   transactionData.quantity = otherBasket.quantity;
@@ -82,8 +84,10 @@ function DialogComponent({ handleCloseModal, otherBasket, openDialog, keyItem })
         description: otherBasket.description,
         title: otherBasket.title,
         image: otherBasket.image,
-        items: otherBasket.items
+        items: otherBasket.items,
+        location: otherBasket.location,
       };
+      console.log("transactionData: ", transactionData);
       // if(!value){
       //   transactionData.quantity = otherBasket.quantity;
       //   transactionData.description = otherBasket.description;
@@ -103,7 +107,6 @@ function DialogComponent({ handleCloseModal, otherBasket, openDialog, keyItem })
       // }
     }
     // console.log("Test Transaction", testTransaction);
-  
     // Ensure this log runs
     try {
       const response = await fetch(`/api/transactions/${urlCreateTransaction}`, {

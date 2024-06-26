@@ -23,6 +23,7 @@ import {
   signInSuccess,
 } from "@/redux/user/userSlice";
 import { cn } from "@/lib/utils";
+import { toast } from "react-toastify";
 
 const validateEmail = (value) => {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

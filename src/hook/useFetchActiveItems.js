@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { toast } from "react-toastify";
 
 /**
  * Custom React hook to fetch active items for a given user.
@@ -27,6 +28,7 @@ function useFetchActiveItems(userId) {
         setError(null); 
       } catch (error) {
         setError(error); // Update error state
+        toast.error(error);
         console.error("Error loading items:", error);
       } finally {
         setLoading(false); 
