@@ -30,16 +30,6 @@ function DrawerComponent({ selectedBasket, id, handleOpenDialog }) {
       return "";
     }
 
-function DrawerComponent({selectedBasket, id, handleOpenDialog}) {
-    const [open ,setOpen] = useState(false);
-    const router = useRouter();
-    // console.log(selectedBasket);
-    return (
-        <Drawer onOpenChange={(open)=>{
-          setOpen(open);
-          if(!open){
-            router.push("/dashboard");
-          }
     const regex = /,\s*([A-Za-z\s]+)\s+(\d{5}),\s*United States$/;
 
     const match = location.match(regex);
@@ -188,4 +178,4 @@ function DrawerComponent({selectedBasket, id, handleOpenDialog}) {
   );
 }
 
-export default DrawerComponent
+export default DrawerComponent;

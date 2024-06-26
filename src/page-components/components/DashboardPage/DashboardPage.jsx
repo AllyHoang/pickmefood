@@ -321,7 +321,7 @@ function DashboardPage({ userId }) {
                     </Link>
                   )}
                 </CardFooter>
-              </Card>
+              </CardComponent>
             ))}
             {/* Dialog UI */}
 
