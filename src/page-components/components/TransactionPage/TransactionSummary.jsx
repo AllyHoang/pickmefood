@@ -3,7 +3,7 @@ import { FiClock, FiCheckCircle, FiXCircle, FiPackage, FiTruck } from "react-ico
 
 const TransactionSummary = () => {
   const [transactions, setTransactions] = useState({
-    all: 1000,
+    total: 1000,
     pending: 145,
     accepted: 812,
     cancelled: 80,
@@ -13,7 +13,7 @@ const TransactionSummary = () => {
     const fetchData = async () => {
       // Simulate fetching data
       setTransactions({
-        all: 1000,
+        total: 1000,
         pending: 145,
         accepted: 812,
         cancelled: 80,
@@ -24,7 +24,7 @@ const TransactionSummary = () => {
   }, []);
 
   const stats = [
-    { label: "Total", count: transactions.processing, bgColor: "bg-blue-200", Icon: FiPackage, iconBgColor: "bg-blue-100" },
+    { label: "Total", count: transactions.total, bgColor: "bg-blue-200", Icon: FiPackage, iconBgColor: "bg-blue-100" },
     { label: "Pending", count: transactions.pending, bgColor: "bg-orange-200", Icon: FiClock, iconBgColor: "bg-orange-100" },
     { label: "Accepted", count: transactions.accepted, bgColor: "bg-green-200", Icon: FiCheckCircle, iconBgColor: "bg-green-100" },
     { label: "Cancelled", count: transactions.cancelled, bgColor: "bg-red-200", Icon: FiXCircle, iconBgColor: "bg-red-100" },

@@ -22,7 +22,7 @@ import { useState } from "react";
 function DrawerComponent({selectedBasket, id, handleOpenDialog}) {
     const [open ,setOpen] = useState(false);
     const router = useRouter();
-    console.log(selectedBasket);
+    // console.log(selectedBasket);
     return (
         <Drawer onOpenChange={(open)=>{
           setOpen(open);

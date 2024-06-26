@@ -1,6 +1,5 @@
-
 import connectToDB from "@/core/db/mongodb";
-import TransactionModel from "@/core/models/Transaction";
+import { TransactionModel } from "@/core/models/Transaction";
 
 export default async function handler(req, res) {
   const { method } = req;
@@ -13,8 +12,17 @@ export default async function handler(req, res) {
         if (!transactionId) {
           return res.status(400).json({ message: "Missing transactionId parameter" });
         }
-        await connectToDB();
-        const transaction = await TransactionModel.find({ transactionId: transactionId });
+
+        // Query the transaction and populate related user, basket, and request basket
+        const transaction = await TransactionModel.findOne({ _id: transactionId })
+          .populate('requesterId')
+          .populate('basketrequestId')
+          .populate('donorId')
+          .populate('basketId');
+        if (!transaction) {
+          return res.status(404).json({ message: "Transaction not found" });
+        }
+        
         res.status(200).json({ transaction });
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -23,6 +31,3 @@ export default async function handler(req, res) {
     res.status(405).end(`Method ${method} Not Allowed`);
   }
 }
-
-
-
