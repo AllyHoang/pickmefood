@@ -185,7 +185,7 @@ a {
 
 /* Chat List */
 .chat-list {
-  @apply h-full flex flex-col gap-5 overflow-hidden;
+  @apply h-screen flex flex-col gap-5 overflow-hidden;
 }
 
 .input-search {

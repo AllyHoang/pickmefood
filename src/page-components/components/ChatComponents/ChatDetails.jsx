@@ -113,7 +113,7 @@ const ChatDetails = ({ chatId, userId }) => {
   return loading ? (
     <Loader />
   ) : (
-    <Card className="flex flex-col h-full overflow-hidden">
+    <Card className="flex flex-col h-screen overflow-hidden">
       <div className="flex flex-row items-center gap-4 px-8 py-3 text-body-bold">
         {chat?.isGroup ? (
           <>
