@@ -30,6 +30,13 @@ const Status = {
 
 export { Status };
 
+// Define the Points
+const POINTS = {
+  DONATION: 10,
+  TRANSACTION: 200
+};
+export {POINTS};
+
 /**
  * Helper function to compare items in a basket with requests in a basketRequest
  * and return an array of objects with { name, emoji } fields.

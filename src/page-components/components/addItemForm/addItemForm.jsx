@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { HiOutlineTrash } from "react-icons/hi";
 import { CldUploadButton } from "next-cloudinary";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { POINTS } from "@/lib/utils";
 
 export default function AddItem({ userId }) {
   const [uploadedUrl, setUploadedUrl] = useState("");
@@ -268,6 +269,13 @@ export default function AddItem({ userId }) {
       userId,
     }));
 
+    let totalPoints = 0;
+    itemsWithUserId.map((item) =>{
+      if(item.quantity){
+        totalPoints += item.quantity * POINTS.DONATION;
+      }
+    })
+
     try {
       const res = await fetch(`/api/items`, {
         method: "POST",
@@ -281,14 +289,17 @@ export default function AddItem({ userId }) {
           title,
           location: userAddress,
           image: uploadedUrl,
+          points: totalPoints
         }),
       });
       if (res.ok) {
-        router.push("/dashboard");
+        toast.success(`Create Basket Successfully. You earn total: ${totalPoints} Points`);
+        // router.push("/dashboard");
       } else {
         throw new Error("Failed to create a basket");
       }
     } catch (error) {
+      toast.error(error);
       console.error("Error:", error);
     }
   };

@@ -4,11 +4,12 @@ import connectToDB from "@/core/db/mongodb";
 import ItemModel from "@/core/models/Item";
 import BasketModel from "@/core/models/Basket";
 import { Status } from "@/lib/utils";
+import { UserModel } from "@/core/models/User";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
     // Process a POST request
-    const { userId, items, image, description, title, location } = req.body;
+    const { userId, items, image, description, title, location, points } = req.body;
 
     try {
       await connectToDB();
@@ -35,6 +36,8 @@ export default async function handler(req, res) {
       const populatedBasket = await BasketModel.findById(basket._id).populate(
         "items"
       );
+      // Update user's points
+      await UserModel.findByIdAndUpdate(userId, { $inc: { points: points } });
       res
         .status(201)
         .json({ message: "Basket Created", data: { basket: populatedBasket } });
