@@ -4,6 +4,12 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import styles from "./mapComponent.module.css"; // Import the CSS module
 import { useRouter } from "next/router";
 import ToggleView from "../DashboardPage/ToggleView";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css"; // Slick slider styles
+import "slick-carousel/slick/slick-theme.css"; // Slick slider theme styles
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import PaymentPage from "../CheckOutForm/PaymentPage";
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoicGlja21lZm9vZCIsImEiOiJjbHZwbHdyMzgwM2hmMmtvNXJ6ZHU2NXh3In0.aITfZvPY-sKGwepyPVPGOg";
@@ -12,63 +18,108 @@ const MapComponent = () => {
   const [map, setMap] = useState(null);
   const [donations, setDonations] = useState([]);
   const [requests, setRequests] = useState([]);
+  const [places, setPlaces] = useState([]);
   const [viewType, setViewType] = useState("map");
   const [searchValue, setSearchValue] = useState("");
   const [searchError, setSearchError] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [selectedRequests, setSelectedRequests] = useState([]);
   const [selectedDonations, setSelectedDonations] = useState([]);
+  const [selectedPlaces, setSelectedPlaces] = useState([]);
   const [donationMarkers, setDonationMarkers] = useState([]);
   const [requestMarkers, setRequestMarkers] = useState([]);
+  const [placesMarkers, setPlacesMarkers] = useState([]);
   const router = useRouter();
   const [showDonations, setShowDonations] = useState(true); // State to toggle between rendering donations and requests
+  const [selectedView, setSelectedView] = useState("Donation");
+
+  const settings = {
+    dots: true, // Show navigation dots
+    infinite: true, // Infinite scrolling
+    speed: 500, // Transition speed
+    slidesToShow: 1, // Show one slide at a time
+    slidesToScroll: 1, // Scroll one slide at a time
+  };
 
   const handleToggleView = () => {
     if (viewType === "list") {
       setViewType("map");
-      router.push('/map-view', undefined, { shallow: true });
+      router.push("/map-view", undefined, { shallow: true });
     } else {
       setViewType("list");
-      router.push('/dashboard', undefined, { shallow: true });
+      router.push("/dashboard", undefined, { shallow: true });
     }
   };
-  useEffect(() => {
-    if (showDonations) {
-      fetchDonations();
-    } else {
-      fetchRequests();
-    }
-  }, [showDonations]);
 
   useEffect(() => {
-    if (showDonations) {
+    switch (selectedView) {
+      case "Donation":
+        fetchDonations();
+        break;
+      case "Request":
+        fetchRequests();
+        break;
+      case "Donation and Request":
+        fetchDonations();
+        fetchRequests();
+        break;
+      case "Places":
+        fetchPlaces();
+        break;
+      default:
+        break;
+    }
+  }, [selectedView]);
+
+  useEffect(() => {
+    if (selectedView === "Donation") {
       if (donations.length > 0 && map) {
         clearMarkers();
         addMarkersToMap();
       }
-    } else {
+    }
+
+    if (selectedView === "Request") {
       if (requests.length > 0 && map) {
         clearMarkers();
         addMarkersToMapRequests();
       }
     }
-  }, [showDonations, donations, requests, map]);
+
+    if (selectedView === "Donation and Request") {
+      if (requests.length > 0 && map) {
+        clearMarkers();
+        addMarkersToMap();
+        addMarkersToMapRequests();
+      }
+    }
+
+    if (selectedView === "Places") {
+      if (places.length > 0 && map) {
+        clearMarkers();
+        addMarkersToMapPlaces();
+      }
+    }
+  }, [selectedView, donations, requests, places, map]);
 
   const clearMarkers = () => {
     donationMarkers.forEach((marker) => marker.remove());
     requestMarkers.forEach((marker) => marker.remove());
+    placesMarkers.forEach((marker) => marker.remove());
     setDonationMarkers([]);
     setRequestMarkers([]);
+    setPlacesMarkers([]);
   };
 
   const fetchDonations = async () => {
     try {
-      const response = await fetch("/api/items");
+      const response = await fetch("/api/baskets");
       if (!response.ok) {
         throw new Error("Failed to fetch donations");
       }
       const data = await response.json();
-      const geocodedDonations = await geocodeDonations(data.items);
+      const geocodedDonations = await geocodeDonations(data.baskets);
+      console.log(data.baskets);
       setDonations(geocodedDonations);
     } catch (error) {
       console.error("Error fetching donations:", error);
@@ -85,6 +136,21 @@ const MapComponent = () => {
       const geocodedRequests = await geocodeRequests(data.requests);
       console.log(geocodedRequests);
       setRequests(geocodedRequests);
+    } catch (error) {
+      console.error("Error fetching donations:", error);
+    }
+  };
+
+  const fetchPlaces = async () => {
+    try {
+      const response = await fetch("/api/places");
+      if (!response.ok) {
+        throw new Error("Failed to fetch places");
+      }
+      const data = await response.json();
+      const geocodedPlaces = await geocodePlaces(data.places);
+      console.log(geocodedPlaces);
+      setPlaces(geocodedPlaces);
     } catch (error) {
       console.error("Error fetching donations:", error);
     }
@@ -122,6 +188,24 @@ const MapComponent = () => {
       })
     );
     return geocodedDonations.filter((donation) => donation !== null);
+  };
+
+  const geocodePlaces = async (places) => {
+    const geocodedPlaces = await Promise.all(
+      places.map(async (place) => {
+        const coordinates = await geocodeAddress(place.formattedAddress);
+        if (coordinates.longitude && coordinates.latitude) {
+          return {
+            ...place,
+            coordinates,
+          };
+        } else {
+          return null;
+        }
+      })
+    );
+    console.log(geocodedPlaces);
+    return geocodedPlaces.filter((place) => place !== null);
   };
 
   const geocodeAddress = async (address) => {
@@ -217,12 +301,42 @@ const MapComponent = () => {
         marker.getElement().addEventListener("click", () => {
           setSelectedRequests(requestsAtLocation);
         });
-
         return marker;
       }
     );
 
     setRequestMarkers(newRequestMarkers);
+  };
+
+  const addMarkersToMapPlaces = () => {
+    // Group requests by their coordinates
+    const placesByCoordinates = places.reduce((acc, place) => {
+      const key = `${place.coordinates.longitude},${place.coordinates.latitude}`;
+      if (!acc[key]) {
+        acc[key] = [];
+      }
+      acc[key].push(place);
+      return acc;
+    }, {});
+
+    const newPlacesMarkers = Object.entries(placesByCoordinates).map(
+      ([coordinates, placesAtLocation]) => {
+        const [longitude, latitude] = coordinates.split(",").map(Number);
+
+        const marker = new mapboxgl.Marker({
+          color: "#a0bded", // Change this color to the desired marker color
+        })
+          .setLngLat([longitude, latitude])
+          .addTo(map);
+
+        marker.getElement().addEventListener("click", () => {
+          setSelectedPlaces(placesAtLocation);
+        });
+        return marker;
+      }
+    );
+
+    setPlacesMarkers(newPlacesMarkers);
   };
 
   const handleSearchChange = async (e) => {
@@ -299,8 +413,8 @@ const MapComponent = () => {
             &times;
           </button>
           {selectedRequests.map((request, index) => (
-            <div className={styles.requestDetails}>
-              <div key={index} className={styles.requestItem}>
+            <div className={styles.requestDetails} key={index}>
+              <div className={styles.requestItem}>
                 <p className={styles.title}>{request.itemName}</p>
                 <p>Location: {request.location}</p>
               </div>
@@ -317,9 +431,9 @@ const MapComponent = () => {
             &times;
           </button>
           {selectedDonations.map((donation, index) => (
-            <div className={styles.donationDetails}>
+            <div className={styles.donationDetails} key={index}>
               <button className={styles.addButton}>Request</button>
-              <div key={index} className={styles.requestItem}>
+              <div className={styles.requestItem}>
                 <p className={styles.title}>{donation.itemName}</p>
                 <p>
                   Expiration Date:{" "}
@@ -331,8 +445,58 @@ const MapComponent = () => {
           ))}
         </div>
       )}
+      {selectedPlaces.map((place, index) => (
+        <div className={styles.sidebarPlaces}>
+          <div key={index} className={styles.placeWrapper}>
+            <div className={styles.placeDetails}>
+              <p className={styles.titlePlace}>{place.displayName.text}</p>
+              <button
+                className={styles.closeButton}
+                onClick={() => setSelectedPlaces([])}
+              >
+                &times;
+              </button>
+            </div>
+            <Dialog>
+              <DialogTrigger>
+                <Button className={styles.addPlaceButton}>Donate</Button>
+              </DialogTrigger>
+              <DialogContent className="min-w-fit w-3/4 h-4/5">
+                <PaymentPage eventId={_id}></PaymentPage>
+              </DialogContent>
+            </Dialog>
+            <p className={styles.location}>
+              <svg
+                className={styles.locationIcon}
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="red"
+                width="30px"
+                height="30px"
+              >
+                <path d="M12 2C8.14 2 5 5.14 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.86-3.14-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" />
+              </svg>
+              {place.formattedAddress}
+            </p>
+            {place.photos && place.photos.length > 0 && (
+              <div className={styles.photoSlider}>
+                <Slider {...settings}>
+                  {place.photos.map((photo, photoIndex) => (
+                    <div key={photoIndex} className={styles.slide}>
+                      <img
+                        src={`https://places.googleapis.com/v1/${photo.name}/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyDYhCkBHKFat3VFMjbBUtxad5Gqx2KjS5k`}
+                        alt={`Photo ${photoIndex}`}
+                        className={styles.photo}
+                      />
+                    </div>
+                  ))}
+                </Slider>
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
       <div className="absolute top-5 left-5 z-10 flex items-center justify-start space-x-2">
-        {/* Add ToggleView components here */}
         <ToggleView viewType={viewType} handleToggleView={handleToggleView} />
         <form className="flex items-center" onSubmit={handleSearchSubmit}>
           <input
@@ -347,7 +511,6 @@ const MapComponent = () => {
           </button>
         </form>
       </div>
-
       {suggestions.length > 0 && (
         <ul className={styles.suggestions}>
           {suggestions.map((suggestion, index) => (
@@ -364,12 +527,18 @@ const MapComponent = () => {
         </ul>
       )}
       {searchError && <p className={styles.error}>{searchError}</p>}
-      <button
-        onClick={() => setShowDonations((prev) => !prev)}
-        className={showDonations ? styles.donationButton : styles.requestButton}
-      >
-        {showDonations ? "Donations" : "Requests"}
-      </button>
+      <div className={styles.controls}>
+        <select
+          className={styles.dropdown}
+          value={selectedView}
+          onChange={(e) => setSelectedView(e.target.value)}
+        >
+          <option value="Donation">Donation</option>
+          <option value="Request">Request</option>
+          <option value="Donation and Request">Donation and Request</option>
+          <option value="Places">Places</option>
+        </select>
+      </div>
     </div>
   );
 };

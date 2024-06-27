@@ -34,6 +34,8 @@ export default function AddItem({ userId }) {
   const [prediction, setPrediction] = useState(null);
   const [error, setError] = useState(null);
 
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
   mapboxgl.accessToken =
     "pk.eyJ1IjoicGlja21lZm9vZCIsImEiOiJjbHZwbHdyMzgwM2hmMmtvNXJ6ZHU2NXh3In0.aITfZvPY-sKGwepyPVPGOg";
 
@@ -252,12 +254,6 @@ export default function AddItem({ userId }) {
       await generateReplicateImage(prompt);
     }
 
-    // Validate again if uploadedUrl is available after generation
-    if (!uploadedUrl) {
-      toast.error("Image generation failed or is still in progress.");
-      return;
-    }
-
     if (!title) {
       toast.error("Please provide a basket name");
       return;
@@ -288,7 +284,6 @@ export default function AddItem({ userId }) {
           image: uploadedUrl,
         }),
       });
-
       if (res.ok) {
         router.push("/dashboard");
       } else {

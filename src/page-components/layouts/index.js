@@ -16,4 +16,5 @@ export { UserPageLayout } from "./UserPageLayout";
 export { AuthenticationLayout } from "./AuthenticationLayout";
 export { SignUpLayout } from "./SignUpLayout";
 export { ForgetPasswordLayout } from "./ForgetPasswordLayout";
-
+export { EventLayout } from "./EventLayout";
+export { PaymentLayout } from "./PaymentLayout";

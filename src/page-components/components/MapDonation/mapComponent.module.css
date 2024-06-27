@@ -192,3 +192,143 @@
 .toggleButton:hover {
   background-color: #f0f0f0;
 }
+
+.controls {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+.dropdown {
+  padding: 8px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  appearance: none; /* Remove default arrow */
+  background-color: #fff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16'%3E%3Cpath fill='%23000000' d='M4.21 7.793l3.437 3.536a1 1 0 001.44 0l3.437-3.536A1 1 0 0012.437 6H3.563a1 1 0 00-.782 1.793z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px top 50%;
+  padding-right: 30px; /* Ensure enough space for the arrow */
+}
+.dropdown:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(200, 227, 255, 0.7); /* Example focus style */
+}
+
+.sidebarPlaces {
+  margin-top: 25px;
+  position: absolute;
+  top: 10%;
+  border: 1px solid #ffffff;
+  right: 10px;
+  width: 300px;
+  background-color: #ffffff;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+  gap: 10px;
+  max-height: 600px; /* Maximum height */
+  overflow-y: scroll; /* Enable vertical scrolling */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  font-family: "Hubot Sans", sans-serif;
+}
+
+.placeDetails {
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #000000;
+  text-align: left;
+  border-bottom: 1px solid #000000; /* Only bottom border */
+  width: 100%; /* Full width */
+  transition: box-shadow 0.3s ease; /* Add transition for smooth effect */
+}
+
+.addPlaceButton {
+  margin: 10px;
+  margin-left: 15px;
+  background-color: #ffffff;
+  color: #000000;
+  border: none;
+  border: 1px solid #000000;
+  padding: 7px;
+  font-size: 12px;
+  cursor: pointer;
+  float: right; /* Align button to the right */
+}
+
+.addPlaceButton:hover {
+  background-color: #a0bded;
+}
+
+.location {
+  font-size: 14px;
+  color: #000000;
+  text-align: left;
+  padding-top: 10px;
+  padding-bottom: 5px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.location-icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 20px;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  float: right;
+}
+
+.titlePlace {
+  font-family: "Hubot Sans", sans-serif;
+  font-size: 18px;
+  color: #000000;
+  text-align: left;
+  padding-top: 10px;
+  padding-bottom: 5px;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+/* Container for the slider */
+.photoSlider {
+  width: 100%;
+  max-width: 400px; /* Set a max width for your slider if needed */
+  margin: 0 auto;
+  overflow: hidden; /* Hide overflowed part of images */
+}
+
+/* Slide wrapper to constrain image size */
+.slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 250px; /* Set the height you want for the image */
+  overflow: hidden; /* Ensure any overflow is hidden */
+}
+
+/* Image styling */
+.photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ensure image covers the container while being cropped */
+  object-position: center; /* Center the image within its container */
+}

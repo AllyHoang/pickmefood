@@ -7,7 +7,7 @@ export default async function handler(req, res) {
     try {
       await connectToDB();
       // Fetch all baskets and populate the user information as well as items
-      const baskets = await BasketModel.find().populate('userId').lean();
+      const baskets = await BasketModel.find().populate("userId").lean();
       //Fetch full item infor for each basket
       const populatedBaskets = await Promise.all(
         baskets.map(async (basket) => {
@@ -29,27 +29,36 @@ export default async function handler(req, res) {
   } else if (req.method === "DELETE") {
     try {
       await connectToDB();
-      const { basketId } = req.body;
+      const { basketIds } = req.body;
 
-      if (!basketId) {
-        return res.status(400).json({ message: "Basket ID is required" });
+      if (!Array.isArray(basketIds) || basketIds.length === 0) {
+        return res
+          .status(400)
+          .json({ message: "Array of basket IDs is required" });
       }
 
-      const basket = await BasketModel.findById(basketId).lean();
+      const deleteResults = await Promise.all(
+        basketIds.map(async (basketId) => {
+          const basket = await BasketModel.findById(basketId).lean();
 
-      if (!basket) {
-        return res.status(404).json({ message: "Basket not found" });
-      }
+          if (!basket) {
+            return { basketId, status: "not found" };
+          }
 
-      // Delete all items in the basket
-      await ItemModel.deleteMany({ _id: { $in: basket.items } });
+          // Delete all items in the basket
+          await ItemModel.deleteMany({ _id: { $in: basket.items } });
 
-      // Delete the basket
-      await BasketModel.findByIdAndDelete(basketId);
+          // Delete the basket
+          await BasketModel.findByIdAndDelete(basketId);
 
-      res
-        .status(200)
-        .json({ message: "Basket and items deleted successfully" });
+          return { basketId, status: "deleted" };
+        })
+      );
+
+      res.status(200).json({
+        message: "Baskets processed",
+        results: deleteResults,
+      });
     } catch (error) {
       console.error("Error deleting basket and items:", error);
       res.status(500).json({ message: "Internal Server Error" });
