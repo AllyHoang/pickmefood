@@ -32,7 +32,6 @@ function useFetchAllBaskets() {
           donationRes.json(),
           requestRes.json(),
         ]);
-        console.log(donationData, requestData);
 
         const combinedBaskets = [
           ...donationData.baskets,
@@ -40,6 +39,7 @@ function useFetchAllBaskets() {
         ];
 
         setBaskets(combinedBaskets);
+        // dispatch(combinedBaskets);
       } catch (error) {
         setError(error);
         console.error(error);

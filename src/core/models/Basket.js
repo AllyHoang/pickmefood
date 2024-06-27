@@ -39,6 +39,12 @@ const BasketSchema = new Schema({
     default: "Donation",
     immutable: true, // This makes the field unchangeable after the document is created
   },
+  pendingTransactions: {
+    type: Number,
+    default: 0, 
+    min: 0, 
+    max: 4
+  },
 });
 
 // Use mongoose.models to avoid model re-compilation

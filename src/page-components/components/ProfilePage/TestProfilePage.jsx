@@ -4,6 +4,8 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import Profile from "./ProfileComponent";
 
 const TestProfilePage = ({ userId }) => {
   const [loading, setLoading] = useState(true);
@@ -11,6 +13,7 @@ const TestProfilePage = ({ userId }) => {
   const [error, setError] = useState(null);
   const [numDonation, setNumDonation] = useState(null);
   const [numRequests, setNumRequests] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const {
     register,
@@ -72,13 +75,8 @@ const TestProfilePage = ({ userId }) => {
           donationRes.json(),
           requestRes.json(),
         ]);
-        console.log(donationData);
-        console.log(requestData);
-
         setNumDonation(donationData.items.length);
         setNumRequests(requestData.requests.length);
-        console.log(numDonation);
-        console.log(numRequests);
       } catch (error) {
         console.log(error);
       }
@@ -87,7 +85,7 @@ const TestProfilePage = ({ userId }) => {
   }, []);
 
   return (
-    <div className="border-none flex gap-10">
+    <div className="border-none flex gap-10 relative">
       <div className="profile-pic flex flex-col items-center mb-4">
         <img
           src={
@@ -122,13 +120,19 @@ const TestProfilePage = ({ userId }) => {
           model to include bio, maybe maximum 50 words.
         </div>
       </div>
-      <Button className="bg-sky-200 text-black h-7 p-4 w-24 relative right-5">
-        {" "}
-        <Link href="profile-page" className="p-5 hover:text-white">
-          {" "}
-          Edit profile{" "}
-        </Link>
-      </Button>
+
+      <div className="absolute top-3 right-8">
+        {/* <Dialog modal={false}> */}
+        <Dialog modal={false}>
+          <DialogTrigger>
+            <Button className="bg-sky-400 text-white">Edit Profile</Button>
+          </DialogTrigger>
+          {/* <DialogContent onInteract = {(e) => e.preventDefault()}> */}
+          <DialogContent onInteractOutside={(event) => event.preventDefault()}>
+            <Profile userId={userId}></Profile>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   );
 };

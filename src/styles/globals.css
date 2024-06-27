@@ -1,6 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap");
+
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
 
 @layer base {
   :root {
@@ -132,7 +140,7 @@ a {
 }
 
 .input-field {
-  @apply w-[300px] max-sm:w-full bg-transparent outline-none;
+  @apply w-[200%] h-9 bg-transparent border rounded-xl pl-4 outline-none;
 }
 
 .button {
@@ -185,7 +193,7 @@ a {
 
 /* Chat List */
 .chat-list {
-  @apply h-screen flex flex-col gap-5 pb-20;
+  @apply h-screen flex flex-col gap-5 overflow-hidden;
 }
 
 .input-search {
@@ -254,7 +262,7 @@ a {
 
 /* Chat Body */
 .chat-body {
-  @apply flex-1 flex flex-col gap-5 bg-grey-2 p-5 overflow-y-scroll custom-scrollbar;
+  @apply flex-1 flex flex-col gap-5 bg-gray-200 p-5 overflow-y-scroll custom-scrollbar;
 }
 
 .message-box {
@@ -274,16 +282,16 @@ a {
 }
 
 .message-text {
-  @apply w-fit bg-white p-3 rounded-lg text-base-medium;
+  @apply w-fit bg-white py-2 px-4  shadow rounded-lg text-base-medium;
 }
 
 .message-text-sender {
-  @apply w-fit bg-purple-2 text-white p-3 rounded-lg text-base-medium;
+  @apply w-fit bg-indigo-200 py-2 px-4 rounded-lg text-base-medium;
 }
 
 /* Message Input */
 .send-message {
-  @apply w-full flex items-center justify-between px-7 py-3 rounded-3xl cursor-pointer bg-white;
+  @apply flex items-center justify-between px-5 py-4 rounded-3xl cursor-pointer bg-white;
 }
 
 .prepare-message {
@@ -299,10 +307,9 @@ a {
   @apply bottom-0 sticky px-10 py-5 flex items-center justify-between sm:hidden;
 }
 
-
-
 @keyframes rotateOscillate {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(0deg);
   }
   25% {

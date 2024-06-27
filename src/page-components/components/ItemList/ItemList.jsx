@@ -51,14 +51,14 @@ const ItemList = ({ userId }) => {
               <div className={styles.itemDescription}>
                 Description: {t.description}
               </div>
-              <div className={styles.itemQuantity}>Quantity: {t.quantity}</div>
+              <div className={styles.itemQuantity}>Quantity:{t.quantity}</div>
               <div className={styles.itemExpDate}>
                 Expiration Date: {t.expirationDate}
               </div>
               <div className={styles.postedDate}>
                 Posted Date: {formatDate(t.createdAt)}
               </div>
-              <div className={styles.location}>Location: {t.location}</div>
+              <div className={styles.location}>Location:{t.location}</div>
             </div>
             <div className={styles.btnGroup}>
               <RemoveBtn id={t._id} />

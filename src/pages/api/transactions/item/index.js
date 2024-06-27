@@ -16,20 +16,21 @@ export default async function handler(req, res) {
       //otherUserI: ID of Requester
       //itemId: ID of donation
       //requesterId: ID of request
-      const { userId, basketrequestId, otherUserId, basketId, description, title, image, items} = req.body;
+      const { userId, basketrequestId, otherUserId, basketId, description, title, image, items, location} = req.body;
       // Check if a transaction with the same fields already exists
       const existingTransaction = await TransactionModel.findOne({
-        requesterId: userId,
+        requesterId: otherUserId,
         basketrequestId: basketrequestId,
-        donorId: otherUserId,
+        donorId: userId,
         basketId: basketId
       });
-
+      console.log("items: ",items);
       if (existingTransaction) {
         return res.status(409).json({ message: 'Transaction with the same fields already exists', data: { transaction: existingTransaction } });
       }
+
       let finalItemId= basketId;
-      if (!basketId) {
+      if (!finalItemId) {
         const newBasket = await BasketModel.create({
           userId: userId,
           //TODO: Might consider adding location field to User Schema
@@ -37,17 +38,27 @@ export default async function handler(req, res) {
           title,
           image,
           type: "Donation",
-          items,
-          status: Status.PENDING
+          items: items,
+          status: Status.PENDING,
+          location,
+          pendingTransactions:0
         });
-        console.log(newBasket);
+        console.log("newBasket: ", newBasket);
         finalItemId =  newBasket._id;
       }
+  
+      const basket = await BasketModel.findById(finalItemId);
+      const basketRequest = await BasketRequest.findById(basketrequestId);
+
+      if (basket?.pendingTransactions >= 4 || basketRequest?.pendingTransactions >= 4) {
+        return res.status(400).json({ message: 'Cannot create transaction. Pending transactions limit exceeded.' });
+      }
+
       //Create new Transaction
       const newTransaction = await TransactionModel.create({
-        requesterId: userId,
+        requesterId: otherUserId,
         basketrequestId: basketrequestId,
-        donorId: otherUserId,
+        donorId: userId,
         basketId: finalItemId,
         createdAt: new Date(),
         matchedAt: null,
@@ -55,8 +66,15 @@ export default async function handler(req, res) {
         agreedByRequester: false,
         agreedByDonor : false,
       });
-      await BasketModel.findByIdAndUpdate(basketId, { status: Status.PENDING });
-      await BasketRequest.findByIdAndUpdate(basketrequestId, {status: Status.PENDING});
+      await BasketModel.findByIdAndUpdate(finalItemId, {
+        status: Status.PENDING,
+        $inc: { pendingTransactions: 1 }
+      });
+  
+      await BasketRequest.findByIdAndUpdate(basketrequestId, {
+        status: Status.PENDING,
+        $inc: { pendingTransactions: 1 }
+      });
 
       res.status(201).json({ message: 'Transaction successfully created for donator', data: { transaction: newTransaction} });
     } catch (error) {
