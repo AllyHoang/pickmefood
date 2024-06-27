@@ -19,7 +19,7 @@ export default async function handler(req, res) {
         // Perform matching
         for (const request of basketRequests) {
             for (const basket of baskets) {
-              if(basket.userId.toString() === userId){
+              if(basket.userId._id.toString() === userId){
                 continue;
               }
               const matchPercentage = calculateMatchPercentage(basket, request, "Request");
@@ -31,7 +31,7 @@ export default async function handler(req, res) {
                   location: basket.location,
                   items: basket.items,
                   status:basket.status,
-                  userId: request.userId,
+                  userId: basket.userId,
                   type: "Donation",
                   // requestId: request._id,
                   // requestTitle: request.title,

@@ -46,6 +46,10 @@ const BasketRequestSchema = new Schema({
     min: 0, 
     max: 4
   },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 // Use mongoose.models to avoid model re-compilation
