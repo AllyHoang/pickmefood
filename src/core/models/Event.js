@@ -52,6 +52,8 @@ const EventSchema = new Schema(
         message: (props) => `${props.value} is not a valid image URL!`,
       },
     },
+    likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
   },
   {
     toJSON: { virtuals: true },

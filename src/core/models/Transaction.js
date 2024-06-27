@@ -1,9 +1,6 @@
 import { Status } from "@/lib/utils";
 import { Schema, model, models } from "mongoose";
 
-
-
-
 const TransactionSchema = new Schema({
     requesterId: {
         type: Schema.Types.ObjectId,

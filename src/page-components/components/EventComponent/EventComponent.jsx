@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import EventCard from "./EventCard";
 import { useRouter } from "next/router";
 
-const EventPage = () => {
+const EventPage = ({userId}) => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -88,7 +88,7 @@ const EventPage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {currentEvents.map((event) => (
               <div key={event._id} className="w-full">
-                <EventCard event={event} />
+                <EventCard event={event} userId={userId} />
               </div>
             ))}
           </div>

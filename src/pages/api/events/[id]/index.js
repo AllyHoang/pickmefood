@@ -1,8 +1,10 @@
 import connectToDB from "@/core/db/mongodb";
 import EventModel from "@/core/models/Event";
 import jwt from "jsonwebtoken"; // Import jsonwebtoken library
+import updateEvent from "../../../../../updateEvent";
 
 export default async function handler(req, res) {
+  // console.log(req.method)
   try {
     // Perform server-side operations, such as connecting to the database
     await connectToDB();
@@ -44,14 +46,16 @@ export default async function handler(req, res) {
         res.status(404).json({ message: "Event Not Found" });
       }
     } else if (req.method === "PUT") {
-      // Handle PUT request
+      console.log("INSIDE PUT METHOD")
       const eventId = req.query.id;
       const updatedEventInfo = req.body;
       const updatedEvent = await EventModel.findOneAndUpdate(
-        { _id: eventId, userId: decodedToken.id }, // Filter by userId
+        { _id: eventId }, // Filter by userId
         updatedEventInfo,
-        { new: true }
+        // { new: true }
       );
+      console.log(updatedEventInfo)
+      console.log(updatedEvent)
 
       if (updatedEvent) {
         res

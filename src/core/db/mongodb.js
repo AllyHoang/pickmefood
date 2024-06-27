@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 
 const mongoUri = process.env.MONGO_URI;
+console.log(process.env.MONGO_URI)
 
 if (!mongoUri) {
   throw new Error(

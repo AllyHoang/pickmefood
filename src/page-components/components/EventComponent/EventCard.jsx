@@ -4,8 +4,11 @@ import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import PaymentPage from "../CheckOutForm/PaymentPage";
-
-const EventCard = ({ event }) => {
+import useUser from "@/hook/useUser";
+import { current } from "@reduxjs/toolkit";
+import updateEvent from "../../../../updateEvent";
+const EventCard = async ({ event, userId }) => {
+  // await updateEvent()
   const {
     image,
     eventName,
@@ -16,9 +19,14 @@ const EventCard = ({ event }) => {
     organizationName,
     _id,
     progress,
+    likes = [],
+    comments = [],
   } = event;
+  const currentUser = useUser(userId).user;
   const [progressStick, setProgress] = useState(0);
   const [remainingMoney, setRemainingMoney] = useState(money);
+  const [isLiked, setIsLiked] = useState(likes.includes(currentUser));
+  const [likesCount, setLikesCount] = useState(likes.length);
 
   useEffect(() => {
     const fetchProgress = async () => {
@@ -38,6 +46,37 @@ const EventCard = ({ event }) => {
 
     fetchProgress();
   }, [_id, money]);
+
+  const handleLike = async () => {
+    try {
+      const modifiedEvent = { ...event };
+
+      if (isLiked) {
+        await modifiedEvent.likes.splice(
+          modifiedEvent.likes.indexOf(currentUser),
+          1
+        );
+        setLikesCount((prevCount) => prevCount - 1);
+      } else {
+        await modifiedEvent.likes.push(currentUser);
+        setLikesCount((prevCount) => prevCount + 1);
+      }
+      const response = await fetch(`/api/events/${_id}`, {
+        method: "PUT",
+        header: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(modifiedEvent),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update like status");
+      }
+      setIsLiked(!isLiked);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="event-card bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
@@ -73,6 +112,9 @@ const EventCard = ({ event }) => {
             To be funded: ${remainingMoney} (${progress.toFixed(2)}% funded)
           </p>
         </div>
+        <button onClick={handleLike}>{isLiked ? "Unlike" : "Like"}</button>
+        <p>Likes: {likesCount}</p>
+
         <Dialog>
           <DialogTrigger>
             <Button className="bg-sky-400">Donate</Button>
