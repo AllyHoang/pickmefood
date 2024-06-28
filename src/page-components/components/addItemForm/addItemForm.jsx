@@ -32,6 +32,7 @@ export default function AddItem({ userId }) {
   const router = useRouter();
   const [prediction, setPrediction] = useState(null);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false); // Loading state
 
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -249,7 +250,7 @@ export default function AddItem({ userId }) {
       // If not, generate the image
       const prompt = `Generate an image that includes the following items: ${items
         .map((item) => item.itemName)
-        .join(", ")}`;
+        .join(", ")};`;
       await generateReplicateImage(prompt);
     }
 
@@ -269,7 +270,7 @@ export default function AddItem({ userId }) {
     }));
 
     try {
-      const res = await fetch(`/api/items`, {
+      const res = await fetch("/api/items", {
         method: "POST",
         headers: {
           "Content-type": "application/json",

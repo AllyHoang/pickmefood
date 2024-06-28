@@ -2,6 +2,7 @@ import { pusherServer } from "@/lib/pusher";
 import Chat from "@/core/models/Chat";
 import { UserModel } from "@/core/models/User";
 import connectToDB from "@/core/db/mongodb";
+import mongoose from "mongoose";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
@@ -28,22 +29,34 @@ export default async function handler(req, res) {
           { upsert: true, new: true }
         );
       } else {
-        // Find the member whose ID is different from currentUserId
+        // Find or create a one-on-one chat
         const otherMember = members.find(
           (memberId) => memberId !== currentUserId
         );
-
-        // Find the name of the other member
         const otherMemberName = await UserModel.findById(otherMember).select(
           "username"
         );
 
-        chat = new Chat({
-          members: [currentUserId, otherMember],
-          name: otherMemberName.username, // Set the chat name to the username of the other member
+        chat = await Chat.findOne({
+          isGroup: false,
+          members: {
+            $all: [
+              new mongoose.Types.ObjectId(currentUserId),
+              new mongoose.Types.ObjectId(otherMember),
+            ],
+          },
         });
 
-        await chat.save();
+        console.log(chat);
+
+        if (!chat) {
+          chat = new Chat({
+            members: [currentUserId, otherMember],
+            name: otherMemberName.username,
+          });
+
+          await chat.save();
+        }
       }
 
       // Update the chats array for all members
@@ -58,7 +71,7 @@ export default async function handler(req, res) {
 
       // Trigger a new-chat event for all members
       updatedMembers.forEach(async (member) => {
-        await pusherServer.trigger(member._id.toString(), "new-chat", chat);
+        await pusherServer.trigger(member.toString(), "new-chat", chat);
       });
 
       res.status(201).json({ chat });

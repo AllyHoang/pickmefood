@@ -16,7 +16,14 @@ import PreferenceModal from "./PreferenceModal";
 import CardComponent from "./CardComponent";
 import useUser from "@/hook/useUser";
 import { BiMap } from "react-icons/bi";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -44,7 +51,6 @@ function DashboardPage({ userId }) {
     }
     return description;
   };
-
 
   const handleOpenPreferenceModal = () => {
     setIsPreferenceModalOpen(true);
@@ -262,11 +268,13 @@ function DashboardPage({ userId }) {
               </CardContent>
             </Card>
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             {baskets?.map((basket) => (
               <CardComponent
                 key={basket._id}
-                className="flex flex-col bg-white rounded-lg shadow-lg"
+                basket={basket}
+                setOpenDialog={setOpenDialog}
+                selectedBasket={selectedBasket}
               >
                 <CardHeader className="flex-col gap-4 items-start">
                   <Badge
@@ -354,11 +362,11 @@ function DashboardPage({ userId }) {
           <MapComponent />
         </div>
       )}
-  <PreferenceModal
+      <PreferenceModal
         isOpen={isPreferenceModalOpen}
         onRequestClose={handleClosePreferenceModal}
         onSave={handleSavePreferences}
-      />  
+      />
     </div>
   );
 }

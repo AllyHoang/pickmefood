@@ -39,24 +39,23 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
     return "";
   }
 
-
   return (
     <Card
-      key={basket?._id}
+      key={basket._id}
       className="flex flex-col bg-white rounded-lg shadow-lg gap-5"
     >
       <div className="flex justify-between">
         <div>
           <CardHeader className="flex-col gap-4 items-start">
             <Badge
-              variant={`${basket?.type === "Request" ? "primary" : "secondary"}`}
+              variant={`${basket.type === "Request" ? "primary" : "secondary"}`}
               className={`px-3 py-1 rounded-full text-xs font-md ${
-                basket?.type === "Request" ? "bg-sky-100" : "bg-emerald-100"
+                basket.type === "Request" ? "bg-sky-100" : "bg-emerald-100"
               }`}
             >
-              {basket?.type === "Request"
-                ? `${basket?.type} 🤲`
-                : `${basket?.type} 🚀`}
+              {basket.type === "Request"
+                ? `${basket.type} 🤲`
+                : `${basket.type} 🚀`}
             </Badge>
 
             <div className="flex flex-row gap-4 items-center">
@@ -71,16 +70,14 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
                 <CardTitle className="text-heading3-bold">
                   {basket?.title}
                 </CardTitle>
-                <CardDescription>
-                  {basket?.userId?.username}
-                </CardDescription>
+                <CardDescription>{basket.userId.username}</CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent className="flex flex-col justify-between">
             <p className="italic">
               {truncateDescription(
-                basket?.type === "Donation"
+                basket.type === "Donation"
                   ? basket?.description
                   : basket?.reason,
                 15
@@ -97,41 +94,41 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
         <BiMap></BiMap>
         <p className="font-medium text-sm">
           {basket?.location
-            ? extractStateAndZip(basket?.location)
+            ? extractStateAndZip(basket.location)
             : "No Location"}
         </p>
       </div>
       <CardFooter className="flex justify-between">
         <div className="flex gap-3">
           {basket?.type === "Donation"
-            ? basket?.items?.map((item) => (
+            ? basket.items?.map((item) => (
                 <div>
-                  <div key={item?.id}>
+                  <div key={item.id}>
                     <Badge className="bg-sky-100 text-black">
-                      {item?.emoji} {item?.itemName}
+                      {item.emoji} {item.itemName}
                     </Badge>
                   </div>
                 </div>
               ))
-            : basket?.requests?.map((request) => (
+            : basket.requests?.map((request) => (
                 // Your JSX for each request
-                <div key={request?.id}>
+                <div key={request.id}>
                   <Badge className="bg-sky-100 text-black">
-                    {request?.emoji} {request?.itemName}
+                    {request.emoji} {request.itemName}
                   </Badge>
                 </div>
               ))}
         </div>
 
-        {basket?.status === "initiated" || basket?.status == undefined ? (
+        {basket.status === "initiated" || basket?.status == undefined ? (
           <DrawerComponent
-            id={basket?._id}
+            id={basket._id}
             handleOpenDialog={setOpenDialog}
             selectedBasket={selectedBasket}
           />
-        ) : basket?.status === "accepted" ? (
+        ) : basket.status === "accepted" ? (
           <Button className="bg-green-500">Accepted</Button>
-        ) : basket?.status === "canceled" ? (
+        ) : basket.status === "canceled" ? (
           <Button className="bg-red-500">Canceled</Button>
         ) : (
           <Link href={{ pathname: "/notifications" }} shallow={true}>
