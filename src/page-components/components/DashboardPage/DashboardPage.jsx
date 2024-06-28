@@ -24,6 +24,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -43,6 +51,8 @@ function DashboardPage({ userId }) {
     urgency: 0.3,
     points: 0.1,
   });
+
+  console.log(baskets);
 
   const truncateDescription = (description, maxWords) => {
     const words = description?.split(" ");
@@ -172,89 +182,19 @@ function DashboardPage({ userId }) {
                   </Button>
                 </div>
               </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-3 gap-4">
-                  {matches?.map((match) => (
-                    <Card
-                      key={match._id}
-                      className="flex flex-col bg-white rounded-lg shadow-lg"
-                    >
-                      <CardHeader className="flex-col gap-4 items-start">
-                        <Badge
-                          variant={`${
-                            match?.type === "Request" ? "primary" : "secondary"
-                          }`}
-                          className={`px-3 py-1 rounded-full text-sm font-large text-s ${
-                            match?.type === "Request"
-                              ? "bg-sky-100"
-                              : "bg-emerald-100"
-                          }`}
-                        >
-                          {match.type === "Request"
-                            ? `${match.type} 🤲`
-                            : `${match.type} 🚀`}
-                        </Badge>
-
-                        <div className="flex flex-row gap-4 items-center">
-                          <Avatar>
-                            <AvatarImage
-                              src={`${match?.userId?.profileImage}`}
-                              alt="Donation Image"
-                            />
-                            <AvatarFallback></AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <CardTitle className="text-xl">
-                              {match?.title}
-                            </CardTitle>
-                            <CardDescription>
-                              {match.type === "Donation"
-                                ? match?.description?.slice(0, 2)
-                                : match?.reason?.slice(0, 2)}
-                            </CardDescription>
-                          </div>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <p>
-                          {truncateDescription(
-                            match.type === "Donation"
-                              ? match?.description
-                              : match?.reason,
-                            15
-                          )}
-                        </p>
-                      </CardContent>
-                      <CardFooter className="flex justify-between">
-                        <div className="flex items-center gap-1 align-center">
-                          <BiMap></BiMap>
-                          <p className="font-medium text-sm">
-                            {" "}
-                            {match?.location}{" "}
-                          </p>
-                        </div>
-                        {match.status === "initiated" ||
-                        match?.status == undefined ? (
-                          <DrawerComponent
-                            id={match._id}
-                            handleOpenDialog={setOpenDialog}
-                            selectedBasket={selectedBasket}
-                          />
-                        ) : match.status === "accepted" ? (
-                          <Button className="bg-green-500">Accepted</Button>
-                        ) : match.status === "canceled" ? (
-                          <Button className="bg-red-500">Canceled</Button>
-                        ) : (
-                          <Link
-                            href={{ pathname: "/notifications" }}
-                            shallow={true}
-                          >
-                            <Button className="bg-sky-500">Let's chat</Button>
-                          </Link>
-                        )}
-                      </CardFooter>
-                    </Card>
-                  ))}
+              <CardContent className="w-full">
+                <div className="grid grid-cols-2 gap-4">
+                  {matches?.map((match) => {
+                    return (
+                      <CardComponent
+                        basket={match}
+                        setOpenDialog={setOpenDialog}
+                        selectedBasket={selectedBasket}
+                        key={match._id}
+                        className="flex flex-col bg-white rounded-lg shadow-lg"
+                      ></CardComponent>
+                    );
+                  })}
                   {/* Dialog UI */}
                   {selectedBasket && openDialog && (
                     <DialogComponent
@@ -269,81 +209,17 @@ function DashboardPage({ userId }) {
             </Card>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            {baskets?.map((basket) => (
-              <CardComponent
-                key={basket._id}
-                basket={basket}
-                setOpenDialog={setOpenDialog}
-                selectedBasket={selectedBasket}
-              >
-                <CardHeader className="flex-col gap-4 items-start">
-                  <Badge
-                    variant={`${
-                      basket?.type === "Request" ? "primary" : "secondary"
-                    }`}
-                    className={`px-3 py-1 rounded-full text-sm font-large text-s ${
-                      basket?.type === "Request"
-                        ? "bg-sky-100"
-                        : "bg-emerald-100"
-                    }`}
-                  >
-                    {basket?.type === "Request"
-                      ? `${basket?.type} 🤲`
-                      : `${basket?.type} 🚀`}
-                  </Badge>
-
-                  <div className="flex flex-row gap-4 items-center">
-                    <Avatar>
-                      <AvatarImage
-                        src={`${basket?.userId?.profileImage}`}
-                        alt="Donation Image"
-                      />
-                      <AvatarFallback></AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <CardTitle className="text-xl">{basket?.title}</CardTitle>
-                      <CardDescription>
-                        {basket?.type === "Donation"
-                          ? basket?.description?.slice(0, 2)
-                          : basket?.reason?.slice(0, 2)}
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p>
-                    {truncateDescription(
-                      basket?.type === "Donation"
-                        ? basket?.description
-                        : basket?.reason,
-                      15
-                    )}
-                  </p>
-                </CardContent>
-                <CardFooter className="flex justify-between">
-                  <div className="flex items-center gap-1 align-center">
-                    <BiMap></BiMap>
-                    <p className="font-medium text-sm"> {basket?.location} </p>
-                  </div>
-                  {basket?.status === "initiated" ||
-                  basket?.status == undefined ? (
-                    <DrawerComponent
-                      id={basket._id}
-                      handleOpenDialog={setOpenDialog}
-                      selectedBasket={selectedBasket}
-                    />
-                  ) : basket.status === "accepted" ? (
-                    <Button className="bg-green-500">Accepted</Button>
-                  ) : basket.status === "canceled" ? (
-                    <Button className="bg-red-500">Canceled</Button>
-                  ) : (
-                    <Link href={{ pathname: "/notifications" }} shallow={true}>
-                      <Button className="bg-sky-500">Let's chat</Button>
-                    </Link>
-                  )}
-                </CardFooter>
-              </CardComponent>
-            ))}
+            {baskets?.map((basket) => {
+              return (
+                <CardComponent
+                  basket={basket}
+                  setOpenDialog={setOpenDialog}
+                  selectedBasket={selectedBasket}
+                  key={basket._id}
+                  className="flex flex-col bg-white rounded-lg shadow-lg"
+                ></CardComponent>
+              );
+            })}
             {/* Dialog UI */}
 
             {selectedBasket && openDialog && (
@@ -363,9 +239,11 @@ function DashboardPage({ userId }) {
         </div>
       )}
       <PreferenceModal
+      <PreferenceModal
         isOpen={isPreferenceModalOpen}
         onRequestClose={handleClosePreferenceModal}
         onSave={handleSavePreferences}
+      />
       />
     </div>
   );

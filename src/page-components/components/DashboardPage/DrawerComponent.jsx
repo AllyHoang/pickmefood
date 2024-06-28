@@ -82,28 +82,29 @@ function DrawerComponent({ selectedBasket, id, handleOpenDialog }) {
           </div>
         )}
 
-        <div className="flex flex-col ">
+        <div className="flex flex-col">
           <h2 className="text-heading2-bold font-bold">
             {selectedBasket?.title}
           </h2>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-2 mt-2">
             {selectedBasket?.type === "Donation"
               ? selectedBasket?.items.map((item) => (
-                  <div>
-                    <div key={item.id}>
-                      <Badge className="bg-sky-100 text-black">
-                        {item.emoji} {item.itemName}
-                      </Badge>
-                    </div>
-                  </div>
+                  <Badge
+                    key={item.id}
+                    className="bg-sky-100 text-black flex items-center gap-1"
+                  >
+                    <span>{item.emoji}</span>
+                    <span>{item.itemName}</span>
+                  </Badge>
                 ))
               : selectedBasket?.requests.map((request) => (
-                  // Your JSX for each request
-                  <div key={request.id}>
-                    <Badge className="bg-sky-100 text-black">
-                      {request.emoji} {request.itemName}
-                    </Badge>
-                  </div>
+                  <Badge
+                    key={request.id}
+                    className="bg-sky-100 text-black flex items-center gap-1"
+                  >
+                    <span>{request.emoji}</span>
+                    <span>{request.itemName}</span>
+                  </Badge>
                 ))}
           </div>
         </div>

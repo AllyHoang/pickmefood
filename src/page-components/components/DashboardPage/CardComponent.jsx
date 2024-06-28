@@ -41,14 +41,16 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
 
   return (
     <Card
-      key={basket._id}
-      className="flex flex-col bg-white rounded-lg shadow-lg gap-5"
+      key={basket?._id}
+      className="flex flex-col bg-white rounded-lg shadow-lg gap-4"
     >
       <div className="flex justify-between">
         <div>
-          <CardHeader className="flex-col gap-4 items-start">
+          <CardHeader className="flex-col gap-3 items-start">
             <Badge
-              variant={`${basket.type === "Request" ? "primary" : "secondary"}`}
+              variant={`${
+                basket?.type === "Request" ? "primary" : "secondary"
+              }`}
               className={`px-3 py-1 rounded-full text-xs font-md ${
                 basket.type === "Request" ? "bg-sky-100" : "bg-emerald-100"
               }`}
@@ -70,7 +72,7 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
                 <CardTitle className="text-heading3-bold">
                   {basket?.title}
                 </CardTitle>
-                <CardDescription>{basket.userId.username}</CardDescription>
+                <CardDescription>{basket?.userId?.username}</CardDescription>
               </div>
             </div>
           </CardHeader>
@@ -86,7 +88,7 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
           </CardContent>
         </div>
         <img
-          className="rounded-3xl size-48 mt-10 mr-10"
+          className="rounded-3xl size-48 mt-10 mr-10 object-cover"
           src={basket?.image}
         ></img>
       </div>
@@ -99,25 +101,28 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
         </p>
       </div>
       <CardFooter className="flex justify-between">
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-wrap">
           {basket?.type === "Donation"
-            ? basket.items?.map((item) => (
-                <div>
-                  <div key={item.id}>
-                    <Badge className="bg-sky-100 text-black">
-                      {item.emoji} {item.itemName}
-                    </Badge>
-                  </div>
-                </div>
+            ? basket?.items?.slice(0, 3).map((item) => (
+                <Badge key={item?.id} className="bg-sky-100 text-black">
+                  {item?.emoji} {item?.itemName}
+                </Badge>
               ))
-            : basket.requests?.map((request) => (
-                // Your JSX for each request
-                <div key={request.id}>
-                  <Badge className="bg-sky-100 text-black">
-                    {request.emoji} {request.itemName}
-                  </Badge>
-                </div>
+            : basket?.requests?.slice(0, 3).map((request) => (
+                <Badge key={request?.id} className="bg-sky-100 text-black">
+                  {request?.emoji} {request?.itemName}
+                </Badge>
               ))}
+          {basket?.type === "Donation" && basket?.items?.length > 3 && (
+            <Badge className="bg-sky-100 text-black">
+              +{basket?.items.length - 3} more
+            </Badge>
+          )}
+          {basket?.type !== "Donation" && basket?.requests?.length > 3 && (
+            <Badge className="bg-sky-100 text-black">
+              +{basket?.requests.length - 3} more
+            </Badge>
+          )}
         </div>
 
         {basket.status === "initiated" || basket?.status == undefined ? (
