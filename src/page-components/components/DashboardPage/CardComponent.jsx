@@ -39,17 +39,18 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
     return "";
   }
 
-
   return (
     <Card
       key={basket?._id}
       className="flex flex-col bg-white rounded-lg shadow-lg gap-4"
     >
-           <div className="flex justify-between">
+      <div className="flex justify-between">
         <div>
           <CardHeader className="flex-col gap-3 items-start">
             <Badge
-              variant={`${basket?.type === "Request" ? "primary" : "secondary"}`}
+              variant={`${
+                basket?.type === "Request" ? "primary" : "secondary"
+              }`}
               className={`px-3 py-1 rounded-full text-xs font-md ${
                 basket?.type === "Request" ? "bg-sky-100" : "bg-emerald-100"
               }`}
@@ -71,9 +72,7 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
                 <CardTitle className="text-heading3-bold">
                   {basket?.title}
                 </CardTitle>
-                <CardDescription>
-                  {basket?.userId?.username}
-                </CardDescription>
+                <CardDescription>{basket?.userId?.username}</CardDescription>
               </div>
             </div>
           </CardHeader>

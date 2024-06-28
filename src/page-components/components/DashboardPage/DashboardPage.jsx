@@ -16,7 +16,14 @@ import PreferenceModal from "./PreferenceModal";
 import CardComponent from "./CardComponent";
 import useUser from "@/hook/useUser";
 import { BiMap } from "react-icons/bi";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -46,7 +53,6 @@ function DashboardPage({ userId }) {
     }
     return description;
   };
-
 
   const handleOpenPreferenceModal = () => {
     setIsPreferenceModalOpen(true);
@@ -170,17 +176,17 @@ function DashboardPage({ userId }) {
               </CardHeader>
               <CardContent className="w-full">
                 <div className="grid grid-cols-2 gap-4">
-                {matches?.map((match) => {
-              return <CardComponent
-              basket={match}
-                setOpenDialog={setOpenDialog}
-                selectedBasket={selectedBasket}
-                key={match._id}
-                className="flex flex-col bg-white rounded-lg shadow-lg"
-              >
-                
-              </CardComponent>
-})}
+                  {matches?.map((match) => {
+                    return (
+                      <CardComponent
+                        basket={match}
+                        setOpenDialog={setOpenDialog}
+                        selectedBasket={selectedBasket}
+                        key={match._id}
+                        className="flex flex-col bg-white rounded-lg shadow-lg"
+                      ></CardComponent>
+                    );
+                  })}
                   {/* Dialog UI */}
                   {selectedBasket && openDialog && (
                     <DialogComponent
@@ -196,16 +202,16 @@ function DashboardPage({ userId }) {
           </div>
           <div className="grid grid-cols-2 gap-4">
             {baskets?.map((basket) => {
-              return <CardComponent
-              basket={basket}
-                setOpenDialog={setOpenDialog}
-                selectedBasket={selectedBasket}
-                key={basket._id}
-                className="flex flex-col bg-white rounded-lg shadow-lg"
-              >
-                
-              </CardComponent>
-})}
+              return (
+                <CardComponent
+                  basket={basket}
+                  setOpenDialog={setOpenDialog}
+                  selectedBasket={selectedBasket}
+                  key={basket._id}
+                  className="flex flex-col bg-white rounded-lg shadow-lg"
+                ></CardComponent>
+              );
+            })}
             {/* Dialog UI */}
 
             {selectedBasket && openDialog && (
@@ -224,11 +230,11 @@ function DashboardPage({ userId }) {
           <MapComponent />
         </div>
       )}
-  <PreferenceModal
+      <PreferenceModal
         isOpen={isPreferenceModalOpen}
         onRequestClose={handleClosePreferenceModal}
         onSave={handleSavePreferences}
-      />  
+      />
     </div>
   );
 }
