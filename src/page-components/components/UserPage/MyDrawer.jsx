@@ -23,7 +23,14 @@ import useUser from "@/hook/useUser";
 import RemoveBtn from "../RemoveButton";
 import RemoveRequestsBtn from "../RemoveRequestsButton";
 
-function MyDrawer({ selectedBasket, id, handleOpenDialog, type }) {
+function MyDrawer({
+  selectedBasket,
+  id,
+  handleOpenDialog,
+  loggedInUserId,
+  userId,
+  type,
+}) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   function extractStateAndZip(location) {
@@ -49,27 +56,6 @@ function MyDrawer({ selectedBasket, id, handleOpenDialog, type }) {
     const timeDifference = currentDate - givenDate;
     const dayDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
     return dayDifference;
-  };
-
-  const handleDeleteBasket = async () => {
-    try {
-      const response = await fetch(`/api/baskets/${selectedBasket._id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        // Basket deleted successfully, navigate back to user page or refresh the list
-        router.push("/userpage");
-      } else {
-        const errorData = await response.json();
-        console.error("Error deleting basket:", errorData.message);
-      }
-    } catch (error) {
-      console.error("Error deleting basket:", error);
-    }
   };
 
   return (
@@ -108,7 +94,7 @@ function MyDrawer({ selectedBasket, id, handleOpenDialog, type }) {
           <h2 className="text-heading2-bold font-bold">
             {selectedBasket?.title}
           </h2>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-2 mt-2">
             {selectedBasket?.type === "Donation"
               ? selectedBasket?.items.map((item) => (
                   <div>
@@ -184,18 +170,22 @@ function MyDrawer({ selectedBasket, id, handleOpenDialog, type }) {
           </div>
         )}
 
-        <div className="mt-4 flex-col" onClick={() => handleOpenDialog(true)}>
-          <Button className="w-10/12 self fixed bottom-12 left-10 bg-sky-400">
-            {" "}
-            Edit{" "}
-          </Button>
+        {userId === loggedInUserId ? (
+          <div className="mt-4 flex-col" onClick={() => handleOpenDialog(true)}>
+            <Button className="w-10/12 self fixed bottom-12 left-10 bg-sky-400">
+              {" "}
+              Edit{" "}
+            </Button>
 
-          {type === "Donation" ? (
-            <RemoveBtn id={selectedBasket?._id} />
-          ) : (
-            <RemoveRequestsBtn id={selectedBasket?._id} />
-          )}
-        </div>
+            {type === "Donation" ? (
+              <RemoveBtn id={selectedBasket?._id} />
+            ) : (
+              <RemoveRequestsBtn id={selectedBasket?._id} />
+            )}
+          </div>
+        ) : (
+          <></>
+        )}
       </DrawerContent>
     </Drawer>
   );

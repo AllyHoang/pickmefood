@@ -7,7 +7,7 @@ import Link from "next/link";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import Profile from "./ProfileComponent";
 
-const TestProfilePage = ({ userId }) => {
+const TestProfilePage = ({ userId, loggedInUserId }) => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
@@ -121,18 +121,24 @@ const TestProfilePage = ({ userId }) => {
         </div>
       </div>
 
-      <div className="absolute top-3 right-8">
-        {/* <Dialog modal={false}> */}
-        <Dialog modal={false}>
-          <DialogTrigger>
-            <Button className="bg-sky-400 text-white">Edit Profile</Button>
-          </DialogTrigger>
-          {/* <DialogContent onInteract = {(e) => e.preventDefault()}> */}
-          <DialogContent onInteractOutside={(event) => event.preventDefault()}>
-            <Profile userId={userId}></Profile>
-          </DialogContent>
-        </Dialog>
-      </div>
+      {userId === loggedInUserId ? (
+        <div className="absolute top-3 right-8">
+          {/* <Dialog modal={false}> */}
+          <Dialog modal={false}>
+            <DialogTrigger>
+              <Button className="bg-sky-400 text-white">Edit Profile</Button>
+            </DialogTrigger>
+            {/* <DialogContent onInteract = {(e) => e.preventDefault()}> */}
+            <DialogContent
+              onInteractOutside={(event) => event.preventDefault()}
+            >
+              <Profile userId={userId}></Profile>
+            </DialogContent>
+          </Dialog>
+        </div>
+      ) : (
+        <></>
+      )}
     </div>
   );
 };
