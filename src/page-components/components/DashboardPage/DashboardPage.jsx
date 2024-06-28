@@ -239,11 +239,9 @@ function DashboardPage({ userId }) {
         </div>
       )}
       <PreferenceModal
-      <PreferenceModal
         isOpen={isPreferenceModalOpen}
         onRequestClose={handleClosePreferenceModal}
         onSave={handleSavePreferences}
-      />
       />
     </div>
   );
