@@ -363,7 +363,8 @@ export default function AddRequest({ userId }) {
       });
 
       if (res.ok) {
-        router.push("/dashboard");
+        toast.success("Create Request Successfully");
+        // router.push("/dashboard");
       } else {
         throw new Error("Failed to create request");
       }

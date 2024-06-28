@@ -1,13 +1,15 @@
 import connectToDB from "@/core/db/mongodb";
 import ItemModel from "@/core/models/Item";
 import BasketModel from "@/core/models/Basket";
+import { UserModel } from "@/core/models/User";
 
 export default async function handler(req, res) {
   await connectToDB();
 
   if (req.method === "POST") {
     // Process a POST request
-    const { userId, items, image, description, title, location } = req.body;
+    const { userId, items, image, description, title, location, points } =
+      req.body;
 
     try {
       // Create the items first
@@ -31,6 +33,8 @@ export default async function handler(req, res) {
       const populatedBasket = await BasketModel.findById(basket._id).populate(
         "items"
       );
+      // Update user's points
+      await UserModel.findByIdAndUpdate(userId, { $inc: { points: points } });
 
       res
         .status(201)
@@ -70,12 +74,10 @@ export default async function handler(req, res) {
         { $pull: { items: { $nin: idsToRetain } } }
       );
 
-      res
-        .status(200)
-        .json({
-          message: "Items and their references deleted successfully",
-          deletedCount: deleteResult.deletedCount,
-        });
+      res.status(200).json({
+        message: "Items and their references deleted successfully",
+        deletedCount: deleteResult.deletedCount,
+      });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Internal Server Error" });

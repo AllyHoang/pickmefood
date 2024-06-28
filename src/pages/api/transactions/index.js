@@ -2,7 +2,8 @@ import connectToDB from "@/core/db/mongodb";
 import BasketModel from "@/core/models/Basket";
 import BasketRequest from "@/core/models/BasketRequest";
 import { TransactionModel } from "@/core/models/Transaction";
-import { Status } from "@/lib/utils";
+import { UserModel } from "@/core/models/User";
+import { POINTS, Status } from "@/lib/utils";
 
 //return all the transactions
 export default async function handler(req, res) {
@@ -50,6 +51,9 @@ export async function updateStatusIfAgreed(transaction) {
           status: Status.ACCEPTED,
         }
       );
+      //Update Donor and Requester Points
+       await UserModel.findByIdAndUpdate(updatedTransaction.donorId, { $inc: { points: POINTS.TRANSACTION } });
+       await UserModel.findByIdAndUpdate(updatedTransaction.requesterId, { $inc: { points: POINTS.TRANSACTION } });
     }
 
     return updatedTransaction;
