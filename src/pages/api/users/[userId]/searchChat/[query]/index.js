@@ -11,7 +11,7 @@ export default async function handler(req, res) {
       const query = req.query.query;
 
       const searchedChat = await Chat.find({
-        members: userId,
+        members: { $in: userId },
         name: { $regex: query, $options: "i" },
       })
         .populate({

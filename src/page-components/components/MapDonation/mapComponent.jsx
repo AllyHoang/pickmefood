@@ -128,12 +128,12 @@ const MapComponent = () => {
 
   const fetchRequests = async () => {
     try {
-      const response = await fetch("/api/requests");
+      const response = await fetch("/api/basketrequests");
       if (!response.ok) {
         throw new Error("Failed to fetch requests");
       }
       const data = await response.json();
-      const geocodedRequests = await geocodeRequests(data.requests);
+      const geocodedRequests = await geocodeRequests(data.baskets);
       console.log(geocodedRequests);
       setRequests(geocodedRequests);
     } catch (error) {

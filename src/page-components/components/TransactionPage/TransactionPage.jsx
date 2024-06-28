@@ -8,16 +8,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { useRouter } from "next/router";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import TransactionSummary from "./TransactionSummary";
 import useFetchTransaction from "@/hook/useFetchTransaction";
 import { useSelector } from "react-redux";
-import Link from "next/link";
-import DialogComponent from "../DashboardPage/DialogComponent";
-import getMatchingItems from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import DrawerTransaction from "./DrawerTransction";
 
@@ -76,28 +72,22 @@ function TransactionPage() {
                       transaction.status === "pending" ? "primary" : "secondary"
                     }`}
                     className={`px-3 py-1 rounded-full text-sm text-s absolute right-2 top-2 ${
-                      transaction.status === "pending" ? (
-                        "bg-sky-200"
-                      ) : transaction.status === "accepted" ? (
-                        "bg-emerald-200"
-                      ) : transaction.status === "canceled" ? (
-                        "bg-red-200"
-                      ) : (
-                        "Unknown Status"
-                      )
+                      transaction.status === "pending"
+                        ? "bg-sky-200"
+                        : transaction.status === "accepted"
+                        ? "bg-emerald-200"
+                        : transaction.status === "canceled"
+                        ? "bg-red-200"
+                        : "Unknown Status"
                     }`}
                   >
-{
-  transaction.status === "pending" ? (
-    "Pending"
-  ) : transaction.status === "accepted" ? (
-    "Accepted"
-  ) : transaction.status === "canceled" ? (
-    "Rejected"
-  ) : (
-    "Unknown Status"
-  )
-}
+                    {transaction.status === "pending"
+                      ? "Pending"
+                      : transaction.status === "accepted"
+                      ? "Accepted"
+                      : transaction.status === "canceled"
+                      ? "Rejected"
+                      : "Unknown Status"}
                   </Badge>
                   <div className="grid grid-cols-1 md:grid-cols-2 items-start">
                     <div className="flex flex-col items-start">
@@ -187,19 +177,21 @@ function TransactionPage() {
                           <p>No items to display</p>
                         )}
                       </div> */}
-                    {/* </div> */}
+                  {/* </div> */}
                   <CardFooter className="flex justify-between items-center">
                     <div className="flex items-center gap-1">
                       <span>{transaction?.location}</span>
                     </div>
-                    {transaction.status!== 'accepted' && (<DrawerTransaction
-                      id={transaction._id}
-                      handleOpenDialog={setOpenDialog}
-                      selectedBasket={selectedTransaction}
-                    />)}
+                    {transaction.status !== "accepted" && (
+                      <DrawerTransaction
+                        id={transaction._id}
+                        handleOpenDialog={setOpenDialog}
+                        selectedBasket={selectedTransaction}
+                      />
+                    )}
                   </CardFooter>
                 </Card>
-))}
+              ))}
               {/* {selectedBasket && openDialog && (
                 <DialogComponent
                   itemKey={JSON.stringify(selectedBasket)}

@@ -52,12 +52,12 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
                 basket?.type === "Request" ? "primary" : "secondary"
               }`}
               className={`px-3 py-1 rounded-full text-xs font-md ${
-                basket?.type === "Request" ? "bg-sky-100" : "bg-emerald-100"
+                basket.type === "Request" ? "bg-sky-100" : "bg-emerald-100"
               }`}
             >
-              {basket?.type === "Request"
-                ? `${basket?.type} 🤲`
-                : `${basket?.type} 🚀`}
+              {basket.type === "Request"
+                ? `${basket.type} 🤲`
+                : `${basket.type} 🚀`}
             </Badge>
 
             <div className="flex flex-row gap-4 items-center">
@@ -79,7 +79,7 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
           <CardContent className="flex flex-col justify-between">
             <p className="italic">
               {truncateDescription(
-                basket?.type === "Donation"
+                basket.type === "Donation"
                   ? basket?.description
                   : basket?.reason,
                 15
@@ -96,7 +96,7 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
         <BiMap></BiMap>
         <p className="font-medium text-sm">
           {basket?.location
-            ? extractStateAndZip(basket?.location)
+            ? extractStateAndZip(basket.location)
             : "No Location"}
         </p>
       </div>
@@ -125,15 +125,15 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
           )}
         </div>
 
-        {basket?.status === "initiated" || basket?.status == undefined ? (
+        {basket.status === "initiated" || basket?.status == undefined ? (
           <DrawerComponent
-            id={basket?._id}
+            id={basket._id}
             handleOpenDialog={setOpenDialog}
             selectedBasket={selectedBasket}
           />
-        ) : basket?.status === "accepted" ? (
+        ) : basket.status === "accepted" ? (
           <Button className="bg-green-500">Accepted</Button>
-        ) : basket?.status === "canceled" ? (
+        ) : basket.status === "canceled" ? (
           <Button className="bg-red-500">Canceled</Button>
         ) : (
           <Link href={{ pathname: "/notifications" }} shallow={true}>
