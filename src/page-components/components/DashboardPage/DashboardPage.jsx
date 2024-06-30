@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import PaginationComponent from "../Pagination/Pagination";
 
 function DashboardPage({ userId }) {
   const [selectedBasket, setSelectedBasket] = useState(null);
@@ -43,7 +44,8 @@ function DashboardPage({ userId }) {
     urgency: 0.3,
     points: 0.1,
   });
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const cardsPerPage = 10;
   console.log(baskets);
 
   const truncateDescription = (description, maxWords) => {
@@ -105,6 +107,16 @@ function DashboardPage({ userId }) {
 
     fetchMatches();
   }, []);
+
+  const totalCards = matches.length + baskets.length;
+  const paginatedMatches = matches.slice(
+    (currentPage - 1) * cardsPerPage,
+    currentPage * cardsPerPage
+  );
+  const paginatedBaskets = baskets.slice(
+    (currentPage - 1) * cardsPerPage,
+    currentPage * cardsPerPage
+  );
 
   return (
     <div>
@@ -176,7 +188,7 @@ function DashboardPage({ userId }) {
               </CardHeader>
               <CardContent className="w-full">
                 <div className="grid grid-cols-2 gap-4">
-                  {matches?.map((match) => {
+                  {paginatedMatches?.map((match) => {
                     return (
                       <CardComponent
                         basket={match}
@@ -201,7 +213,7 @@ function DashboardPage({ userId }) {
             </Card>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            {baskets?.map((basket) => {
+            {paginatedBaskets?.map((basket) => {
               return (
                 <CardComponent
                   basket={basket}
@@ -235,6 +247,14 @@ function DashboardPage({ userId }) {
         onRequestClose={handleClosePreferenceModal}
         onSave={handleSavePreferences}
       />
+      <div className="mt-3">
+        <PaginationComponent
+          totalCards={totalCards}
+          cardsPerPage={cardsPerPage}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+      </div>
     </div>
   );
 }
