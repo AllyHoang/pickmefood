@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 export default function WelcomeMessage() {
   return (
     <>
-      <div className="flex flex-col bg-gradient-to-tr from-sky-400 via-sky-500 to-sky-600 h-screen w-1/2 items-center rounded-3xl ">
+      <div className="flex flex-col bg-gradient-to-tr from-sky-400 via-sky-500 to-sky-600 h-screen w-1/2 items-center">
         <div className="flex flex-col gap-10 items-center relative top-32">
           <p className="text-white text-[3.75rem] leading-[1] ml-7 self-start">
             Welcome to
