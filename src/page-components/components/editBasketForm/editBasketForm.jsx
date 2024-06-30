@@ -7,7 +7,8 @@ function EditBasketForm({ isOpen, onClose, basket, onSave }) {
   const [title, setTitle] = useState(basket?.title || "");
   const [description, setDescription] = useState(basket?.description || "");
   const [location, setLocation] = useState(basket?.location || "");
-  const [items, setExpiryDate] = useState(basket?.items || "");
+  const [items, setExpiryDate] = useState(basket.type === "Donation" ? basket?.expiryDate : "");
+  
 
   const handleSave = async () => {
     try {

@@ -123,7 +123,6 @@ const TestProfilePage = ({ userId, loggedInUserId }) => {
 
       {userId === loggedInUserId ? (
         <div className="absolute top-3 right-8">
-          {/* <Dialog modal={false}> */}
           <Dialog modal={false}>
             <DialogTrigger>
               <Button className="bg-sky-400 text-white">Edit Profile</Button>

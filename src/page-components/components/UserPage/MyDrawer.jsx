@@ -16,12 +16,14 @@ import Link from "next/link";
 import { RxSewingPin } from "react-icons/rx";
 import { RxPerson } from "react-icons/rx";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import useUser from "@/hook/useUser";
-import RemoveBtn from "../RemoveButton";
-import RemoveRequestsBtn from "../RemoveRequestsButton";
+import RemoveBtn from "./RemoveButton";
+import RemoveRequestsBtn from "./RemoveRequestsButton";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import EditBasketForm from "./EditBasketForm";
 
 function MyDrawer({
   selectedBasket,
@@ -32,6 +34,7 @@ function MyDrawer({
   type,
 }) {
   const [open, setOpen] = useState(false);
+  const username = useUser(userId).user.username;
   const router = useRouter();
   function extractStateAndZip(location) {
     if (typeof location !== "string") {
@@ -63,7 +66,7 @@ function MyDrawer({
       onOpenChange={(open) => {
         setOpen(open);
         if (!open) {
-          router.push("/userpage");
+          router.push(`/${username}?userId=${userId}`);
         }
       }}
       direction="right"
@@ -71,7 +74,10 @@ function MyDrawer({
       <DrawerTrigger asChild>
         {/* //item._id */}
         <Link
-          href={{ pathname: "/userpage", query: { id: id } }}
+          href={{
+            pathname: `/${username}?userId=${userId}`,
+            query: { id: id },
+          }}
           shallow={true}
         >
           <Button className="">View Details</Button>
@@ -172,15 +178,22 @@ function MyDrawer({
 
         {userId === loggedInUserId ? (
           <div className="mt-4 flex-col" onClick={() => handleOpenDialog(true)}>
-            <Button className="w-10/12 self fixed bottom-12 left-10 bg-sky-400">
-              {" "}
-              Edit{" "}
-            </Button>
+            <Dialog>
+              <DialogTrigger>
+                <Button className="w-10/12 self fixed bottom-12 left-10 bg-sky-400">
+                  {" "}
+                  Edit{" "}
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <EditBasketForm basket={selectedBasket} />
+              </DialogContent>
+            </Dialog>
 
             {type === "Donation" ? (
-              <RemoveBtn id={selectedBasket?._id} />
+              <RemoveBtn id={selectedBasket?._id} userId={userId} />
             ) : (
-              <RemoveRequestsBtn id={selectedBasket?._id} />
+              <RemoveRequestsBtn id={selectedBasket?._id} userId={userId} />
             )}
           </div>
         ) : (

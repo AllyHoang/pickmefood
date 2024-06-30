@@ -39,6 +39,7 @@ export default function AddItem({ userId }) {
 
   mapboxgl.accessToken =
     "pk.eyJ1IjoicGlja21lZm9vZCIsImEiOiJjbHZwbHdyMzgwM2hmMmtvNXJ6ZHU2NXh3In0.aITfZvPY-sKGwepyPVPGOg";
+  // mapboxgl.accessToken =process.env.mapboxgl.accessToken
 
   useEffect(() => {
     const mapInstance = new mapboxgl.Map({
@@ -271,11 +272,11 @@ export default function AddItem({ userId }) {
     }));
 
     let totalPoints = 0;
-    itemsWithUserId.map((item) =>{
-      if(item.quantity){
+    itemsWithUserId.map((item) => {
+      if (item.quantity) {
         totalPoints += item.quantity * POINTS.DONATION;
       }
-    })
+    });
 
     try {
       const res = await fetch("/api/items", {
@@ -290,11 +291,13 @@ export default function AddItem({ userId }) {
           title,
           location: userAddress,
           image: uploadedUrl,
-          points: totalPoints
+          points: totalPoints,
         }),
       });
       if (res.ok) {
-        toast.success(`Create Basket Successfully. You earn total: ${totalPoints} Points`);
+        toast.success(
+          `Create Basket Successfully. You earn total: ${totalPoints} Points`
+        );
         // router.push("/dashboard");
       } else {
         throw new Error("Failed to create a basket");
