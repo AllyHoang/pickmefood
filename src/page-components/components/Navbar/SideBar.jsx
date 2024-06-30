@@ -51,7 +51,6 @@ const SideBar = () => {
     {
       href: {
         pathname: `/${currentUser?.username}`,
-        query: { userId: currentUser?.id },
       },
       icon: <RxAvatar size="20px" />,
       label: "Profile",

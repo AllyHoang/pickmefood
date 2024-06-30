@@ -76,7 +76,6 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
                   <Link
                     href={{
                       pathname: `/${basket?.userId?.username}`,
-                      query: { userId: basket?.userId?._id },
                     }}
                   >
                     {" "}

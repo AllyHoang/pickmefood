@@ -6,8 +6,11 @@ import mapboxgl from "mapbox-gl";
 import "react-datepicker/dist/react-datepicker.css";
 import "mapbox-gl/dist/mapbox-gl.css";
 import Select from "react-select";
+import { useRouter } from "next/navigation"; // Import useRouter from Next.js
+import useUser from "@/hook/useUser";
 
-function EditBasketForm({ basket }) {
+function EditBasketForm({ basket, userId }) {
+  const router = useRouter();
   const [title, setTitle] = useState(basket?.title || "");
   const [description, setDescription] = useState(
     basket?.type === "Donation" ? basket?.description : basket?.reason || ""
@@ -153,7 +156,7 @@ function EditBasketForm({ basket }) {
         location,
         items,
       };
-      
+
       if (basket.type === "Donation") {
         payload.description = description;
       } else if (basket.type === "Request") {
@@ -180,7 +183,9 @@ function EditBasketForm({ basket }) {
       }
 
       if (response.ok) {
+        console.log(useUser(userId).user.username);
         const updatedBasket = await response.json();
+        console.log(updatedBasket);
       } else {
         const errorData = await response.json();
         console.error("Error updating basket:", errorData.message);

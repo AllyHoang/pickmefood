@@ -66,7 +66,7 @@ function MyDrawer({
       onOpenChange={(open) => {
         setOpen(open);
         if (!open) {
-          router.push(`/${username}?userId=${userId}`);
+          router.push(`/${username}`);
         }
       }}
       direction="right"
@@ -75,7 +75,7 @@ function MyDrawer({
         {/* //item._id */}
         <Link
           href={{
-            pathname: `/${username}?userId=${userId}`,
+            pathname: `/${username}`,
             query: { id: id },
           }}
           shallow={true}
@@ -186,7 +186,7 @@ function MyDrawer({
                 </Button>
               </DialogTrigger>
               <DialogContent>
-                <EditBasketForm basket={selectedBasket} />
+                <EditBasketForm basket={selectedBasket} userId={userId} />
               </DialogContent>
             </Dialog>
 

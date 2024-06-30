@@ -73,6 +73,11 @@ export default async function handler(req, res) {
         { new: true }
       );
 
+      // const updatedBasket = await BasketModel.findOneAndUpdate(
+      //   { _id: basketId },
+      //   updatedBasketInfo,
+      //   { new: true }
+      // );
       if (items && items.length > 0) {
         // Validate and update each item
         for (const item of items) {
