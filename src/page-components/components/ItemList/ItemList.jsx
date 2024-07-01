@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import RemoveBtn from "../RemoveButton";
+import RemoveBtn from "../UserPage/RemoveButton";
 import { HiPencilAlt } from "react-icons/hi";
 import styles from "./ItemList.module.css"; // Import CSS module
 

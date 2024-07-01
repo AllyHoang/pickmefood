@@ -57,6 +57,55 @@ export default async function handler(req, res) {
       console.error("Error deleting basket and items:", error);
       res.status(500).json({ message: "Internal Server Error" });
     }
+  } else if (req.method === "PUT") {
+    try {
+      await connectToDB();
+      const basketId = req.query.id;
+      if (!basketId) {
+        return res.status(400).json({ message: "Basket ID is required" });
+      }
+      const updatedBasketInfo = req.body;
+      const { items, ...basketFields } = updatedBasketInfo;
+      // Update the basket fields
+      const updatedBasket = await BasketModel.findOneAndUpdate(
+        { _id: basketId },
+        basketFields,
+        { new: true }
+      );
+
+      // const updatedBasket = await BasketModel.findOneAndUpdate(
+      //   { _id: basketId },
+      //   updatedBasketInfo,
+      //   { new: true }
+      // );
+      if (items && items.length > 0) {
+        // Validate and update each item
+        for (const item of items) {
+          if (item._id) {
+            // If item exists, update it
+            await ItemModel.findByIdAndUpdate(item._id, item);
+          } else {
+            // If item does not exist, create a new one and add it to the basket
+            const newItem = new ItemModel(item);
+            await newItem.save();
+            updatedBasket.items.push(newItem._id);
+          }
+        }
+        await updatedBasket.save();
+      }
+
+      if (updatedBasket) {
+        res.status(200).json({
+          message: "Basket updated successfully",
+          data: { basket: updatedBasket },
+        });
+      } else {
+        res.status(404).json({ message: "Basket not found" });
+      }
+    } catch (error) {
+      console.error("Error editing basket and items:", error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
   } else {
     res.status(405).json({ message: "Method Not Allowed" });
   }

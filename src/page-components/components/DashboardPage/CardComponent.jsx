@@ -72,7 +72,16 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
                 <CardTitle className="text-heading3-bold">
                   {basket?.title}
                 </CardTitle>
-                <CardDescription>{basket?.userId?.username}</CardDescription>
+                <CardDescription className="underline">
+                  <Link
+                    href={{
+                      pathname: `/${basket?.userId?.username}`,
+                    }}
+                  >
+                    {" "}
+                    {basket?.userId?.username}
+                  </Link>
+                </CardDescription>
               </div>
             </div>
           </CardHeader>
@@ -103,19 +112,19 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
       <CardFooter className="flex justify-between">
         <div className="flex gap-3 flex-wrap">
           {basket?.type === "Donation"
-            ? basket?.items?.slice(0, 3).map((item) => (
+            ? basket?.items?.slice(0, 2).map((item) => (
                 <Badge key={item?.id} className="bg-sky-100 text-black">
                   {item?.emoji} {item?.itemName}
                 </Badge>
               ))
-            : basket?.requests?.slice(0, 3).map((request) => (
+            : basket?.requests?.slice(0, 2).map((request) => (
                 <Badge key={request?.id} className="bg-sky-100 text-black">
                   {request?.emoji} {request?.itemName}
                 </Badge>
               ))}
           {basket?.type === "Donation" && basket?.items?.length > 3 && (
             <Badge className="bg-sky-100 text-black">
-              +{basket?.items.length - 3} more
+              +{basket?.items.length - 2} more
             </Badge>
           )}
           {basket?.type !== "Donation" && basket?.requests?.length > 3 && (
