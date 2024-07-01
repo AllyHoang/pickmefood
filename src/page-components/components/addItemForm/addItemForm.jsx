@@ -14,6 +14,8 @@ import { HiOutlineTrash } from "react-icons/hi";
 import { CldUploadButton } from "next-cloudinary";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { POINTS } from "@/lib/utils";
+import { useDispatch } from "react-redux";
+import { updatePoints } from "@/redux/user/userSlice";
 
 export default function AddItem({ userId }) {
   const [uploadedUrl, setUploadedUrl] = useState("");
