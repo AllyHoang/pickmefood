@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
 import {
   Dialog,
@@ -27,23 +27,25 @@ import {
 } from "@/components/ui/popover";
 import { useSelector } from "react-redux";
 import useUser from "@/hook/useUser";
+import { useRouter } from "next/router";
 
 function DialogComponent({ handleCloseModal, otherBasket, openDialog, keyItem }) {
   // Get user state from redux
   const { loading, error, currentUser } = useSelector((state) => state.user);
   const [items, setItems] = useState([]);
   const [requests, setRequests] = useState([]);
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(null);
   const [open, setOpen] = useState(false);
-  const [submissionAttempted, setSubmissionAttempted] = useState(false);
+  const router = useRouter();
   // user is other user
   // currentUser is user who is authenticated
   const user = otherBasket.userId;
-  console.log(otherBasket);
-  
+  // console.log(otherBasket);
+  // console.log("Printing Glbal: ",value);
 
   const handleCreateTransaction = async (e) => {
     e.preventDefault();
+    // console.log("Local: ",value);
     const urlCreateTransaction = otherBasket.type === "Donation" ? "request" : "item";
     let transactionData;
     //US is a donor
@@ -58,21 +60,6 @@ function DialogComponent({ handleCloseModal, otherBasket, openDialog, keyItem })
         items: otherBasket.requests,
         location: otherBasket.location,
       };
-      // if(!value){
-      //   transactionData.quantity = otherBasket.quantity;
-      //   transactionData.description = otherBasket.reason;
-      // } 
-      //testTransaction is only for debugging purpose
-      // testTransaction = {
-      //   type: "You are Donation",
-      //   donorId: currentUser.id,
-      //   donorName: currentUser.username,
-      //   basketId: value || null,
-      //   basketrequesterId: user._id,
-      //   requesterName: user?.username,
-      //   basketrequestId: otherBasket._id,
-      //   basketrequestName: otherBasket.title,
-      // }
       
     } else {
       //US is a requestor
@@ -87,27 +74,9 @@ function DialogComponent({ handleCloseModal, otherBasket, openDialog, keyItem })
         items: otherBasket.items,
         location: otherBasket.location,
       };
-      console.log("transactionData: ", transactionData);
-      // if(!value){
-      //   transactionData.quantity = otherBasket.quantity;
-      //   transactionData.description = otherBasket.description;
-      //   transactionData.itemName = otherBasket.itemName;
-      //   transactionData.emoji = otherBasket.emoji;
-      // } 
-      //testTransaction is only for debugging purpose
-      // testTransaction = {
-      //   type: "You are Requester",
-      //   donorId: user._id,
-      //   donorName: user?.username,
-      //   basketId: otherItem.id,
-      //   basketName: otherBasket.itemName,
-      //   requesterId: currentUser.id,
-      //   requesterName: currentUser.username,
-      //   basketrequestId: value || null,
-      // }
+      // console.log("transactionData.basketrequestId: ",transactionData.basketrequestId);
+      // console.log("transactionData: ", transactionData);
     }
-    // console.log("Test Transaction", testTransaction);
-    // Ensure this log runs
     try {
       const response = await fetch(`/api/transactions/${urlCreateTransaction}`, {
         method: "POST",
@@ -132,6 +101,7 @@ function DialogComponent({ handleCloseModal, otherBasket, openDialog, keyItem })
       toast.success("Create transaction successfully");
       //TODO: Might navigate user to Me Page
       handleCloseModal();
+      router.push('/transactions');
     } catch (error) {
       console.error("Error creating transaction:", error.message);
       toast.error(error.message);
@@ -150,7 +120,7 @@ function DialogComponent({ handleCloseModal, otherBasket, openDialog, keyItem })
             throw new Error("Failed to fetch items");
           }
           const donationData = await donationRes.json();
-          console.log(donationData);
+          console.log("donationData: ",donationData);
           setItems(
             donationData.baskets.map((item, index) => ({
               ...item,
@@ -174,7 +144,7 @@ function DialogComponent({ handleCloseModal, otherBasket, openDialog, keyItem })
             throw new Error("Failed to fetch items");
           }
           const requestData = await requestRes.json();
-          console.log(requestData);
+          console.log("requestData: ",requestData);
           setRequests(
             requestData.baskets.map((request, index) => ({
               ...request,
@@ -193,7 +163,7 @@ function DialogComponent({ handleCloseModal, otherBasket, openDialog, keyItem })
   return (
     <Dialog open={openDialog} className="relative z-50">
       <DialogContent className="bg-white p-8 rounded-xl shadow-2xl max-w-3xl mx-auto">
-        <form id={`create-transaction-form-${keyItem}`} onSubmit={handleCreateTransaction}>
+        <form id={`create-transaction-form-${keyItem}`}>
           <DialogHeader className="border-b pb-4 mb-4">
             <h2 className="text-heading2-bold text-sky-500">Create New Transaction</h2>
             <hr className="border-l mb-4"></hr>
@@ -253,16 +223,6 @@ function DialogComponent({ handleCloseModal, otherBasket, openDialog, keyItem })
                       readOnly
                     />
                   </div>
-                  <div>
-                    <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">Quantity</label>
-                    <input
-                      type="number"
-                      id="quantity"
-                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sky-500 focus:border-sky-500 sm:text-sm"
-                      defaultValue={otherBasket?.quantity}
-                      readOnly
-                    />
-                  </div>
                 </div>
                 <h4 className="text-md font-semibold text-gray-800 mb-2">Existing {otherBasket.type ==="Request" ? "Donation 🚀" : "Request 🤲"}</h4>
                 <Popover open={open} onOpenChange={setOpen}>
@@ -294,7 +254,7 @@ function DialogComponent({ handleCloseModal, otherBasket, openDialog, keyItem })
                                   key={item.value}
                                   value={item.value}
                                   onSelect={(currentValue) => {
-                                    setValue(currentValue === value ? "" : currentValue);
+                                    setValue(currentValue === value ? null : currentValue);
                                     setOpen(false);
                                   }}
                                   className="flex items-center p-2 hover:bg-gray-100 cursor-pointer"
@@ -313,7 +273,7 @@ function DialogComponent({ handleCloseModal, otherBasket, openDialog, keyItem })
                                   key={request.value}
                                   value={request.value}
                                   onSelect={(currentValue) => {
-                                    setValue(currentValue === value ? "" : currentValue);
+                                    setValue(currentValue === value ? null : currentValue);
                                     setOpen(false);
                                   }}
                                   className="flex items-center p-2 hover:bg-gray-100 cursor-pointer"
@@ -348,7 +308,7 @@ function DialogComponent({ handleCloseModal, otherBasket, openDialog, keyItem })
               className="bg-sky-500 text-white px-4 py-2 rounded-md hover:bg-sky-600"
               type="submit"
               form={`create-transaction-form-${keyItem}`}
-              onSubmit={handleCreateTransaction}
+              onClick={handleCreateTransaction}
             >
               Create Transaction
             </Button>

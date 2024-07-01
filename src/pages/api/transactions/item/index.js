@@ -13,9 +13,9 @@ export default async function handler(req, res) {
   if (method === 'POST') {
     try {
       //userId: ID of Donator
-      //otherUserI: ID of Requester
-      //itemId: ID of donation
-      //requesterId: ID of request
+      //otherUserID: ID of Requester
+      //basketId: ID of donation
+      //basletrequestId: ID of request
       const { userId, basketrequestId, otherUserId, basketId, description, title, image, items, location} = req.body;
       // Check if a transaction with the same fields already exists
       const existingTransaction = await TransactionModel.findOne({
@@ -30,10 +30,9 @@ export default async function handler(req, res) {
       }
 
       let finalItemId= basketId;
-      if (!finalItemId) {
+      if (basketId === null) {
         const newBasket = await BasketModel.create({
           userId: userId,
-          //TODO: Might consider adding location field to User Schema
           description,
           title,
           image,

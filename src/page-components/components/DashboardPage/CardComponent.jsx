@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { BiMap } from "react-icons/bi";
 import DrawerComponent from "./DrawerComponent";
 import Link from "next/link";
+import { extractStateAndZip } from "@/lib/utils";
 
 function CardComponent({ basket, setOpenDialog, selectedBasket }) {
   const truncateDescription = (description, maxWords) => {
@@ -21,23 +22,6 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
     }
     return description;
   };
-
-  function extractStateAndZip(location) {
-    if (typeof location !== "string") {
-      return "";
-    }
-
-    const regex = /,\s*([A-Za-z\s]+)\s+(\d{5}),\s*United States$/;
-
-    const match = location.match(regex);
-
-    if (match) {
-      const state = match[1].trim();
-      const zip = match[2] ? match[2].trim() : "";
-      return zip ? `${state}, ${zip}` : state;
-    }
-    return "";
-  }
 
   return (
     <Card
@@ -145,7 +129,7 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
         ) : basket.status === "canceled" ? (
           <Button className="bg-red-500">Canceled</Button>
         ) : (
-          <Link href={{ pathname: "/notifications" }} shallow={true}>
+          <Link href={{ pathname: "/chats" }} shallow={true}>
             <Button className="bg-sky-500">Let's chat</Button>
           </Link>
         )}

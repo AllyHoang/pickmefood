@@ -13,6 +13,7 @@ import { BiMap } from "react-icons/bi";
 import Link from "next/link";
 import MyDrawer from "./MyDrawer";
 import useUser from "@/hook/useUser";
+import { extractStateAndZip } from "@/lib/utils";
 
 function MyCard({ basket, setOpenDialog, selectedBasket, loggedInUserId, userId, type }) {
   const truncateDescription = (description, maxWords) => {
@@ -22,24 +23,6 @@ function MyCard({ basket, setOpenDialog, selectedBasket, loggedInUserId, userId,
     }
     return description;
   };
-
-  function extractStateAndZip(location) {
-    if (typeof location !== "string") {
-      return "";
-    }
-
-    const regex = /,\s*([A-Za-z\s]+)\s+(\d{5}),\s*United States$/;
-
-    const match = location.match(regex);
-
-    if (match) {
-      const state = match[1].trim();
-      const zip = match[2] ? match[2].trim() : "";
-      return zip ? `${state}, ${zip}` : state;
-    }
-    return "";
-  }
-
   return (
     <Card
       key={basket._id}
