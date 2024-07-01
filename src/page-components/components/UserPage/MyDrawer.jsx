@@ -22,26 +22,12 @@ import { Separator } from "@/components/ui/separator";
 import useUser from "@/hook/useUser";
 import RemoveBtn from "../RemoveButton";
 import RemoveRequestsBtn from "../RemoveRequestsButton";
+import { extractStateAndZip } from "@/lib/utils";
 
 function MyDrawer({ selectedBasket, id, handleOpenDialog, type }) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  function extractStateAndZip(location) {
-    if (typeof location !== "string") {
-      return "";
-    }
 
-    const regex = /,\s*([A-Za-z\s]+)\s+(\d{5}),\s*United States$/;
-
-    const match = location.match(regex);
-
-    if (match) {
-      const state = match[1].trim();
-      const zip = match[2] ? match[2].trim() : "";
-      return zip ? `${state}, ${zip}` : state;
-    }
-    return "";
-  }
 
   const calculateDaysDifference = (date) => {
     const currentDate = new Date();
@@ -108,24 +94,19 @@ function MyDrawer({ selectedBasket, id, handleOpenDialog, type }) {
           <h2 className="text-heading2-bold font-bold">
             {selectedBasket?.title}
           </h2>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-2 mt-2">
             {selectedBasket?.type === "Donation"
               ? selectedBasket?.items.map((item) => (
-                  <div>
-                    <div key={item.id}>
-                      <Badge className="bg-sky-100 text-black">
-                        {item.emoji} {item.itemName}
-                      </Badge>
-                    </div>
-                  </div>
+                  <Badge key={item.id} className="bg-sky-100 text-black flex items-center gap-1">
+                    <span>{item.emoji}</span>
+                    <span>{item.itemName}</span>
+                  </Badge>
                 ))
               : selectedBasket?.requests.map((request) => (
-                  // Your JSX for each request
-                  <div key={request.id}>
-                    <Badge className="bg-sky-100 text-black">
-                      {request.emoji} {request.itemName}
-                    </Badge>
-                  </div>
+                  <Badge key={request.id} className="bg-sky-100 text-black flex items-center gap-1">
+                    <span>{request.emoji}</span>
+                    <span>{request.itemName}</span>
+                  </Badge>
                 ))}
           </div>
         </div>

@@ -21,27 +21,11 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import { MdDescription } from "react-icons/md";
+import { extractStateAndZip } from "@/lib/utils";
 
 function DrawerComponent({ selectedBasket, id, handleOpenDialog }) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  function extractStateAndZip(location) {
-    if (typeof location !== "string") {
-      return "";
-    }
-
-    const regex = /,\s*([A-Za-z\s]+)\s+(\d{5}),\s*United States$/;
-
-    const match = location.match(regex);
-    console.log(match);
-
-    if (match) {
-      const state = match[1].trim();
-      const zip = match[2] ? match[2].trim() : "";
-      return zip ? `${state}, ${zip}` : state;
-    }
-    return "";
-  }
 
   const calculateDaysDifference = (date) => {
     const currentDate = new Date();
@@ -89,19 +73,13 @@ function DrawerComponent({ selectedBasket, id, handleOpenDialog }) {
           <div className="flex flex-wrap gap-2 mt-2">
             {selectedBasket?.type === "Donation"
               ? selectedBasket?.items.map((item) => (
-                  <Badge
-                    key={item.id}
-                    className="bg-sky-100 text-black flex items-center gap-1"
-                  >
+                  <Badge key={item.id} className="bg-sky-100 text-black flex items-center gap-1">
                     <span>{item.emoji}</span>
                     <span>{item.itemName}</span>
                   </Badge>
                 ))
               : selectedBasket?.requests.map((request) => (
-                  <Badge
-                    key={request.id}
-                    className="bg-sky-100 text-black flex items-center gap-1"
-                  >
+                  <Badge key={request.id} className="bg-sky-100 text-black flex items-center gap-1">
                     <span>{request.emoji}</span>
                     <span>{request.itemName}</span>
                   </Badge>

@@ -44,16 +44,6 @@ function DashboardPage({ userId }) {
     points: 0.1,
   });
 
-  console.log(baskets);
-
-  const truncateDescription = (description, maxWords) => {
-    const words = description?.split(" ");
-    if (words?.length > maxWords) {
-      return words?.slice(0, maxWords)?.join(" ") + "...";
-    }
-    return description;
-  };
-
   const handleOpenPreferenceModal = () => {
     setIsPreferenceModalOpen(true);
   };
@@ -81,21 +71,33 @@ function DashboardPage({ userId }) {
     setOpenDialog(false);
   };
 
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const filteredBaskets = baskets.filter((basket) => {
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    return (
+      basket.title.toLowerCase().includes(lowerCaseSearchTerm) ||
+      basket.description.toLowerCase().includes(lowerCaseSearchTerm)
+    );
+  });
+
   useEffect(() => {
     console.log(router.query);
     if (router.query.id) {
       const basket = baskets.find((basket) => basket._id === router.query.id);
       setSelectedBasket(basket);
     }
-  }, [router.query.id, baskets]);
+  }, [router.query.id, baskets])
 
   useEffect(() => {
     const fetchMatches = async () => {
       const responseDonation = await fetch(
-        `/api/matching-algorithm/${currentUser.id}/donation`
+        `/api/matching-algorithm/${userId}/donation`
       );
       const responseRequest = await fetch(
-        `/api/matching-algorithm/${currentUser.id}/request`
+        `/api/matching-algorithm/${userId}/request`
       );
       const dataDonation = await responseDonation.json();
       const dataRequest = await responseRequest.json();
@@ -115,7 +117,7 @@ function DashboardPage({ userId }) {
               {/* Heading */}
               <DashboardHeading userId={userId}></DashboardHeading>
               {/* Point Badge */}
-              <PointBadge></PointBadge>
+              <PointBadge userId ={userId}></PointBadge>
             </div>
             <div className="flex justify-between items-center mb-6">
               {/* Toggle View From Map to List and vice */}
@@ -132,6 +134,7 @@ function DashboardPage({ userId }) {
                     type="text"
                     placeholder="Search..."
                     value={searchTerm}
+                    onChange={handleSearchChange}
                     className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-xl"
                   />
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -201,7 +204,7 @@ function DashboardPage({ userId }) {
             </Card>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            {baskets?.map((basket) => {
+            {filteredBaskets?.map((basket) => {
               return (
                 <CardComponent
                   basket={basket}

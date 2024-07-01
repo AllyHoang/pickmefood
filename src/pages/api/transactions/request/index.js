@@ -25,7 +25,9 @@ export default async function handler(req, res) {
       }
 
       let finalRequestId = basketrequestId; 
-      if (!finalRequestId) {
+      console.log("basketrequestId: ",basketrequestId);
+      console.log("finalRequestId: ",finalRequestId);
+      if (basketrequestId === null) {
         const newRequest = await BasketRequest.create({
           userId: userId,
           reason: description,
