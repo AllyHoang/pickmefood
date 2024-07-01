@@ -9,12 +9,15 @@ import "slick-carousel/slick/slick.css"; // Slick slider styles
 import "slick-carousel/slick/slick-theme.css"; // Slick slider theme styles
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import PaymentPage from "../CheckOutForm/PaymentPage";
+import DialogComponent from "../DashboardPage/DialogComponent";
+import PaymentPagePlaces from "../CheckOutForm/PaymentPagePlaces";
+import useFetchAllBaskets from "@/hook/useFetchAllBaskets";
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoicGlja21lZm9vZCIsImEiOiJjbHZwbHdyMzgwM2hmMmtvNXJ6ZHU2NXh3In0.aITfZvPY-sKGwepyPVPGOg";
 
-const MapComponent = () => {
+const MapComponent = ({ userId }) => {
+  const { baskets, isLoading } = useFetchAllBaskets();
   const [map, setMap] = useState(null);
   const [donations, setDonations] = useState([]);
   const [requests, setRequests] = useState([]);
@@ -27,10 +30,12 @@ const MapComponent = () => {
   const [selectedDonations, setSelectedDonations] = useState([]);
   const [selectedPlaces, setSelectedPlaces] = useState([]);
   const [donationMarkers, setDonationMarkers] = useState([]);
+  const [openDialogForBasket, setOpenDialogForBasket] = useState(null);
   const [requestMarkers, setRequestMarkers] = useState([]);
   const [placesMarkers, setPlacesMarkers] = useState([]);
+  const [selectedBasket, setSelectedBasket] = useState(null);
   const router = useRouter();
-  const [showDonations, setShowDonations] = useState(true); // State to toggle between rendering donations and requests
+  const [openDialog, setOpenDialog] = useState(false);
   const [selectedView, setSelectedView] = useState("Donation");
 
   const settings = {
@@ -49,6 +54,14 @@ const MapComponent = () => {
       setViewType("list");
       router.push("/dashboard", undefined, { shallow: true });
     }
+  };
+
+  const handleOpenDialog = (request) => {
+    setOpenDialogForBasket(request);
+  };
+
+  const handleCloseModal = () => {
+    setOpenDialogForBasket(null);
   };
 
   useEffect(() => {
@@ -414,8 +427,23 @@ const MapComponent = () => {
           </button>
           {selectedRequests.map((request, index) => (
             <div className={styles.requestDetails} key={index}>
+              <button
+                className={styles.addButton}
+                onClick={() => handleOpenDialog(request)}
+              >
+                Donate
+              </button>
+              {request && openDialogForBasket === request && (
+                <DialogComponent
+                  itemKey={JSON.stringify(request)}
+                  openDialog={Boolean(openDialogForBasket)}
+                  handleCloseModal={handleCloseModal}
+                  otherBasket={request}
+                />
+              )}
               <div className={styles.requestItem}>
-                <p className={styles.title}>{request.itemName}</p>
+                <p className={styles.title}>{request.title}</p>
+                <p>{request.reason}</p>
                 <p>Location: {request.location}</p>
               </div>
             </div>
@@ -432,12 +460,28 @@ const MapComponent = () => {
           </button>
           {selectedDonations.map((donation, index) => (
             <div className={styles.donationDetails} key={index}>
-              <button className={styles.addButton}>Request</button>
+              <button
+                className={styles.addButton}
+                onClick={() => setOpenDialog(true)}
+              >
+                Request
+              </button>
+              {donation && openDialogForBasket === donation && (
+                <DialogComponent
+                  itemKey={JSON.stringify(donation)}
+                  openDialog={Boolean(openDialogForBasket)}
+                  handleCloseModal={handleCloseModal}
+                  otherBasket={donation}
+                />
+              )}
               <div className={styles.requestItem}>
-                <p className={styles.title}>{donation.itemName}</p>
+                <p className={styles.title}>{donation.title}</p>
+                <p>{donation.description}</p>
                 <p>
                   Expiration Date:{" "}
-                  {new Date(donation.expirationDate).toLocaleDateString()}
+                  {new Date(
+                    donation.items[0].expirationDate
+                  ).toLocaleDateString()}
                 </p>
                 <p>Location: {donation.location}</p>
               </div>
@@ -462,7 +506,11 @@ const MapComponent = () => {
                 <Button className={styles.addPlaceButton}>Donate</Button>
               </DialogTrigger>
               <DialogContent className="min-w-fit w-3/4 h-4/5">
-                <PaymentPage eventId={_id}></PaymentPage>
+                <PaymentPagePlaces
+                  userId={userId}
+                  placeId={place._id}
+                  placeName={place.displayName.text}
+                />
               </DialogContent>
             </Dialog>
             <p className={styles.location}>
@@ -484,7 +532,7 @@ const MapComponent = () => {
                   {place.photos.map((photo, photoIndex) => (
                     <div key={photoIndex} className={styles.slide}>
                       <img
-                        src={`https://places.googleapis.com/v1/${photo.name}/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyDYhCkBHKFat3VFMjbBUtxad5Gqx2KjS5k`}
+                        src={`https://places.googleapis.com/v1/${photo.name}/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyDlHBXX4KF-W6Dbn4DZySC6y4kfCd3ffeM`}
                         alt={`Photo ${photoIndex}`}
                         className={styles.photo}
                       />

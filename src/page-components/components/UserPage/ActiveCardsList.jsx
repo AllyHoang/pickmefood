@@ -17,10 +17,6 @@ const ActiveCardsList = ({ userId, type }) => {
     return <div>Loading...</div>;
   }
 
-  const handleCloseModal = () => {
-    setOpenDialog(false);
-  };
-
   useEffect(() => {
     if (router.query.id) {
       const basket = baskets.find((basket) => basket._id === router.query.id);
@@ -37,7 +33,7 @@ const ActiveCardsList = ({ userId, type }) => {
               basket={basket}
               setOpenDialog={setOpenDialog}
               selectedBasket={selectedBasket}
-              type = "Donation"
+              type="Donation"
             />
           ))
         : requestBaskets?.map((basket) => (
@@ -46,7 +42,7 @@ const ActiveCardsList = ({ userId, type }) => {
               basket={basket}
               setOpenDialog={setOpenDialog}
               selectedBasket={selectedBasket}
-              type = "Request"
+              type="Request"
             />
           ))}
     </div>

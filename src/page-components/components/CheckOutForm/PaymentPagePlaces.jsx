@@ -2,19 +2,17 @@
 import React, { useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
-import CheckoutForm from "@/page-components/components/CheckOutForm/CheckOutForm";
+import CheckoutFormPlaces from "./CheckOutFormPlaces";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 );
 
-export default function PaymentPage({ eventId, userId, event }) {
+export default function PaymentPagePlaces({ placeId, placeName, userId }) {
   const [clientSecret, setClientSecret] = useState("");
   const [donationAmount, setDonationAmount] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
-
-  const { organizationName, organizationId } = event;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,15 +20,14 @@ export default function PaymentPage({ eventId, userId, event }) {
     setIsLoading(true);
 
     // Fetch the client secret from the API using the user-specified amount
-    const response = await fetch("/api/create-payment-intent", {
+    const response = await fetch("/api/payment-intent-places", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         amount: Math.round(parseFloat(donationAmount)),
-        eventId,
+        placeId,
+        placeName,
         userId,
-        organizationId,
-        organizationName,
       }), // Convert to cents
     });
 
@@ -72,16 +69,13 @@ export default function PaymentPage({ eventId, userId, event }) {
         </form>
       ) : (
         <Elements options={options} stripe={stripePromise}>
-          <CheckoutForm
+          <CheckoutFormPlaces
             clientSecret={clientSecret}
             setClientSecret={setClientSecret}
             setMessage={setMessage}
             setIsLoading={setIsLoading}
             donationAmount={donationAmount}
             stripePromise={stripePromise}
-            eventId={eventId}
-            organizationId={organizationId}
-            organizationName={organizationName}
           />
         </Elements>
       )}

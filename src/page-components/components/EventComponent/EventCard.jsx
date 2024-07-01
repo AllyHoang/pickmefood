@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import PaymentPage from "../CheckOutForm/PaymentPage";
 
-const EventCard = ({ event }) => {
+const EventCard = ({ event, userId }) => {
   const {
     image,
     eventName,
@@ -14,11 +14,14 @@ const EventCard = ({ event }) => {
     money,
     location,
     organizationName,
+    organizationId,
     _id,
     progress,
   } = event;
   const [progressStick, setProgress] = useState(0);
   const [remainingMoney, setRemainingMoney] = useState(money);
+
+  console.log(organizationId);
 
   useEffect(() => {
     const fetchProgress = async () => {
@@ -78,7 +81,11 @@ const EventCard = ({ event }) => {
             <Button className="bg-sky-400">Donate</Button>
           </DialogTrigger>
           <DialogContent className="min-w-fit w-3/4 h-4/5">
-            <PaymentPage eventId={_id}></PaymentPage>
+            <PaymentPage
+              eventId={_id}
+              userId={userId}
+              event={event}
+            ></PaymentPage>
           </DialogContent>
         </Dialog>
       </div>

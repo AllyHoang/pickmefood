@@ -7,7 +7,7 @@ import {
 } from "@stripe/react-stripe-js";
 import Breadcrumbs from "@/components/ui/breadcrumbs";
 
-export default function CheckoutForm({
+export default function CheckoutFormPlaces({
   clientSecret,
   setClientSecret,
   setMessage,
@@ -32,8 +32,8 @@ export default function CheckoutForm({
     const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: "http://localhost:3000/events", // Replace with your return URL
-      },
+        return_url: "http://localhost:3000/maps", // Replace with your return URL
+      }, // To handle async payments (such as 3D Secure) without redirecting
       redirect: "if_required", // To handle async payments (such as 3D Secure) without redirecting
     });
 
@@ -98,7 +98,11 @@ export default function CheckoutForm({
         <button
           type="submit"
           disabled={!clientSecret || isLoadingPayment}
-          style={{ marginTop: "20px" }}
+          className={`w-full py-2 px-4 mt-4 rounded-lg text-white ${
+            isLoadingPayment
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700 transition ease-in-out duration-300"
+          }`}
         >
           {isLoadingPayment ? "Processing..." : "Pay now"}
         </button>

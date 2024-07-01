@@ -8,14 +8,9 @@ import PointBadge from "./PointBadge";
 import DashboardHeading from "./DashboardHeading";
 import useFetchAllBaskets from "@/hook/useFetchAllBaskets";
 import DialogComponent from "./DialogComponent";
-import DrawerComponent from "./DrawerComponent";
-import { Status } from "@/lib/utils";
-import Link from "next/link";
 import { useSelector } from "react-redux";
 import PreferenceModal from "./PreferenceModal";
 import CardComponent from "./CardComponent";
-import useUser from "@/hook/useUser";
-import { BiMap } from "react-icons/bi";
 import {
   Card,
   CardContent,
@@ -24,8 +19,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 function DashboardPage({ userId }) {
   const [selectedBasket, setSelectedBasket] = useState(null);

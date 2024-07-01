@@ -1,7 +1,6 @@
 import { VideoCallLayout } from "@/page-components/layouts/VideoCallLayout";
 import VideoCall from "@/page-components/components/VideoCallComponent/VideoCall";
 import jwt from "jsonwebtoken";
-import { useRouter } from "next/router";
 
 const VideoCallIndex = ({ userId, email, firstname, lastname, chatId }) => {
   return (

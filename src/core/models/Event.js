@@ -1,4 +1,5 @@
 import { Schema, models, model } from "mongoose";
+import mongoose from "mongoose";
 
 const EventSchema = new Schema(
   {
@@ -22,7 +23,10 @@ const EventSchema = new Schema(
     },
     organizationName: {
       type: String,
-      default: "",
+    },
+    organizationId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Places",
     },
     createdAt: {
       type: Date,

@@ -1,8 +1,23 @@
 import { Schema, models, model } from "mongoose";
+import mongoose from "mongoose";
 
 // Define a new Mongoose Schema
 const PlacesSchema = new Schema(
   {
+    donationAmount: {
+      type: Number,
+    },
+    donors: [
+      {
+        userId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        amount: {
+          type: Number,
+        },
+      },
+    ],
     formattedAddress: {
       type: String,
       required: true,

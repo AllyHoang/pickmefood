@@ -34,7 +34,7 @@ export default async function handler(req, res) {
         "items"
       );
       // Update user's points
-      await UserModel.findByIdAndUpdate(userId, { $inc: { points: points } });
+      await UserModel.findByIdAndUpdate(userId, { $inc: { points: 10 } });
 
       res
         .status(201)
