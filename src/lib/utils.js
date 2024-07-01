@@ -27,12 +27,14 @@ export function extractStateAndZip(location) {
 export function getMatchingItemsInOneTransaction(transaction) {
   console.log("transaction:", transaction);
   const basketItems = transaction.basketId.items || [];
-  const requestItems = transaction.basketrequestId.requests || [];
-  const matchingItems = basketItems.filter(basketItem =>
-    requestItems.some(requestItem => requestItem.itemName === basketItem.itemName)
+  const requestItems = transaction.basketrequestId?.requests || [];
+  const matchingItems = basketItems.filter((basketItem) =>
+    requestItems.some(
+      (requestItem) => requestItem.itemName === basketItem.itemName
+    )
   );
 
-  console.log("matchingItems: ",matchingItems);
+  console.log("matchingItems: ", matchingItems);
 
   return matchingItems;
 }
@@ -63,9 +65,9 @@ export { Status };
 // Define the Points
 const POINTS = {
   DONATION: 10,
-  TRANSACTION: 200
+  TRANSACTION: 200,
 };
-export {POINTS};
+export { POINTS };
 
 /**
  * Helper function to compare items in a basket with requests in a basketRequest
@@ -79,7 +81,6 @@ async function getMatchingItems(items, requests) {
   try {
     console.log("basketId.items: ", items);
     console.log("basketrequestId.items: ", requests);
-
 
     const result = [];
 

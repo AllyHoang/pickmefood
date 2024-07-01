@@ -38,7 +38,6 @@ function MyDrawer({
   const username = useUser(userId).user.username;
   const router = useRouter();
 
-
   const calculateDaysDifference = (date) => {
     const currentDate = new Date();
     const givenDate = new Date(date);
@@ -87,100 +86,110 @@ function MyDrawer({
             {selectedBasket?.title}
           </h2>
           <div className="flex flex-wrap gap-2 mt-2">
-          <div className="flex flex-wrap gap-2 mt-2">
+            <div className="flex flex-wrap gap-2 mt-2">
+              {selectedBasket?.type === "Donation"
+                ? selectedBasket?.items.map((item) => (
+                    <Badge
+                      key={item.id}
+                      className="bg-sky-100 text-black flex items-center gap-1"
+                    >
+                      <span>{item.emoji}</span>
+                      <span>{item.itemName}</span>
+                    </Badge>
+                  ))
+                : selectedBasket?.requests.map((request) => (
+                    <Badge
+                      key={request.id}
+                      className="bg-sky-100 text-black flex items-center gap-1"
+                    >
+                      <span>{request.emoji}</span>
+                      <span>{request.itemName}</span>
+                    </Badge>
+                  ))}
+            </div>
+          </div>
+
+          <p className="text-gray-500">
+            Created{" "}
             {selectedBasket?.type === "Donation"
-              ? selectedBasket?.items.map((item) => (
-                  <Badge key={item.id} className="bg-sky-100 text-black flex items-center gap-1">
-                    <span>{item.emoji}</span>
-                    <span>{item.itemName}</span>
-                  </Badge>
-                ))
-              : selectedBasket?.requests.map((request) => (
-                  <Badge key={request.id} className="bg-sky-100 text-black flex items-center gap-1">
-                    <span>{request.emoji}</span>
-                    <span>{request.itemName}</span>
-                  </Badge>
-                ))}
-          </div>
-        </div>
-
-        <p className="text-gray-500">
-          Created{" "}
-          {selectedBasket?.type === "Donation"
-            ? calculateDaysDifference(selectedBasket?.items[0].createdAt)
-            : calculateDaysDifference(
-                selectedBasket?.requests[0].createdAt
-              )}{" "}
-          days ago at {extractStateAndZip(selectedBasket?.location)}
-        </p>
-
-        <div className="flex gap-2">
-          <Avatar>
-            <AvatarImage
-              src={useUser(selectedBasket?.userId).user.profileImage}
-              alt="Donation Image"
-            />
-            <AvatarFallback></AvatarFallback>
-          </Avatar>
-
-          <div className="font-bold">
-            {" "}
-            Created by {useUser(selectedBasket?.userId).user.username}{" "}
-          </div>
-        </div>
-
-        <Separator className="h-[1px] w-full mt-2"></Separator>
-        <div>
-          <div className="flex">
-            {/* <MdDescription className="mr-2" size="20px" /> */}
-            <div className="font-bold italic">Description</div>
-          </div>
-          <p className="">
-            {selectedBasket?.type === "Donation"
-              ? selectedBasket?.description
-              : selectedBasket?.reason}
+              ? calculateDaysDifference(selectedBasket?.items[0].createdAt)
+              : calculateDaysDifference(
+                  selectedBasket?.requests[0].createdAt
+                )}{" "}
+            days ago at {extractStateAndZip(selectedBasket?.location)}
           </p>
-        </div>
-        <div>
-          <p className="flex items-center text-gray-800 font-bold">
-            {/* <RxSewingPin className="mr-2" size="20px" /> */}
-            <span className="font-bold italic">Location</span>
-          </p>
-          <span className="">{selectedBasket?.location}</span>
-        </div>
-        {selectedBasket?.expiryDate && (
-          <div className="flex justify-between align-middle ">
-            <p className="flex items-center text-gray-800 font-bold">
-              {/* <RxClock className="mr-2" size="20px" /> */}
-              Expires:
+
+          <div className="flex gap-2">
+            <Avatar>
+              <AvatarImage
+                src={useUser(selectedBasket?.userId).user.profileImage}
+                alt="Donation Image"
+              />
+              <AvatarFallback></AvatarFallback>
+            </Avatar>
+
+            <div className="font-bold">
+              {" "}
+              Created by {useUser(selectedBasket?.userId).user.username}{" "}
+            </div>
+          </div>
+
+          <Separator className="h-[1px] w-full mt-2"></Separator>
+          <div>
+            <div className="flex">
+              {/* <MdDescription className="mr-2" size="20px" /> */}
+              <div className="font-bold italic">Description</div>
+            </div>
+            <p className="">
+              {selectedBasket?.type === "Donation"
+                ? selectedBasket?.description
+                : selectedBasket?.reason}
             </p>
-            <span>{selectedBasket?.expiryDate}</span>
           </div>
-        )}
-
-        {userId === loggedInUserId ? (
-          <div className="mt-4 flex-col" onClick={() => handleOpenDialog(true)}>
-            <Dialog>
-              <DialogTrigger>
-                <Button className="w-10/12 self fixed bottom-12 left-10 bg-sky-400">
-                  {" "}
-                  Edit{" "}
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <EditBasketForm basket={selectedBasket} userId={userId} />
-              </DialogContent>
-            </Dialog>
-
-            {type === "Donation" ? (
-              <RemoveBtn id={selectedBasket?._id} userId={userId} />
-            ) : (
-              <RemoveRequestsBtn id={selectedBasket?._id} userId={userId} />
-            )}
+          <div>
+            <p className="flex items-center text-gray-800 font-bold">
+              {/* <RxSewingPin className="mr-2" size="20px" /> */}
+              <span className="font-bold italic">Location</span>
+            </p>
+            <span className="">{selectedBasket?.location}</span>
           </div>
-        ) : (
-          <></>
-        )}
+          {selectedBasket?.expiryDate && (
+            <div className="flex justify-between align-middle ">
+              <p className="flex items-center text-gray-800 font-bold">
+                {/* <RxClock className="mr-2" size="20px" /> */}
+                Expires:
+              </p>
+              <span>{selectedBasket?.expiryDate}</span>
+            </div>
+          )}
+
+          {userId === loggedInUserId ? (
+            <div
+              className="mt-4 flex-col"
+              onClick={() => handleOpenDialog(true)}
+            >
+              <Dialog>
+                <DialogTrigger>
+                  <Button className="w-10/12 self fixed bottom-12 left-10 bg-sky-400">
+                    {" "}
+                    Edit{" "}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <EditBasketForm basket={selectedBasket} userId={userId} />
+                </DialogContent>
+              </Dialog>
+
+              {type === "Donation" ? (
+                <RemoveBtn id={selectedBasket?._id} userId={userId} />
+              ) : (
+                <RemoveRequestsBtn id={selectedBasket?._id} userId={userId} />
+              )}
+            </div>
+          ) : (
+            <></>
+          )}
+        </div>
       </DrawerContent>
     </Drawer>
   );

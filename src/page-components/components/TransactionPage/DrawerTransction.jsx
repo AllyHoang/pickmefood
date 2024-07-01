@@ -52,7 +52,9 @@ function DrawerTransaction({ selectedTransaction, id, handleOpenDialog }) {
       const data = await response.json();
       setOpen(false);
       console.log("Transaction accepted:", data);
-      toast.success("You have accepted this transcation. Please wait for others");
+      toast.success(
+        "You have accepted this transcation. Please wait for others"
+      );
     } catch (error) {
       console.error("Failed to accept transaction:", error);
       toast.error(error);
@@ -75,16 +77,32 @@ function DrawerTransaction({ selectedTransaction, id, handleOpenDialog }) {
       const data = await response.json();
       console.log("Transaction canceled:", data);
       setOpen(false);
-      toast.success('Cancel Transaction Successfully');
+      toast.success("Cancel Transaction Successfully");
     } catch (error) {
       console.error("Failed to cancel transaction:", error);
       toast.error(error);
     }
   };
 
-  const handleChat = async ()=>{
-    router.push('/chats');
-  }
+  const handleChat = async (selectedTransaction) => {
+    const otherMemberId =
+      selectedTransaction.donorId._id !== currentUser.id
+        ? selectedTransaction.donorId._id
+        : selectedTransaction.requesterId._id;
+
+    const res = await fetch("/api/chats", {
+      method: "POST",
+      body: JSON.stringify({
+        currentUserId: currentUser.id,
+        members: [currentUser.id, otherMemberId],
+      }),
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      router.push(`/chats/${data.chat._id}`);
+    }
+  };
 
   return (
     <Drawer
@@ -244,7 +262,9 @@ function DrawerTransaction({ selectedTransaction, id, handleOpenDialog }) {
               onClick={() => handleAccept(selectedTransaction)}
               className="flex items-center justify-center gap-1 w-1/2 bg-green-500 hover:bg-green-400 text-white py-2 rounded transition duration-150 ease-in-out"
             >
-              <IoMdCheckmarkCircleOutline size={20}></IoMdCheckmarkCircleOutline>
+              <IoMdCheckmarkCircleOutline
+                size={20}
+              ></IoMdCheckmarkCircleOutline>
               Accept
             </button>
             <button
@@ -255,7 +275,10 @@ function DrawerTransaction({ selectedTransaction, id, handleOpenDialog }) {
               Cancel
             </button>
           </div>
-          <button onClick={()=> handleChat()} className="flex items-center justify-center gap-1 w-full bg-sky-500 hover:bg-sky-400 text-white py-2 rounded transition duration-150 ease-in-out mt-2">
+          <button
+            onClick={() => handleChat(selectedTransaction)}
+            className="flex items-center justify-center gap-1 w-full bg-sky-500 hover:bg-sky-400 text-white py-2 rounded transition duration-150 ease-in-out mt-2"
+          >
             <CiChat2 size={20}></CiChat2>
             Let's connect
           </button>
