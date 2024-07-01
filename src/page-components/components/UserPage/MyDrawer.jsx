@@ -16,16 +16,26 @@ import Link from "next/link";
 import { RxSewingPin } from "react-icons/rx";
 import { RxPerson } from "react-icons/rx";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import useUser from "@/hook/useUser";
-import RemoveBtn from "../RemoveButton";
-import RemoveRequestsBtn from "../RemoveRequestsButton";
+import RemoveBtn from "./RemoveButton";
+import RemoveRequestsBtn from "./RemoveRequestsButton";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import EditBasketForm from "./EditBasketForm";
 import { extractStateAndZip } from "@/lib/utils";
 
-function MyDrawer({ selectedBasket, id, handleOpenDialog, type }) {
+function MyDrawer({
+  selectedBasket,
+  id,
+  handleOpenDialog,
+  loggedInUserId,
+  userId,
+  type,
+}) {
   const [open, setOpen] = useState(false);
+  const username = useUser(userId).user.username;
   const router = useRouter();
 
 
@@ -37,33 +47,12 @@ function MyDrawer({ selectedBasket, id, handleOpenDialog, type }) {
     return dayDifference;
   };
 
-  const handleDeleteBasket = async () => {
-    try {
-      const response = await fetch(`/api/baskets/${selectedBasket._id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        // Basket deleted successfully, navigate back to user page or refresh the list
-        router.push("/userpage");
-      } else {
-        const errorData = await response.json();
-        console.error("Error deleting basket:", errorData.message);
-      }
-    } catch (error) {
-      console.error("Error deleting basket:", error);
-    }
-  };
-
   return (
     <Drawer
       onOpenChange={(open) => {
         setOpen(open);
         if (!open) {
-          router.push("/userpage");
+          router.push(`/${username}`);
         }
       }}
       direction="right"
@@ -71,7 +60,10 @@ function MyDrawer({ selectedBasket, id, handleOpenDialog, type }) {
       <DrawerTrigger asChild>
         {/* //item._id */}
         <Link
-          href={{ pathname: "/userpage", query: { id: id } }}
+          href={{
+            pathname: `/${username}`,
+            query: { id: id },
+          }}
           shallow={true}
         >
           <Button className="">View Details</Button>
@@ -94,6 +86,7 @@ function MyDrawer({ selectedBasket, id, handleOpenDialog, type }) {
           <h2 className="text-heading2-bold font-bold">
             {selectedBasket?.title}
           </h2>
+          <div className="flex flex-wrap gap-2 mt-2">
           <div className="flex flex-wrap gap-2 mt-2">
             {selectedBasket?.type === "Donation"
               ? selectedBasket?.items.map((item) => (
@@ -165,18 +158,29 @@ function MyDrawer({ selectedBasket, id, handleOpenDialog, type }) {
           </div>
         )}
 
-        <div className="mt-4 flex-col" onClick={() => handleOpenDialog(true)}>
-          <Button className="w-10/12 self fixed bottom-12 left-10 bg-sky-400">
-            {" "}
-            Edit{" "}
-          </Button>
+        {userId === loggedInUserId ? (
+          <div className="mt-4 flex-col" onClick={() => handleOpenDialog(true)}>
+            <Dialog>
+              <DialogTrigger>
+                <Button className="w-10/12 self fixed bottom-12 left-10 bg-sky-400">
+                  {" "}
+                  Edit{" "}
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <EditBasketForm basket={selectedBasket} userId={userId} />
+              </DialogContent>
+            </Dialog>
 
-          {type === "Donation" ? (
-            <RemoveBtn id={selectedBasket?._id} />
-          ) : (
-            <RemoveRequestsBtn id={selectedBasket?._id} />
-          )}
-        </div>
+            {type === "Donation" ? (
+              <RemoveBtn id={selectedBasket?._id} userId={userId} />
+            ) : (
+              <RemoveRequestsBtn id={selectedBasket?._id} userId={userId} />
+            )}
+          </div>
+        ) : (
+          <></>
+        )}
       </DrawerContent>
     </Drawer>
   );

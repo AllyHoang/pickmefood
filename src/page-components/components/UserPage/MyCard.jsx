@@ -15,7 +15,7 @@ import MyDrawer from "./MyDrawer";
 import useUser from "@/hook/useUser";
 import { extractStateAndZip } from "@/lib/utils";
 
-function MyCard({ basket, setOpenDialog, selectedBasket, type }) {
+function MyCard({ basket, setOpenDialog, selectedBasket, loggedInUserId, userId, type }) {
   const truncateDescription = (description, maxWords) => {
     const words = description?.split(" ");
     if (words?.length > maxWords) {
@@ -85,21 +85,21 @@ function MyCard({ basket, setOpenDialog, selectedBasket, type }) {
         </p>
       </div>
       <CardFooter className="flex justify-between">
-      <div className="flex gap-3 flex-wrap">
+        <div className="flex gap-3 flex-wrap">
           {basket?.type === "Donation"
-            ? basket?.items?.slice(0, 3).map((item) => (
+            ? basket?.items?.slice(0, 2).map((item) => (
                 <Badge key={item?.id} className="bg-sky-100 text-black">
                   {item?.emoji} {item?.itemName}
                 </Badge>
               ))
-            : basket?.requests?.slice(0, 3).map((request) => (
+            : basket?.requests?.slice(0, 2).map((request) => (
                 <Badge key={request?.id} className="bg-sky-100 text-black">
                   {request?.emoji} {request?.itemName}
                 </Badge>
               ))}
           {basket?.type === "Donation" && basket?.items?.length > 3 && (
             <Badge className="bg-sky-100 text-black">
-              +{basket?.items.length - 3} more
+              +{basket?.items.length - 2} more
             </Badge>
           )}
           {basket?.type !== "Donation" && basket?.requests?.length > 3 && (
@@ -114,7 +114,9 @@ function MyCard({ basket, setOpenDialog, selectedBasket, type }) {
             id={basket._id}
             handleOpenDialog={setOpenDialog}
             selectedBasket={selectedBasket}
-            type = {type}
+            type={type}
+            userId = {userId}
+            loggedInUserId = {loggedInUserId}
           />
         ) : basket.status === "accepted" ? (
           <Button className="bg-green-500">Accepted</Button>

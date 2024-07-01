@@ -44,11 +44,18 @@ const handleLogout = async () => {
 const SideBar = () => {
   const router = useRouter();
   const [activeItem, setActiveItem] = React.useState(router.pathname);
+  const { loading, error, currentUser } = useSelector((state) => state.user);
 
   const MenuList = [
     { href: "/dashboard", icon: <RxHome size="20px" />, label: "Dashboard" },
     { href: "/map-view", icon: <RxPaperPlane size="20px" />, label: "Map" },
-    { href: "/userpage", icon: <RxAvatar size="20px" />, label: "Profile" },
+    {
+      href: {
+        pathname: `/${currentUser?.username}`,
+      },
+      icon: <RxAvatar size="20px" />,
+      label: "Profile",
+    },
     {
       href: "/transactions",
       icon: <FiCreditCard size="20px" />,
@@ -63,7 +70,6 @@ const SideBar = () => {
   ];
 
   const isActive = (path) => activeItem === path;
-  const { loading, error, currentUser } = useSelector((state) => state.user);
 
   return (
     <>
