@@ -18,23 +18,28 @@ import { Router } from "lucide-react";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useSelector } from "react-redux";
+import { extractStateAndZip } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { CiChat2 } from "react-icons/ci";
+import { AiOutlineCloseCircle } from "react-icons/ai";
+import { IoMdCheckmarkCircleOutline } from "react-icons/io";
+import { toast } from "react-toastify";
 
-function DrawerTransaction({ selectedBasket, id, handleOpenDialog }) {
+function DrawerTransaction({ selectedTransaction, id, handleOpenDialog }) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  console.log(selectedBasket);
   const { loading, error, currentUser } = useSelector((state) => state.user);
 
-  const handleAccept = async (selectedBasket) => {
+  const handleAccept = async (selectedTransaction) => {
     try {
       let url;
-      if (selectedBasket.donorId._id === currentUser.id) {
+      if (selectedTransaction.donorId._id === currentUser.id) {
         url = "agree-donor";
       } else {
         url = "agree-requester";
       }
       const response = await fetch(
-        `/api/transactions/${selectedBasket._id}/${url}`,
+        `/api/transactions/${selectedTransaction._id}/${url}`,
         {
           method: "PUT",
         }
@@ -45,17 +50,19 @@ function DrawerTransaction({ selectedBasket, id, handleOpenDialog }) {
       }
 
       const data = await response.json();
+      setOpen(false);
       console.log("Transaction accepted:", data);
-      s;
+      toast.success("You have accepted this transcation. Please wait for others");
     } catch (error) {
       console.error("Failed to accept transaction:", error);
+      toast.error(error);
     }
   };
 
-  const handleCancel = async (selectedBasket) => {
+  const handleCancel = async (selectedTransaction) => {
     try {
       const response = await fetch(
-        `/api/transactions/${selectedBasket._id}/canceled`,
+        `/api/transactions/${selectedTransaction._id}/canceled`,
         {
           method: "PUT",
         }
@@ -67,30 +74,17 @@ function DrawerTransaction({ selectedBasket, id, handleOpenDialog }) {
 
       const data = await response.json();
       console.log("Transaction canceled:", data);
+      setOpen(false);
+      toast.success('Cancel Transaction Successfully');
     } catch (error) {
       console.error("Failed to cancel transaction:", error);
+      toast.error(error);
     }
   };
 
-  const handleChat = async () => {
-    const otherMemberId =
-      selectedBasket.donorId._id !== currentUser.id
-        ? selectedBasket.donorId._id
-        : selectedBasket.requesterId._id;
-
-    const res = await fetch("/api/chats", {
-      method: "POST",
-      body: JSON.stringify({
-        currentUserId: currentUser.id,
-        members: [currentUser.id, otherMemberId],
-      }),
-    });
-    const data = await res.json();
-
-    if (res.ok) {
-      router.push(`/chats/${data.chat._id}`);
-    }
-  };
+  const handleChat = async ()=>{
+    router.push('/chats');
+  }
 
   return (
     <Drawer
@@ -112,84 +106,159 @@ function DrawerTransaction({ selectedBasket, id, handleOpenDialog }) {
         </Link>
       </DrawerTrigger>
       <DrawerContent
-        title={selectedBasket?.title}
+        title={selectedTransaction?.title}
         className="bg-white flex flex-col rounded-t-lg shadow-xl transition-all duration-300 h-full w-[400px] mt-24 fixed bottom-0 right-0"
       >
         <div className="p-4 bg-white shadow-lg rounded-lg">
-          {selectedBasket?.image && (
+          <h1 className="text-heading3-bold font-bold mb-2">Transaction #1</h1>
+          {/* Donor Section */}
+          {selectedTransaction?.basketId?.image && (
             <div className="overflow-hidden rounded-t-lg">
               <img
-                src={`${selectedBasket?.image}`}
+                src={`${selectedTransaction?.basketId?.image}`}
                 alt="Donation"
                 className="w-full object-cover hover:scale-105 transition-scale duration-300"
-                style={{ height: "200px" }}
+                style={{ height: "150px" }}
               />
             </div>
           )}
-          <div className="p-4">
-            <div className="flex justify-between items-center mb-4">
+          <div className="px-2 py-1">
+            <div className="flex justify-between items-center mb-2">
               <h2
-                className={`text-2xl text-heading4-bold font-bold  ${
-                  selectedBasket?.type === "Request"
+                className={`text-2xl text-heading4-bold font-bold ${
+                  selectedTransaction?.type === "Request"
                     ? "text-sky-600"
                     : "text-emerald-600"
                 }`}
               >
-                {selectedBasket?.title}
+                {selectedTransaction?.basketId?.title}
               </h2>
             </div>
             <p className="text-gray-500">
-              {selectedBasket?.type === "Donation"
-                ? selectedBasket?.description
-                : selectedBasket?.reason}
+              {selectedTransaction?.basketId?.description}
+            </p>
+            <div className="">
+              <div className="flex justify-between align-middle">
+                <p className="flex items-center text-gray-800 font-bold">
+                  <RxPerson className="mr-2" size="20px" />
+                  Donor:
+                </p>
+                <span>{selectedTransaction?.donorId?.username}</span>
+              </div>
+              <div className="flex justify-between align-middle">
+                <p className="flex items-center text-gray-800 font-bold">
+                  <RxSewingPin className="mr-2" size="20px" />
+                  <span className="font-bold">Location:</span>
+                </p>
+                <span>
+                  {extractStateAndZip(selectedTransaction?.basketId?.location)}
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {selectedTransaction?.basketId?.items
+                  ?.slice(0, 2)
+                  .map((item) => (
+                    <Badge key={item?.id} className="bg-sky-100 text-black">
+                      {item?.emoji} {item?.itemName}
+                    </Badge>
+                  ))}
+                {selectedTransaction?.basketId?.items?.length > 2 && (
+                  <Badge className="bg-sky-100 text-black">
+                    +{selectedTransaction?.basketId?.items?.length - 2} more
+                  </Badge>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <hr className="my-3" />
+
+          {/* Requester Section */}
+          {selectedTransaction?.basketrequestId?.image && (
+            <div className="overflow-hidden rounded-t-lg">
+              <img
+                src={`${selectedTransaction?.basketrequestId?.image}`}
+                alt="Request"
+                className="w-full object-cover hover:scale-105 transition-scale duration-300"
+                style={{ height: "150px" }}
+              />
+            </div>
+          )}
+          <div className="px-2 py-1">
+            <div className="flex justify-between items-center mb-2">
+              <h2
+                className={`text-2xl text-heading4-bold font-bold ${
+                  selectedTransaction?.type === "Request"
+                    ? "text-sky-600"
+                    : "text-emerald-600"
+                }`}
+              >
+                {selectedTransaction?.basketrequestId?.title}
+              </h2>
+            </div>
+            <p className="text-gray-500">
+              {selectedTransaction?.type === "Donation"
+                ? selectedTransaction?.basketrequestId?.description
+                : selectedTransaction?.basketrequestId?.reason}
             </p>
             <div className="mt-4">
               <div className="flex justify-between align-middle">
                 <p className="flex items-center text-gray-800 font-bold">
                   <RxPerson className="mr-2" size="20px" />
-                  {selectedBasket?.type === "Request" ? "Requester" : "Donor"}:
+                  Requester:
                 </p>
-                <span>{selectedBasket?.userId?.username}</span>
+                <span>{selectedTransaction?.requesterId?.username}</span>
               </div>
-              <div className="flex justify-between align-middle ">
+              <div className="flex justify-between align-middle">
                 <p className="flex items-center text-gray-800 font-bold">
                   <RxSewingPin className="mr-2" size="20px" />
                   <span className="font-bold">Location:</span>
                 </p>
-                <span>{selectedBasket?.location}</span>
+                <span>
+                  {extractStateAndZip(
+                    selectedTransaction?.basketrequestId?.location
+                  )}
+                </span>
               </div>
-              {selectedBasket?.expiryDate && (
-                <div className="flex justify-between align-middle ">
-                  <p className="flex items-center text-gray-800 font-bold">
-                    <RxClock className="mr-2" size="20px" />
-                    Expires:
-                  </p>
-                  <span>{selectedBasket?.expiryDate}</span>
-                </div>
-              )}
-            </div>
-            {/* onClick={()=> handleOpenDialog(true)} */}
-            <div className="mt-4 flex items-center justify-center gap-2">
-              <button
-                onClick={() => handleAccept(selectedBasket)}
-                className="w-full bg-green-500 hover:bg-sky-400 text-white py-2 rounded transition duration-150 ease-in-out"
-              >
-                Accept
-              </button>
-              <button
-                onClick={() => handleCancel(selectedBasket)}
-                className="w-full bg-red-500 hover:bg-sky-400 text-white py-2 rounded transition duration-150 ease-in-out"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => handleChat()}
-                className="w-full bg-sky-500 hover:bg-sky-400 text-white py-2 rounded transition duration-150 ease-in-out"
-              >
-                Let's chat
-              </button>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {selectedTransaction?.basketrequestId?.requests
+                  ?.slice(0, 2)
+                  .map((request) => (
+                    <Badge key={request?.id} className="bg-sky-100 text-black">
+                      {request?.emoji} {request?.itemName}
+                    </Badge>
+                  ))}
+                {selectedTransaction?.basketrequestId?.requests?.length > 2 && (
+                  <Badge className="bg-sky-100 text-black">
+                    +
+                    {selectedTransaction?.basketrequestId?.requests?.length - 2}{" "}
+                    more
+                  </Badge>
+                )}
+              </div>
             </div>
           </div>
+
+          <div className="mt-2 flex items-center justify-center gap-2">
+            <button
+              onClick={() => handleAccept(selectedTransaction)}
+              className="flex items-center justify-center gap-1 w-1/2 bg-green-500 hover:bg-green-400 text-white py-2 rounded transition duration-150 ease-in-out"
+            >
+              <IoMdCheckmarkCircleOutline size={20}></IoMdCheckmarkCircleOutline>
+              Accept
+            </button>
+            <button
+              onClick={() => handleCancel(selectedTransaction)}
+              className="flex items-center justify-center gap-1 w-1/2 bg-red-500 hover:bg-red-400 text-white py-2 rounded transition duration-150 ease-in-out"
+            >
+              <AiOutlineCloseCircle size={20}></AiOutlineCloseCircle>
+              Cancel
+            </button>
+          </div>
+          <button onClick={()=> handleChat()} className="flex items-center justify-center gap-1 w-full bg-sky-500 hover:bg-sky-400 text-white py-2 rounded transition duration-150 ease-in-out mt-2">
+            <CiChat2 size={20}></CiChat2>
+            Let's connect
+          </button>
         </div>
       </DrawerContent>
     </Drawer>

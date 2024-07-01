@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { BiMap } from "react-icons/bi";
 import DrawerComponent from "./DrawerComponent";
 import Link from "next/link";
+import { extractStateAndZip } from "@/lib/utils";
 
 function CardComponent({ basket, setOpenDialog, selectedBasket }) {
   const truncateDescription = (description, maxWords) => {
@@ -21,23 +22,6 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
     }
     return description;
   };
-
-  function extractStateAndZip(location) {
-    if (typeof location !== "string") {
-      return "";
-    }
-
-    const regex = /,\s*([A-Za-z\s]+)\s+(\d{5}),\s*United States$/;
-
-    const match = location.match(regex);
-
-    if (match) {
-      const state = match[1].trim();
-      const zip = match[2] ? match[2].trim() : "";
-      return zip ? `${state}, ${zip}` : state;
-    }
-    return "";
-  }
 
   return (
     <Card
@@ -72,7 +56,16 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
                 <CardTitle className="text-heading3-bold">
                   {basket?.title}
                 </CardTitle>
-                <CardDescription>{basket?.userId?.username}</CardDescription>
+                <CardDescription className="underline">
+                  <Link
+                    href={{
+                      pathname: `/${basket?.userId?.username}`,
+                    }}
+                  >
+                    {" "}
+                    {basket?.userId?.username}
+                  </Link>
+                </CardDescription>
               </div>
             </div>
           </CardHeader>
@@ -103,19 +96,19 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
       <CardFooter className="flex justify-between">
         <div className="flex gap-3 flex-wrap">
           {basket?.type === "Donation"
-            ? basket?.items?.slice(0, 3).map((item) => (
+            ? basket?.items?.slice(0, 2).map((item) => (
                 <Badge key={item?.id} className="bg-sky-100 text-black">
                   {item?.emoji} {item?.itemName}
                 </Badge>
               ))
-            : basket?.requests?.slice(0, 3).map((request) => (
+            : basket?.requests?.slice(0, 2).map((request) => (
                 <Badge key={request?.id} className="bg-sky-100 text-black">
                   {request?.emoji} {request?.itemName}
                 </Badge>
               ))}
           {basket?.type === "Donation" && basket?.items?.length > 3 && (
             <Badge className="bg-sky-100 text-black">
-              +{basket?.items.length - 3} more
+              +{basket?.items.length - 2} more
             </Badge>
           )}
           {basket?.type !== "Donation" && basket?.requests?.length > 3 && (
@@ -136,7 +129,7 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
         ) : basket.status === "canceled" ? (
           <Button className="bg-red-500">Canceled</Button>
         ) : (
-          <Link href={{ pathname: "/notifications" }} shallow={true}>
+          <Link href={{ pathname: "/chats" }} shallow={true}>
             <Button className="bg-sky-500">Let's chat</Button>
           </Link>
         )}

@@ -7,6 +7,36 @@ export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
+export function extractStateAndZip(location) {
+  if (typeof location !== "string") {
+    return "";
+  }
+
+  const regex = /,\s*([A-Za-z\s]+)\s+(\d{5}),\s*United States$/;
+
+  const match = location.match(regex);
+
+  if (match) {
+    const state = match[1].trim();
+    const zip = match[2] ? match[2].trim() : "";
+    return zip ? `${state}, ${zip}` : state;
+  }
+  return "";
+}
+
+export function getMatchingItemsInOneTransaction(transaction) {
+  console.log("transaction:", transaction);
+  const basketItems = transaction.basketId.items || [];
+  const requestItems = transaction.basketrequestId.requests || [];
+  const matchingItems = basketItems.filter(basketItem =>
+    requestItems.some(requestItem => requestItem.itemName === basketItem.itemName)
+  );
+
+  console.log("matchingItems: ",matchingItems);
+
+  return matchingItems;
+}
+
 export function randomID(len) {
   let result = "";
   if (result) return result;

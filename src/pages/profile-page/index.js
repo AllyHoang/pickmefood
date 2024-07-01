@@ -1,5 +1,5 @@
 import { ProfilePageLayout } from "@/page-components/layouts";
-import Profile from "@/page-components/components/ProfilePage/ProfileComponent";
+import Profile from "@/page-components/components/UserPage/ProfileComponent";
 import jwt from "jsonwebtoken";
 
 const ProfileIndex = ({ userId }) => {

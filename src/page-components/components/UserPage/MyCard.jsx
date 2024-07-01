@@ -13,8 +13,9 @@ import { BiMap } from "react-icons/bi";
 import Link from "next/link";
 import MyDrawer from "./MyDrawer";
 import useUser from "@/hook/useUser";
+import { extractStateAndZip } from "@/lib/utils";
 
-function MyCard({ basket, setOpenDialog, selectedBasket, type }) {
+function MyCard({ basket, setOpenDialog, selectedBasket, loggedInUserId, userId, type }) {
   const truncateDescription = (description, maxWords) => {
     const words = description?.split(" ");
     if (words?.length > maxWords) {
@@ -22,24 +23,6 @@ function MyCard({ basket, setOpenDialog, selectedBasket, type }) {
     }
     return description;
   };
-
-  function extractStateAndZip(location) {
-    if (typeof location !== "string") {
-      return "";
-    }
-
-    const regex = /,\s*([A-Za-z\s]+)\s+(\d{5}),\s*United States$/;
-
-    const match = location.match(regex);
-
-    if (match) {
-      const state = match[1].trim();
-      const zip = match[2] ? match[2].trim() : "";
-      return zip ? `${state}, ${zip}` : state;
-    }
-    return "";
-  }
-
   return (
     <Card
       key={basket._id}
@@ -102,25 +85,28 @@ function MyCard({ basket, setOpenDialog, selectedBasket, type }) {
         </p>
       </div>
       <CardFooter className="flex justify-between">
-        <div className="flex gap-3">
+        <div className="flex gap-3 flex-wrap">
           {basket?.type === "Donation"
-            ? basket.items?.map((item) => (
-                <div>
-                  <div key={item.id}>
-                    <Badge className="bg-sky-100 text-black">
-                      {item.emoji} {item.itemName}
-                    </Badge>
-                  </div>
-                </div>
+            ? basket?.items?.slice(0, 2).map((item) => (
+                <Badge key={item?.id} className="bg-sky-100 text-black">
+                  {item?.emoji} {item?.itemName}
+                </Badge>
               ))
-            : basket.requests?.map((request) => (
-                // Your JSX for each request
-                <div key={request.id}>
-                  <Badge className="bg-sky-100 text-black">
-                    {request.emoji} {request.itemName}
-                  </Badge>
-                </div>
+            : basket?.requests?.slice(0, 2).map((request) => (
+                <Badge key={request?.id} className="bg-sky-100 text-black">
+                  {request?.emoji} {request?.itemName}
+                </Badge>
               ))}
+          {basket?.type === "Donation" && basket?.items?.length > 3 && (
+            <Badge className="bg-sky-100 text-black">
+              +{basket?.items.length - 2} more
+            </Badge>
+          )}
+          {basket?.type !== "Donation" && basket?.requests?.length > 3 && (
+            <Badge className="bg-sky-100 text-black">
+              +{basket?.requests.length - 3} more
+            </Badge>
+          )}
         </div>
 
         {basket.status === "initiated" || basket?.status == undefined ? (
@@ -128,7 +114,9 @@ function MyCard({ basket, setOpenDialog, selectedBasket, type }) {
             id={basket._id}
             handleOpenDialog={setOpenDialog}
             selectedBasket={selectedBasket}
-            type = {type}
+            type={type}
+            userId = {userId}
+            loggedInUserId = {loggedInUserId}
           />
         ) : basket.status === "accepted" ? (
           <Button className="bg-green-500">Accepted</Button>

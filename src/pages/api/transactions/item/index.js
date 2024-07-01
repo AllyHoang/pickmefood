@@ -13,9 +13,9 @@ export default async function handler(req, res) {
   if (method === "POST") {
     try {
       //userId: ID of Donator
-      //otherUserI: ID of Requester
-      //itemId: ID of donation
-      //requesterId: ID of request
+      //otherUserID: ID of Requester
+      //basketId: ID of donation
+      //basletrequestId: ID of request
       const {
         userId,
         basketrequestId,
@@ -36,19 +36,16 @@ export default async function handler(req, res) {
       });
       console.log("items: ", items);
       if (existingTransaction) {
-        return res
-          .status(409)
-          .json({
-            message: "Transaction with the same fields already exists",
-            data: { transaction: existingTransaction },
-          });
+        return res.status(409).json({
+          message: "Transaction with the same fields already exists",
+          data: { transaction: existingTransaction },
+        });
       }
 
       let finalItemId = basketId;
-      if (!finalItemId) {
+      if (basketId === null) {
         const newBasket = await BasketModel.create({
           userId: userId,
-          //TODO: Might consider adding location field to User Schema
           description,
           title,
           image,
@@ -69,12 +66,10 @@ export default async function handler(req, res) {
         basket?.pendingTransactions >= 4 ||
         basketRequest?.pendingTransactions >= 4
       ) {
-        return res
-          .status(400)
-          .json({
-            message:
-              "Cannot create transaction. Pending transactions limit exceeded.",
-          });
+        return res.status(400).json({
+          message:
+            "Cannot create transaction. Pending transactions limit exceeded.",
+        });
       }
 
       //Create new Transaction
@@ -99,12 +94,10 @@ export default async function handler(req, res) {
         $inc: { pendingTransactions: 1 },
       });
 
-      res
-        .status(201)
-        .json({
-          message: "Transaction successfully created for donator",
-          data: { transaction: newTransaction },
-        });
+      res.status(201).json({
+        message: "Transaction successfully created for donator",
+        data: { transaction: newTransaction },
+      });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

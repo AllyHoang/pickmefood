@@ -5,7 +5,7 @@ import useFetchUserBaskets from "@/hook/useFetchUserBaskets";
 import { Router } from "lucide-react";
 import { useRouter } from "next/router";
 
-const ActiveCardsList = ({ userId, type }) => {
+const ActiveCardsList = ({ userId, loggedInUserId, type }) => {
   const { donationBaskets, requestBaskets, loading, error } =
     useFetchUserBaskets((userId = userId));
   const baskets = [...donationBaskets, ...requestBaskets];
@@ -33,6 +33,8 @@ const ActiveCardsList = ({ userId, type }) => {
               basket={basket}
               setOpenDialog={setOpenDialog}
               selectedBasket={selectedBasket}
+              loggedInUserId={loggedInUserId}
+              userId={userId}
               type="Donation"
             />
           ))
@@ -42,6 +44,8 @@ const ActiveCardsList = ({ userId, type }) => {
               basket={basket}
               setOpenDialog={setOpenDialog}
               selectedBasket={selectedBasket}
+              loggedInUserId={loggedInUserId}
+              userId={userId}
               type="Request"
             />
           ))}

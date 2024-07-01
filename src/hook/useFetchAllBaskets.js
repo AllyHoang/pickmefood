@@ -36,7 +36,7 @@ function useFetchAllBaskets() {
         const combinedBaskets = [
           ...donationData.baskets,
           ...requestData.baskets,
-        ];
+        ].filter(basket => basket.status !== 'accepted');
 
         setBaskets(combinedBaskets);
         // dispatch(combinedBaskets);

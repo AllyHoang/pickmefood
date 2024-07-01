@@ -19,6 +19,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import PaginationComponent from "../Pagination/Pagination";
 
 function DashboardPage({ userId }) {
   const [selectedBasket, setSelectedBasket] = useState(null);
@@ -36,7 +39,8 @@ function DashboardPage({ userId }) {
     urgency: 0.3,
     points: 0.1,
   });
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const cardsPerPage = 10;
   console.log(baskets);
 
   const truncateDescription = (description, maxWords) => {
@@ -74,6 +78,18 @@ function DashboardPage({ userId }) {
     setOpenDialog(false);
   };
 
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const filteredBaskets = baskets.filter((basket) => {
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+    return (
+      basket.title.toLowerCase().includes(lowerCaseSearchTerm) ||
+      basket.description.toLowerCase().includes(lowerCaseSearchTerm)
+    );
+  });
+
   useEffect(() => {
     console.log(router.query);
     if (router.query.id) {
@@ -85,10 +101,10 @@ function DashboardPage({ userId }) {
   useEffect(() => {
     const fetchMatches = async () => {
       const responseDonation = await fetch(
-        `/api/matching-algorithm/${currentUser.id}/donation`
+        `/api/matching-algorithm/${userId}/donation`
       );
       const responseRequest = await fetch(
-        `/api/matching-algorithm/${currentUser.id}/request`
+        `/api/matching-algorithm/${userId}/request`
       );
       const dataDonation = await responseDonation.json();
       const dataRequest = await responseRequest.json();
@@ -99,6 +115,16 @@ function DashboardPage({ userId }) {
     fetchMatches();
   }, []);
 
+  const totalCards = matches.length + baskets.length;
+  const paginatedMatches = matches.slice(
+    (currentPage - 1) * cardsPerPage,
+    currentPage * cardsPerPage
+  );
+  const paginatedBaskets = baskets.slice(
+    (currentPage - 1) * cardsPerPage,
+    currentPage * cardsPerPage
+  );
+
   return (
     <div>
       {viewType === "list" ? (
@@ -108,7 +134,7 @@ function DashboardPage({ userId }) {
               {/* Heading */}
               <DashboardHeading userId={userId}></DashboardHeading>
               {/* Point Badge */}
-              <PointBadge></PointBadge>
+              <PointBadge userId={userId}></PointBadge>
             </div>
             <div className="flex justify-between items-center mb-6">
               {/* Toggle View From Map to List and vice */}
@@ -125,6 +151,7 @@ function DashboardPage({ userId }) {
                     type="text"
                     placeholder="Search..."
                     value={searchTerm}
+                    onChange={handleSearchChange}
                     className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-xl"
                   />
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -169,7 +196,7 @@ function DashboardPage({ userId }) {
               </CardHeader>
               <CardContent className="w-full">
                 <div className="grid grid-cols-2 gap-4">
-                  {matches?.map((match) => {
+                  {paginatedMatches?.map((match) => {
                     return (
                       <CardComponent
                         basket={match}
@@ -194,7 +221,7 @@ function DashboardPage({ userId }) {
             </Card>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            {baskets?.map((basket) => {
+            {paginatedBaskets?.map((basket) => {
               return (
                 <CardComponent
                   basket={basket}
@@ -228,6 +255,14 @@ function DashboardPage({ userId }) {
         onRequestClose={handleClosePreferenceModal}
         onSave={handleSavePreferences}
       />
+      <div className="mt-3">
+        <PaginationComponent
+          totalCards={totalCards}
+          cardsPerPage={cardsPerPage}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+      </div>
     </div>
   );
 }
