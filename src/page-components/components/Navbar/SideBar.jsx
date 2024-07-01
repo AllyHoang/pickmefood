@@ -26,6 +26,7 @@ import { AiOutlineTrophy } from "react-icons/ai";
 import { FiBell } from "react-icons/fi";
 import { MdOutlineLeaderboard } from "react-icons/md";
 import { useSelector } from "react-redux";
+import Image from "next/image";
 
 const handleLogout = async () => {
   try {
@@ -72,7 +73,12 @@ const SideBar = () => {
             <NavigationMenuItem className="flex items-center align-center pl-2 pr-6">
               <Link href="/" legacyBehavior passHref>
                 <NavigationMenuLink className={`text-heading3-bold`}>
-                  PICK ME FOOD
+                  <Image
+                    src="/Pick Me Food Logo.png"
+                    alt="Pick Me Food Logo"
+                    width={190}
+                    height={80}
+                  />
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>

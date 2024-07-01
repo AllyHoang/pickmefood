@@ -1,16 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Tab } from "@mui/material";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import ActiveCardsList from "./ActiveCardsList";
-import AddItem from "../addItemForm/addItemForm";
-import AddRequest from "../addRequestForm/addRequestForm";
-import ImageScan from "../ImageScan/ImageScan";
-
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
-
-import Profile from "../ProfilePage/ProfileComponent";
 import TestProfilePage from "../ProfilePage/TestProfilePage";
 
 export function TabBar({ userId, firstName, lastName }) {

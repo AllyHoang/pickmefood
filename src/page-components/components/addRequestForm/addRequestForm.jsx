@@ -333,12 +333,6 @@ export default function AddRequest({ userId }) {
         await generateReplicateImage(prompt);
       }
 
-      // Validate again if uploadedUrl is available after generation
-      if (!uploadedUrl) {
-        toast.error("Image generation failed or is still in progress.");
-        return;
-      }
-
       // Check if items array is empty
       if (items.length === 0) {
         toast.error("Please add at least one item");

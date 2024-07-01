@@ -2,16 +2,13 @@
 import { Video, X } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import Loader from "../Loader";
-import { AddPhotoAlternate, Dataset } from "@mui/icons-material";
 import Link from "next/link";
 import { CldUploadButton } from "next-cloudinary";
 import MessageBox from "./MessageBox";
 import { pusherClient } from "@/lib/pusher";
-import { useRoomID } from "@/lib/RoomIDContext";
 import { Card } from "@/components/ui/card";
 
 const ChatDetails = ({ chatId, userId }) => {
-  const { roomID } = useRoomID();
   const [loading, setLoading] = useState(true);
   const [chat, setChat] = useState({});
   const [otherMembers, setOtherMembers] = useState([]);
@@ -163,14 +160,6 @@ const ChatDetails = ({ chatId, userId }) => {
             onUpload={sendPhoto}
             uploadPreset="zoa1vsa7"
           >
-            {/* <AddPhotoAlternate
-              sx={{
-                fontSize: "35px",
-                color: "#737373",
-                cursor: "pointer",
-                "&:hover": { color: "red" },
-              }}
-            /> */}
             <svg
               class="w-6 h-6"
               fill="none"
