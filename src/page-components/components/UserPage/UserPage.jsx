@@ -10,6 +10,9 @@ import Link from "next/link";
 import ActiveCardsList from "./ActiveCardsList";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import TestProfilePage from "./TestProfilePage";
+import { GoSearch } from "react-icons/go";
+import { Input } from "@/components/ui/input";
+
 
 const UserPage = ({ userId, loggedInUserId }) => {
   const router = useRouter();
@@ -38,9 +41,25 @@ const UserPage = ({ userId, loggedInUserId }) => {
             className="flex flex-col justify-normal gap-5 "
           >
             {userId === loggedInUserId ? (
-              <Link href="add-request relative top-4">
+              <div className="flex flex-row mt-4 gap-6">
+              <div className="flex-grow flex items-center gap-4">
+              <div className="relative flex-grow pl-3">
+                <Input  
+                  type="text"
+                  placeholder="Search..."
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-xl"
+                />
+                <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                  <GoSearch className="h-5 w-5 text-gray-500" />
+                </div>
+              </div>
+          
+            </div>
+              <Link href="/add-request"
+              className="pr-4">
                 <Button className="bg-sky-400">Add Request</Button>
               </Link>
+              </div>
             ) : (
               <></>
             )}
@@ -57,6 +76,21 @@ const UserPage = ({ userId, loggedInUserId }) => {
             className="flex flex-col justify-normal gap-5 "
           >
             {userId === loggedInUserId ? (
+              <div className="flex flex-row mt-4 gap-6">
+                <div className="flex-grow flex items-center gap-4">
+              <div className="relative flex-grow pl-3">
+                <Input  
+                  type="text"
+                  placeholder="Search..."
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-xl"
+                />
+                <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                  <GoSearch className="h-5 w-5 text-gray-500" />
+                </div>
+              </div>
+          
+            </div>
+            <div className="pr-4">
               <Dialog>
                 <DialogTrigger className="flex">
                   <Button className="bg-sky-400">Add Donation</Button>
@@ -83,6 +117,8 @@ const UserPage = ({ userId, loggedInUserId }) => {
                   </div>
                 </DialogContent>
               </Dialog>
+              </div>
+              </div>
             ) : (
               <></>
             )}
