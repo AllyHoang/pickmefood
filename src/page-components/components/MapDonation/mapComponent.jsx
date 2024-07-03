@@ -34,9 +34,7 @@ const MapComponent = ({ userId }) => {
   const [openDialogForBasket, setOpenDialogForBasket] = useState(null);
   const [requestMarkers, setRequestMarkers] = useState([]);
   const [placesMarkers, setPlacesMarkers] = useState([]);
-  const [selectedBasket, setSelectedBasket] = useState(null);
   const router = useRouter();
-  const [openDialog, setOpenDialog] = useState(false);
   const [selectedView, setSelectedView] = useState("Donation");
 
   const settings = {

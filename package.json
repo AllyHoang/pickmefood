@@ -83,7 +83,7 @@
     "tailwindcss-animate": "^1.0.7",
     "toastify": "^2.0.1",
     "vaul": "^0.9.1",
-    "ws": "^8.17.1"
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@types/node": "20.12.7",

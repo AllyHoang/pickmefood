@@ -10,13 +10,15 @@ import { MessageList } from "./MessageList";
 import { fetchChatToken } from "./fetchChatToken";
 import { Card } from "@/components/ui/card";
 import { useChat } from "@/lib/ChatContext";
+import { useWebSocket } from "@/hook/useWebSocket";
 
 const Chat = ({ roomIdentifier, userId, eventId }) => {
-  const { setIsChatLive, setEventId } = useChat();
+  const { isChatLive, setIsChatLive, setEventId } = useChat();
   const [messages, setMessages] = useState([]);
   const [messageToSend, setMessageToSend] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [connectionState, setConnectionState] = useState("disconnected");
+  const [socket, setSocket] = useState(null); // State to hold WebSocket instance
 
   const chatRoomUrl = "wss://edge.ivschat.us-east-1.amazonaws.com";
 
@@ -54,11 +56,71 @@ const Chat = ({ roomIdentifier, userId, eventId }) => {
   };
 
   useEffect(() => {
+    const newSocket = new WebSocket("ws://localhost:8080");
+
+    newSocket.onmessage = (event) => {
+      if (typeof event.data === "string") {
+        try {
+          const message = JSON.parse(event.data);
+          console.log("Received message from WebSocket server:", message);
+          if (message.eventId) {
+            setEventId(message.eventId);
+            setIsChatLive(message.isChatLive);
+          }
+        } catch (error) {
+          console.error("Error parsing JSON:", error);
+        }
+      } else if (event.data instanceof Blob) {
+        // Handle Blob data, if necessary
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const message = JSON.parse(reader.result);
+            console.log(
+              "Received message from WebSocket server (Blob):",
+              message
+            );
+            if (message.eventId) {
+              setEventId(message.eventId);
+              setIsChatLive(message.isChatLive);
+            }
+          } catch (error) {
+            console.error("Error parsing JSON from Blob:", error);
+          }
+        };
+        reader.readAsText(event.data);
+      } else {
+        console.warn("Unsupported message type:", typeof event.data);
+      }
+    };
+
+    newSocket.onopen = () => {
+      const message = { type: "clientMessage", content: "Hello from Chat" };
+      newSocket.send(JSON.stringify(message));
+      console.log("Sent message to WebSocket server:", message);
+    };
+
+    setSocket(newSocket); // Store the socket in state
+
+    return () => {
+      newSocket.close();
+    };
+  }, []);
+
+  useEffect(() => {
     const unsubscribeOnConnected = room.addListener("connect", () => {
       console.log("Connected to chat room");
       setConnectionState("connected");
       setIsChatLive(true);
       setEventId(eventId);
+      // Send WebSocket message on connection
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({ eventId, isChatLive: true }));
+        console.log("Sent message to WebSocket server:", {
+          eventId,
+          isChatLive: true,
+        });
+      }
     });
 
     const unsubscribeOnDisconnected = room.addListener("disconnect", () => {
@@ -97,7 +159,7 @@ const Chat = ({ roomIdentifier, userId, eventId }) => {
       unsubscribeOnMessageDeleted();
       room.disconnect();
     };
-  }, [room, setIsChatLive, setEventId]);
+  }, [room, socket, eventId, setIsChatLive, setEventId]);
 
   return (
     <div className="flex h-full bg-gray-100">

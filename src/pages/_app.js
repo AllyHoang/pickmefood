@@ -20,8 +20,8 @@ function App({ Component, pageProps }) {
   return (
     <RootLayout>
       <NextAuthProvider>
-        <ImageProvider>
-          <ChatProvider>
+        <ChatProvider>
+          <ImageProvider>
             <Provider store={store}>
               <PersistGate loading={null} persistor={persistor}>
                 <PageLayout {...pageProps}>
@@ -30,8 +30,8 @@ function App({ Component, pageProps }) {
                 </PageLayout>
               </PersistGate>
             </Provider>
-          </ChatProvider>
-        </ImageProvider>
+          </ImageProvider>
+        </ChatProvider>
       </NextAuthProvider>
     </RootLayout>
   );
