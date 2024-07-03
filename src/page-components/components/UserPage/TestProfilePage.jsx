@@ -125,7 +125,9 @@ const TestProfilePage = ({ userId, loggedInUserId }) => {
         <div className="absolute top-3 right-8">
           <Dialog modal={false}>
             <DialogTrigger>
-              <Button className="bg-sky-400 text-white">Edit Profile</Button>
+              <Button className="bg-white text-black hover:bg-slate-200">
+                Edit Profile
+              </Button>
             </DialogTrigger>
             {/* <DialogContent onInteract = {(e) => e.preventDefault()}> */}
             <DialogContent

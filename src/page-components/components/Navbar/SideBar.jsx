@@ -21,9 +21,11 @@ import {
   RxChatBubble,
   RxHeart,
 } from "react-icons/rx";
+import { IoIosChatbubbles } from "react-icons/io";
 import { FiCreditCard } from "react-icons/fi";
 import { AiOutlineTrophy } from "react-icons/ai";
 import { FiBell } from "react-icons/fi";
+import { MdEvent } from "react-icons/md";
 import { MdOutlineLeaderboard } from "react-icons/md";
 import { useSelector } from "react-redux";
 import Image from "next/image";
@@ -66,7 +68,8 @@ const SideBar = () => {
       icon: <AiOutlineTrophy size="21px" />,
       label: "Leaderboard",
     },
-    { href: "/chats", icon: <FiBell size="20px" />, label: "Notifications" },
+    { href: "/chats", icon: <IoIosChatbubbles size="20px" />, label: "Chats" },
+    { href: "/events", icon: <MdEvent size="20px" />, label: "Events" },
   ];
 
   const isActive = (path) => activeItem === path;
@@ -77,7 +80,7 @@ const SideBar = () => {
         <NavigationMenuList className="flex flex-col items-start md:h-[100vh] space-y-6 pt-6 justify-between">
           <div>
             <NavigationMenuItem className="flex items-center align-center pl-2 pr-6">
-              <Link href="/" legacyBehavior passHref>
+              <Link href="/dashboard" legacyBehavior passHref>
                 <NavigationMenuLink className={`text-heading3-bold`}>
                   <Image
                     src="/Pick Me Food Logo.png"

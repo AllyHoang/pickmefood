@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import PaymentPage from "../CheckOutForm/PaymentPage";
+import { useRouter } from "next/router";
 
 const EventCard = ({ event, userId }) => {
   const {
@@ -20,8 +21,71 @@ const EventCard = ({ event, userId }) => {
   } = event;
   const [progressStick, setProgress] = useState(0);
   const [remainingMoney, setRemainingMoney] = useState(money);
+  const router = useRouter();
+  const [eventId, setEventId] = useState("");
+  const [isChatLive, setIsChatLive] = useState(false);
 
-  console.log(organizationId);
+  useEffect(() => {
+    const socket = new WebSocket("ws://localhost:8080");
+
+    socket.onopen = () => {
+      console.log("WebSocket connection opened");
+      const message = {
+        type: "clientMessage",
+        content: "Hello from EventCard",
+      };
+      socket.send(JSON.stringify(message));
+      console.log("Sent message to WebSocket server:", message);
+    };
+
+    socket.onmessage = (event) => {
+      if (typeof event.data === "string") {
+        try {
+          const message = JSON.parse(event.data);
+          console.log("Received message from WebSocket server:", message);
+          if (message.eventId) {
+            setEventId(message.eventId);
+            setIsChatLive(message.isChatLive);
+          }
+        } catch (error) {
+          console.error("Error parsing JSON:", error);
+        }
+      } else if (event.data instanceof Blob) {
+        // Handle Blob data, if necessary
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const message = JSON.parse(reader.result);
+            console.log(
+              "Received message from WebSocket server (Blob):",
+              message
+            );
+            if (message.eventId) {
+              setEventId(message.eventId);
+              setIsChatLive(message.isChatLive);
+            }
+          } catch (error) {
+            console.error("Error parsing JSON from Blob:", error);
+          }
+        };
+        reader.readAsText(event.data);
+      } else {
+        console.warn("Unsupported message type:", typeof event.data);
+      }
+    };
+
+    socket.onclose = () => {
+      console.log("WebSocket connection closed");
+    };
+
+    socket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    return () => {
+      socket.close();
+    };
+  }, []);
 
   useEffect(() => {
     const fetchProgress = async () => {
@@ -42,6 +106,11 @@ const EventCard = ({ event, userId }) => {
     fetchProgress();
   }, [_id, money]);
 
+  const routeToChannel = () => {
+    // Example: Redirect to a specific route based on the event _id
+    router.push(`/channel/Summer Festival`);
+  };
+
   return (
     <div className="event-card bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <img
@@ -57,6 +126,14 @@ const EventCard = ({ event, userId }) => {
           <div className="date-box bg-white text-gray-700 border border-gray-300 px-2 py-1 rounded shadow-sm">
             <span className="text-xs">{expirationDate}</span>
           </div>
+          {isChatLive && _id === eventId && (
+            <button
+              className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded"
+              onClick={routeToChannel}
+            >
+              LIVE
+            </button>
+          )}
         </div>
         <p className="card-organization text-sm text-gray-600 mb-1">
           {organizationName}
