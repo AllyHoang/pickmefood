@@ -80,7 +80,7 @@ const SideBar = () => {
         <NavigationMenuList className="flex flex-col items-start md:h-[100vh] space-y-6 pt-6 justify-between">
           <div>
             <NavigationMenuItem className="flex items-center align-center pl-2 pr-6">
-              <Link href="/" legacyBehavior passHref>
+              <Link href="/dashboard" legacyBehavior passHref>
                 <NavigationMenuLink className={`text-heading3-bold`}>
                   <Image
                     src="/Pick Me Food Logo.png"
