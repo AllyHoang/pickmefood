@@ -13,6 +13,9 @@ import DialogComponent from "../DashboardPage/DialogComponent";
 import PaymentPagePlaces from "../CheckOutForm/PaymentPagePlaces";
 import useFetchAllBaskets from "@/hook/useFetchAllBaskets";
 import { GoSearch } from "react-icons/go";
+import CardComponent from "../DashboardPage/CardComponent";
+import MapCard from "./MapCard";
+import { set } from "mongoose";
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoicGlja21lZm9vZCIsImEiOiJjbHZwbHdyMzgwM2hmMmtvNXJ6ZHU2NXh3In0.aITfZvPY-sKGwepyPVPGOg";
@@ -38,6 +41,18 @@ const MapComponent = ({ userId }) => {
   const router = useRouter();
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedView, setSelectedView] = useState("Donation");
+  // State to store the position of the mouse click
+  const [clickPosition, setClickPosition] = useState({ top: 0, left: 0 });
+
+  useEffect(() => {
+    document.addEventListener("click", function (event) {
+      // Retrieve the mouse coordinates relative to the document
+      var mouseX = event.pageX;
+      var mouseY = event.pageY;
+      setClickPosition({ top: mouseY, left: mouseX });
+      console.log(clickPosition.top, clickPosition.left);
+    });
+  }, [selectedRequests, selectedDonations, selectedPlaces]);
 
   const settings = {
     dots: true, // Show navigation dots
@@ -46,6 +61,14 @@ const MapComponent = ({ userId }) => {
     slidesToShow: 1, // Show one slide at a time
     slidesToScroll: 1, // Scroll one slide at a time
   };
+
+  useEffect(() => {
+    console.log(router.query);
+    if (router.query.id) {
+      const basket = baskets.find((basket) => basket._id === router.query.id);
+      setSelectedBasket(basket);
+    }
+  }, [router.query.id, baskets]);
 
   const handleToggleView = () => {
     if (viewType === "list") {
@@ -63,6 +86,7 @@ const MapComponent = ({ userId }) => {
 
   const handleCloseModal = () => {
     setOpenDialogForBasket(null);
+    setOpenDialog(false);
   };
 
   useEffect(() => {
@@ -148,7 +172,6 @@ const MapComponent = ({ userId }) => {
       }
       const data = await response.json();
       const geocodedRequests = await geocodeRequests(data.baskets);
-      console.log(geocodedRequests);
       setRequests(geocodedRequests);
     } catch (error) {
       console.error("Error fetching donations:", error);
@@ -163,7 +186,6 @@ const MapComponent = ({ userId }) => {
       }
       const data = await response.json();
       const geocodedPlaces = await geocodePlaces(data.places);
-      console.log(geocodedPlaces);
       setPlaces(geocodedPlaces);
     } catch (error) {
       console.error("Error fetching donations:", error);
@@ -218,7 +240,6 @@ const MapComponent = ({ userId }) => {
         }
       })
     );
-    console.log(geocodedPlaces);
     return geocodedPlaces.filter((place) => place !== null);
   };
 
@@ -419,73 +440,72 @@ const MapComponent = ({ userId }) => {
     <div className={styles.container}>
       <div id="map" className={styles.mapContainer}></div>
       {selectedRequests.length > 0 && (
-        <div className={styles.sidebar}>
-          <button
-            className={styles.closeButton}
-            onClick={() => setSelectedRequests([])}
-          >
-            &times;
-          </button>
+        <div
+          id="requests-sidebar"
+          className="fixed w-[300px] h-[400px] bg-white shadow-lg rounded-lg z-50 overflow-y-auto"
+          style={{
+            top: `${clickPosition.top}px`,
+            left: `${clickPosition.left}px`,
+          }}
+        >
           {selectedRequests.map((request, index) => (
-            <div className={styles.requestDetails} key={index}>
-              <button
-                className={styles.addButton}
-                onClick={() => handleOpenDialog(request)}
-              >
-                Donate
-              </button>
-              {request && openDialogForBasket === request && (
+            <div className="flex flex-col " key={index}>
+              <MapCard
+                basket={request}
+                // selectedBasket={request}
+                selectedBasket={selectedBasket}
+                setOpenDialog={setOpenDialog}
+                onPage="map"
+              ></MapCard>
+              {selectedBasket && openDialog === request && (
                 <DialogComponent
-                  itemKey={JSON.stringify(request)}
-                  openDialog={Boolean(openDialogForBasket)}
+                  itemKey={JSON.stringify(selectedBasket)}
+                  openDialog={openDialog}
                   handleCloseModal={handleCloseModal}
-                  otherBasket={request}
+                  otherBasket={selectedBasket}
                 />
               )}
-              <div className={styles.requestItem}>
-                <p className={styles.title}>{request.title}</p>
-                <p>{request.reason}</p>
-                <p>Location: {request.location}</p>
-              </div>
+              <button
+                className={styles.closeButton}
+                onClick={() => setSelectedRequests([])}
+              >
+                &times;
+              </button>
             </div>
           ))}
         </div>
       )}
       {selectedDonations.length > 0 && (
-        <div className={styles.sidebar}>
-          <button
-            className={styles.closeButton}
-            onClick={() => setSelectedDonations([])}
-          >
-            &times;
-          </button>
+        <div
+          id="donations-sidebar"
+          className=" fixed w-[300px] h-[400px] bg-white shadow-lg rounded-lg z-50 overflow-y-auto"
+          style={{
+            top: `${clickPosition.top}px`,
+            left: `${clickPosition.left}px`,
+          }}
+        >
           {selectedDonations.map((donation, index) => (
-            <div className={styles.donationDetails} key={index}>
-              <button
-                className={styles.addButton}
-                onClick={() => setOpenDialog(true)}
-              >
-                Request
-              </button>
-              {donation && openDialogForBasket === donation && (
+            <div key={index}>
+              <MapCard
+                basket={donation}
+                selectedBasket={selectedBasket}
+                setOpenDialog={setOpenDialog}
+                onPage="map"
+              ></MapCard>
+              {selectedBasket && openDialog && (
                 <DialogComponent
-                  itemKey={JSON.stringify(donation)}
-                  openDialog={Boolean(openDialogForBasket)}
+                  itemKey={JSON.stringify(selectedBasket)}
+                  openDialog={openDialog}
                   handleCloseModal={handleCloseModal}
-                  otherBasket={donation}
+                  otherBasket={selectedBasket}
                 />
               )}
-              <div className={styles.requestItem}>
-                <p className={styles.title}>{donation.title}</p>
-                <p>{donation.description}</p>
-                <p>
-                  Expiration Date:{" "}
-                  {new Date(
-                    donation.items[0].expirationDate
-                  ).toLocaleDateString()}
-                </p>
-                <p>Location: {donation.location}</p>
-              </div>
+              <button
+                className={styles.closeButton}
+                onClick={() => setSelectedDonations([])}
+              >
+                &times;
+              </button>
             </div>
           ))}
         </div>
@@ -579,7 +599,9 @@ const MapComponent = ({ userId }) => {
           ))}
         </ul>
       )}
+
       {searchError && <p className={styles.error}>{searchError}</p>}
+
       <div className="absolute top-[25px] right-[20px] h-20">
         <select
           className="ml-4 p-2 border border-gray-300 rounded"

@@ -33,14 +33,6 @@ function DashboardPage({ userId }) {
   const [currentPage, setCurrentPage] = useState(1);
   const cardsPerPage = 10;
 
-  const truncateDescription = (description, maxWords) => {
-    const words = description?.split(" ");
-    if (words?.length > maxWords) {
-      return words?.slice(0, maxWords)?.join(" ") + "...";
-    }
-    return description;
-  };
-
   const handleOpenPreferenceModal = () => {
     setIsPreferenceModalOpen(true);
   };
@@ -165,61 +157,15 @@ function DashboardPage({ userId }) {
               </select>
             </div>
           </div>
-          {/* <div className="max-w-screen-2xl mx-auto w-full pb-4 mt-10">
-            <Card className="border-none drop-shadow-sm ">
-              <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
-                <CardTitle className="text-heading3-bold line-clamp-1">
-                  Top Match
-                </CardTitle>
-                <div className="flex justify-center align-middle gap-2">
-                  <Button className="bg-sky-400" size="sm">
-                    View Matches
-                  </Button>
-                  <Button
-                    className=""
-                    size="sm"
-                    onClick={handleOpenPreferenceModal}
-                  >
-                    Change Preference
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="w-full">
-                <div className="grid grid-cols-3 gap-4">
-                  {paginatedMatches?.map((match) => {
-                    return (
-                      <CardComponent
-                        basket={match}
-                        setOpenDialog={setOpenDialog}
-                        selectedBasket={selectedBasket}
-                        key={match._id}
-                        className="flex flex-col bg-white rounded-lg shadow-lg"
-                      ></CardComponent>
-                    );
-                  })}
-                  {/* Dialog UI */}
-          {/* {selectedBasket && openDialog && (
-                    <DialogComponent
-                      itemKey={JSON.stringify(selectedBasket)}
-                      openDialog={openDialog}
-                      handleCloseModal={handleCloseModal}
-                      otherBasket={selectedBasket}
-                    ></DialogComponent>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-
-          </div> */}{" "}
           <TopMatchComponent
             matches={paginatedMatches}
             handleOpenPreferenceModal={handleOpenPreferenceModal}
             setOpenDialog={setOpenDialog}
             selectedBasket={selectedBasket}
             handleCloseModal={handleCloseModal}
-            openDialog = {openDialog}
+            openDialog={openDialog}
           ></TopMatchComponent>
-          
+
           <p className="text-heading2-bold mt-6 mb-6 ">All Postings</p>
           <div className="grid grid-cols-3 gap-7">
             {paginatedBaskets?.map((basket) => {
@@ -230,6 +176,7 @@ function DashboardPage({ userId }) {
                   selectedBasket={selectedBasket}
                   key={basket._id}
                   className="flex flex-col bg-white rounded-lg shadow-lg"
+                  onPage="dashboard"
                 ></CardComponent>
               );
             })}
