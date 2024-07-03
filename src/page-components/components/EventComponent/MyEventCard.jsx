@@ -1,12 +1,11 @@
-// src/components/EventCard.jsx
-
 import React, { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import PaymentPage from "../CheckOutForm/PaymentPage";
+import EditEventForm from "./EditEventForm";
 import { useRouter } from "next/router";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
-const EventCard = ({ event, userId, currentEventId, isChatLive }) => {
+const MyEventCard = ({ event, userId }) => {
   const {
     image,
     eventName,
@@ -23,7 +22,21 @@ const EventCard = ({ event, userId, currentEventId, isChatLive }) => {
   const [remainingMoney, setRemainingMoney] = useState(money);
   const router = useRouter();
 
-  isChatLive = true;
+  const handleDeleteButtonClick = async () => {
+    try {
+      const response = await fetch(`/api/events/${_id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        router.push("/my-event");
+      } else {
+        throw new Error("Failed to delete event");
+      }
+    } catch (error) {
+      console.error("Error deleting event:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchProgress = async () => {
@@ -44,9 +57,10 @@ const EventCard = ({ event, userId, currentEventId, isChatLive }) => {
     fetchProgress();
   }, [_id, money]);
 
-  const routeToChannel = () => {
-    // Example: Redirect to a specific route based on the event _id
-    router.push(`/channel/Summer Festival`);
+  const handleLivestreamClick = () => {
+    router.push({
+      pathname: `/channel/${eventName}`,
+    });
   };
 
   return (
@@ -64,14 +78,6 @@ const EventCard = ({ event, userId, currentEventId, isChatLive }) => {
           <div className="date-box bg-white text-gray-700 border border-gray-300 px-2 py-1 rounded shadow-sm">
             <span className="text-xs">{expirationDate}</span>
           </div>
-          {isChatLive && _id === "667501d4c77df56abe541034" && (
-            <button
-              className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded"
-              onClick={routeToChannel}
-            >
-              LIVE
-            </button>
-          )}
         </div>
         <p className="card-organization text-sm text-gray-600 mb-1">
           {organizationName}
@@ -88,24 +94,36 @@ const EventCard = ({ event, userId, currentEventId, isChatLive }) => {
             ></div>
           </div>
           <p className="card-funding-info text-sm text-gray-700">
-            To be funded: ${remainingMoney} (${progress.toFixed(2)}% funded)
+            To be funded: ${remainingMoney} ({progress.toFixed(2)}% funded)
           </p>
         </div>
-        <Dialog>
-          <DialogTrigger>
-            <Button className="bg-sky-400">Donate</Button>
-          </DialogTrigger>
-          <DialogContent className="min-w-fit w-3/4 h-4/5">
-            <PaymentPage
-              eventId={_id}
-              userId={userId}
-              event={event}
-            ></PaymentPage>
-          </DialogContent>
-        </Dialog>
+        <div className="flex justify-end space-x-4">
+          <Button onClick={handleLivestreamClick} className="bg-green-500">
+            Livestream
+          </Button>
+          <Dialog>
+            <DialogTrigger>
+              <Button className="bg-sky-400">Donate</Button>
+            </DialogTrigger>
+            <DialogContent className="min-w-fit w-3/4 h-4/5">
+              <PaymentPage eventId={_id} userId={userId} event={event} />
+            </DialogContent>
+          </Dialog>
+          <Dialog>
+            <DialogTrigger>
+              <Button className="bg-sky-400">Edit</Button>
+            </DialogTrigger>
+            <DialogContent className="min-w-fit w-full h-full">
+              <EditEventForm eventId={_id} userId={userId} />
+            </DialogContent>
+          </Dialog>
+          <Button onClick={handleDeleteButtonClick} className="bg-red-500">
+            Delete
+          </Button>
+        </div>
       </div>
     </div>
   );
 };
 
-export default EventCard;
+export default MyEventCard;

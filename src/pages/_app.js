@@ -12,6 +12,7 @@ import { ImageProvider } from "@/lib/ImageContext";
 import { Provider } from "react-redux";
 import { persistor, store } from "@/redux/store";
 import { PersistGate } from "redux-persist/integration/react";
+import { ChatProvider } from "@/lib/ChatContext";
 
 function App({ Component, pageProps }) {
   const PageLayout = Component.Layout || LandingPageLayout;
@@ -20,14 +21,16 @@ function App({ Component, pageProps }) {
     <RootLayout>
       <NextAuthProvider>
         <ImageProvider>
-          <Provider store={store}>
-            <PersistGate loading={null} persistor={persistor}>
-              <PageLayout {...pageProps}>
-                <Component {...pageProps} />
-                <ToastContainer />
-              </PageLayout>
-            </PersistGate>
-          </Provider>
+          <ChatProvider>
+            <Provider store={store}>
+              <PersistGate loading={null} persistor={persistor}>
+                <PageLayout {...pageProps}>
+                  <Component {...pageProps} />
+                  <ToastContainer />
+                </PageLayout>
+              </PersistGate>
+            </Provider>
+          </ChatProvider>
         </ImageProvider>
       </NextAuthProvider>
     </RootLayout>

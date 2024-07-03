@@ -21,9 +21,11 @@ import {
   RxChatBubble,
   RxHeart,
 } from "react-icons/rx";
+import { IoIosChatbubbles } from "react-icons/io";
 import { FiCreditCard } from "react-icons/fi";
 import { AiOutlineTrophy } from "react-icons/ai";
 import { FiBell } from "react-icons/fi";
+import { MdEvent } from "react-icons/md";
 import { MdOutlineLeaderboard } from "react-icons/md";
 import { useSelector } from "react-redux";
 import Image from "next/image";
@@ -66,7 +68,8 @@ const SideBar = () => {
       icon: <AiOutlineTrophy size="21px" />,
       label: "Leaderboard",
     },
-    { href: "/chats", icon: <FiBell size="20px" />, label: "Notifications" },
+    { href: "/chats", icon: <IoIosChatbubbles size="20px" />, label: "Chats" },
+    { href: "/events", icon: <MdEvent size="20px" />, label: "Events" },
   ];
 
   const isActive = (path) => activeItem === path;

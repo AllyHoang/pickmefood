@@ -18,8 +18,7 @@ export default function RemoveRequestsBtn({ id, userId }) {
       });
 
       if (res.ok) {
-        // router.refresh();
-        router.push(`/${username}`);
+        router.refresh();
       }
     }
   };
