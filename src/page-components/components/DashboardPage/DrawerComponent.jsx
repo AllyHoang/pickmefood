@@ -26,7 +26,6 @@ import { extractStateAndZip } from "@/lib/utils";
 function DrawerComponent({ selectedBasket, id, handleOpenDialog, onPage }) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  console.log(selectedBasket);
   const calculateDaysDifference = (date) => {
     const currentDate = new Date();
     const givenDate = new Date(date);

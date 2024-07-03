@@ -43,19 +43,25 @@ const MapComponent = ({ userId }) => {
   const [selectedBasket, setSelectedBasket] = useState(null);
   const router = useRouter();
   const [openDialog, setOpenDialog] = useState(false);
+  const [openPlaceDialog, setOpenPlaceDialog] = useState(false);
   const [selectedView, setSelectedView] = useState("Donation");
   // State to store the position of the mouse click
   const [clickPosition, setClickPosition] = useState({ top: 0, left: 0 });
 
   useEffect(() => {
-    document.addEventListener("click", function (event) {
-      // Retrieve the mouse coordinates relative to the document
-      var mouseX = event.pageX;
-      var mouseY = event.pageY;
-      setClickPosition({ top: mouseY, left: mouseX });
-      console.log(clickPosition.top, clickPosition.left);
-    });
-  }, [selectedRequests, selectedDonations, selectedPlaces]);
+    console.log("Normal dialog open", openDialog);
+    console.log("Place dialog open", openPlaceDialog);
+
+    if (!openDialog && !openPlaceDialog) {
+      document.addEventListener("click", function (event) {
+        // Retrieve the mouse coordinates relative to the document
+        var mouseX = event.pageX;
+        var mouseY = event.pageY;
+        setClickPosition({ top: mouseY, left: mouseX });
+        console.log(clickPosition.top, clickPosition.left);
+      });
+    }
+  }, []);
 
   const settings = {
     dots: true, // Show navigation dots
@@ -85,6 +91,14 @@ const MapComponent = ({ userId }) => {
 
   const handleOpenDialog = (request) => {
     setOpenDialogForBasket(request);
+  };
+
+  const handleOpenPlaceDialog = () => {
+    setOpenPlaceDialog(true);
+  };
+
+  const handleClosePlaceDialog = () => {
+    setOpenPlaceDialog(false);
   };
 
   const handleCloseModal = () => {
@@ -561,9 +575,15 @@ const MapComponent = ({ userId }) => {
               </button>
             </div>
 
-            <Dialog>
+            <Dialog
+              onOpenChange={(open) =>
+                open ? handleOpenPlaceDialog() : handleClosePlaceDialog()
+              }
+            >
               <DialogTrigger className="mt-2">
-                <Button className="w-full bg-sky-400 text-black">Donate</Button>
+                <Button className="w-full bg-sky-400 text-black hover:bg-sky-400">
+                  Donate
+                </Button>
               </DialogTrigger>
               <DialogContent className="min-w-fit w-3/4 h-4/5">
                 <PaymentPagePlaces
@@ -613,9 +633,9 @@ const MapComponent = ({ userId }) => {
 
       {searchError && <p className={styles.error}>{searchError}</p>}
 
-      <div className="absolute top-[25px] right-[20px] h-20">
+      <div className="absolute top-[25px] right-[20px] h-20 ">
         <select
-          className="ml-4 p-2 border border-gray-300 rounded"
+          className="ml-4 p-2 border border-gray-300 rounded-xl"
           value={selectedView}
           onChange={(e) => setSelectedView(e.target.value)}
         >
