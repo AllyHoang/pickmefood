@@ -316,235 +316,238 @@ export default function AddItem({ userId }) {
 
   return (
     <div className="flex flex-col overflow-hidden h-screen">
-    <div className="flex flex-1 flex-col items-center gap-2 overflow-y-scroll pb-4">
-      <ToastContainer />
-      <h1
-        className="self-start font-bold text-gray-700 mt-2 mb-4 ml-8"
-        style={{ fontSize: "20px" }}
-      >
-        Add Donation Manually🚀
-      </h1>
+      <div className="flex flex-1 flex-col items-center gap-2 overflow-y-scroll pb-4">
+        <ToastContainer />
+        <h1
+          className="self-start font-bold text-gray-700 mt-2 mb-4 ml-8"
+          style={{ fontSize: "20px" }}
+        >
+          Add Donation Manually🚀
+        </h1>
 
-      <div className="grid grid-cols-2 self-center gap-10">
-        <Card className="flex flex-col h-fit w-full">
-          <form onSubmit={handleSubmit} className="p-5 bg-white rounded-lg">
-            {/* Always show title and description fields */}
+        <div className="grid grid-cols-2 self-center gap-10">
+          <Card className="flex flex-col h-fit w-full">
+            <form onSubmit={handleSubmit} className="p-5 bg-white rounded-lg">
+              {/* Always show title and description fields */}
 
-            <div className="flex flex-col gap-2 mb-4">
-              <label htmlFor="name" className="font-medium text-gray-700">
-                Item name
-              </label>
-              <Select
-                options={foodItems.map((item) => ({
-                  value: item.name,
-                  label: item.name,
-                }))}
-                value={selectedOption}
-                onChange={handleItemChange}
-                className="w-full"
-              />
-            </div>
+              <div className="flex flex-col gap-2 mb-4">
+                <label htmlFor="name" className="font-medium text-gray-700">
+                  Item name
+                </label>
+                <Select
+                  options={foodItems.map((item) => ({
+                    value: item.name,
+                    label: item.name,
+                  }))}
+                  value={selectedOption}
+                  onChange={handleItemChange}
+                  className="w-full"
+                />
+              </div>
 
-            <div className="flex flex-row gap-4 mb-3">
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-row gap-4 mb-3">
+                <div className="flex flex-col gap-2">
+                  <label
+                    htmlFor="expirationDate"
+                    className="font-medium text-gray-700"
+                  >
+                    Item expiration date
+                  </label>
+                  <DatePicker
+                    id="expirationDate"
+                    selected={expirationDate}
+                    onChange={(date) => setExpirationDate(date)}
+                    dateFormat="MM/dd/yyyy"
+                    className="h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors"
+                    placeholderText="Choose a date"
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label
+                    htmlFor="quantity"
+                    className="font-medium text-gray-700"
+                  >
+                    Item quantity
+                  </label>
+                  <Input
+                    id="quantity"
+                    value={quantity}
+                    onChange={(e) => setQuantity(e.target.value)}
+                    className="flex grow w-full mb-2"
+                    type="number"
+                    placeholder="Ex: 1,2"
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col gap-2 mb-2">
                 <label
-                  htmlFor="expirationDate"
+                  htmlFor="userAddress"
                   className="font-medium text-gray-700"
                 >
-                  Item expiration date
-                </label>
-                <DatePicker
-                  id="expirationDate"
-                  selected={expirationDate}
-                  onChange={(date) => setExpirationDate(date)}
-                  dateFormat="MM/dd/yyyy"
-                  className="h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors"
-                  placeholderText="Choose a date"
-                />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label htmlFor="quantity" className="font-medium text-gray-700">
-                  Item quantity
+                  Your address
                 </label>
                 <Input
-                  id="quantity"
-                  value={quantity}
-                  onChange={(e) => setQuantity(e.target.value)}
-                  className="flex grow w-full mb-2"
-                  type="number"
-                  placeholder="Ex: 1,2"
+                  id="userAddress"
+                  value={userAddress}
+                  onChange={handleAddressChange}
+                  className="w-full mb-4"
+                  type="text"
+                  placeholder="Enter your address"
+                />
+
+                {addressSuggestions.length > 0 && (
+                  <div className="relative w-full">
+                    <ul className="absolute z-10 top-0 w-full bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto mb-2">
+                      {addressSuggestions.map((address, index) => (
+                        <li
+                          key={index}
+                          onClick={() => handleSuggestionClick(address)}
+                          className="p-2 cursor-pointer hover:bg-gray-100"
+                        >
+                          {address}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+              <div
+                id="map"
+                className="bg-gray-200 rounded-lg shadow-lg h-72 mb-3"
+              ></div>
+              <div className="flex flex-row justify-between">
+                <a
+                  href="#"
+                  onClick={handleGetUserLocation}
+                  className="text-small-medium text-muted underline pt-0"
+                >
+                  Get my location
+                </a>
+                <Button
+                  type="button"
+                  onClick={handleAddItem}
+                  className="w-fit justify-center shadow-md  text-white bg-sky-400 mt-4 px-4 rounded-lg"
+                >
+                  Add Item
+                </Button>
+              </div>
+            </form>
+          </Card>
+
+          <Card className="flex flex-col overflow-y-auto h-fit w-full p-5">
+            <div className="mb-2">
+              <div className="flex flex-col gap-2 mb-3">
+                <p className="font-medium text-gray-700">Basket image</p>
+                <CldUploadButton
+                  className="flex flex-col w-full"
+                  options={{ maxFiles: 1 }}
+                  folder="images"
+                  onSuccess={handleUploadSuccess}
+                  onFailure={(error) =>
+                    console.error("Cloudinary upload error:", error)
+                  }
+                  uploadPreset="zoa1vsa7"
+                >
+                  <div className="flex flex-row justify-start gap-1">
+                    <p className="text-small-medium text-gray-700">
+                      Upload image
+                    </p>
+                    <IoCloudUploadOutline size={22} />
+                  </div>
+                </CldUploadButton>
+                {/* <p className="text-gray-700 font-normal">
+                Please upload your image to make your donation standout
+              </p> */}
+              </div>
+
+              {uploadedUrl && (
+                <img
+                  className="border-2 rounded-lg w-32 h-32 mb-2 overflow-hidden object-contain"
+                  src={uploadedUrl}
+                  alt="uploaded"
+                />
+              )}
+
+              <div className="flex flex-col gap-2 mb-3">
+                <label
+                  htmlFor="basketTitle"
+                  className="font-medium text-gray-700"
+                >
+                  Basket title
+                </label>
+                <Input
+                  id="basketTitle"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="w-full mb-2"
+                  type="text"
+                  placeholder="Please provide input for the basket title"
+                />
+              </div>
+              <div className="flex flex-col gap-2 mb-3">
+                <label
+                  htmlFor="basketDescription"
+                  className="font-medium text-gray-700"
+                >
+                  Basket description
+                </label>
+                <textarea
+                  id="basketDescription"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full border-2 rounded-lg p-2"
+                  type="text"
                 />
               </div>
             </div>
-            <div className="flex flex-col gap-2 mb-2">
-              <label
-                htmlFor="userAddress"
-                className="font-medium text-gray-700"
-              >
-                Your address
-              </label>
-              <Input
-                id="userAddress"
-                value={userAddress}
-                onChange={handleAddressChange}
-                className="w-full mb-4"
-                type="text"
-                placeholder="Enter your address"
-              />
 
-              {addressSuggestions.length > 0 && (
-                <div className="relative w-full">
-                  <ul className="absolute z-10 top-0 w-full bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto mb-2">
-                    {addressSuggestions.map((address, index) => (
-                      <li
-                        key={index}
-                        onClick={() => handleSuggestionClick(address)}
-                        className="p-2 cursor-pointer hover:bg-gray-100"
-                      >
-                        {address}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-            <div
-              id="map"
-              className="bg-gray-200 rounded-lg shadow-lg h-72 mb-3"
-            ></div>
-            <div className="flex flex-row justify-between">
-              <a
-                href="#"
-                onClick={handleGetUserLocation}
-                className="text-small-medium text-muted underline pt-0"
+            <h3 className="text-lg font-medium mb-2 text-gray-700">
+              Items in basket
+            </h3>
+            {items.map((item, index) => (
+              <div
+                key={index}
+                className="border border-gray-300 rounded-lg p-1 mb-4 self-center gap-2 w-full"
               >
-                Get my location
-              </a>
-              <Button
-                type="button"
-                onClick={handleAddItem}
-                className="w-fit justify-center shadow-md  text-white bg-sky-400 mt-4 px-4 rounded-lg"
-              >
-                Add Item
-              </Button>
-            </div>
-          </form>
-        </Card>
-
-        <Card className="flex flex-col overflow-y-auto h-fit w-full p-5">
-          <div className="mb-2">
-          <div className="flex flex-col gap-2 mb-3">
-            <p className="font-medium text-gray-700">
-              Basket image
-            </p>
-              <CldUploadButton
-                className="flex flex-col w-full"
-                options={{ maxFiles: 1 }}
-                folder="images"
-                onSuccess={handleUploadSuccess}
-                onFailure={(error) =>
-                  console.error("Cloudinary upload error:", error)
-                }
-                uploadPreset="zoa1vsa7"
-              >
-                <div className="flex flex-row justify-start gap-1">
-                <p className="text-small-medium text-gray-700">Upload image</p>
-                <IoCloudUploadOutline size={22}/>
-                </div>
-              </CldUploadButton>
-              {/* <p className="text-gray-700 font-normal">
-                Please upload your image to make your donation standout
-              </p> */}
-            </div>
-
-            {uploadedUrl && (
-              
-                <img className="border-2 rounded-lg w-32 h-32 mb-2 overflow-hidden object-contain" src={uploadedUrl} alt="uploaded" />
-              
-            )}
-
-            <div className="flex flex-col gap-2 mb-3">
-              <label
-                htmlFor="basketTitle"
-                className="font-medium text-gray-700"
-              >
-                Basket title
-              </label>
-              <Input
-                id="basketTitle"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full mb-2"
-                type="text"
-                placeholder="Please provide input for the basket title"
-              />
-            </div>
-            <div className="flex flex-col gap-2 mb-3">
-              <label
-                htmlFor="basketDescription"
-                className="font-medium text-gray-700"
-              >
-                Basket description
-              </label>
-              <textarea
-                id="basketDescription"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="w-full border-2 rounded-lg p-2"
-                type="text"
-              />
-            </div>
-          </div>
-
-          <h3 className="text-lg font-medium mb-2 text-gray-700">
-            Items in basket
-          </h3>
-          {items.map((item, index) => (
-            <div
-              key={index}
-              className="border border-gray-300 rounded-lg p-1 mb-4 self-center gap-2 w-full"
-            >
-              <div className="flex flex-row justify-between">
-                <div className="flex-grow mb-2">
-                  <Badge className="bg-emerald-100 text-gray-700 mt-2 ml-2">
-                    {item.itemName} {item.emoji}
-                  </Badge>
-                  <p className="text-gray-600 ml-4 mt-2">
-                    {item.quantity} - Expires on{" "}
-                    {item.expirationDate.toLocaleDateString()}
-                  </p>
-                </div>
-                <div className="flex items-center">
-                  <a
-                    onClick={() => handleRemoveItem(index)}
-                    className="mr-4 hover:bg-slate-400"
-                  >
-                    <HiOutlineTrash size="25" style={{ color: "8585AB" }} />
-                  </a>
+                <div className="flex flex-row justify-between">
+                  <div className="flex-grow mb-2">
+                    <Badge className="bg-emerald-100 text-gray-700 mt-2 ml-2">
+                      {item.itemName} {item.emoji}
+                    </Badge>
+                    <p className="text-gray-600 ml-4 mt-2">
+                      {item.quantity} - Expires on{" "}
+                      {item.expirationDate.toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className="flex items-center">
+                    <a
+                      onClick={() => handleRemoveItem(index)}
+                      className="mr-4 hover:bg-slate-400"
+                    >
+                      <HiOutlineTrash size="25" style={{ color: "8585AB" }} />
+                    </a>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        
-        </Card>
+            ))}
+          </Card>
+        </div>
       </div>
-      
-    </div>
-    <footer className="sticky bottom-0 bg-white border-t-2 w-full p-6 shadow-md">
-    <div className="flex flex-row justify-end gap-4">
-      <Link href={`/${currentUser?.username}`}>
-    <Button className="w-fit bg-slate-100 text-gray-700 hover:bg-slate-200 rounded-lg">
-        Cancel
-    </Button>
-    </Link>
-    <Button 
-    onClick={handleSubmit}
-    className="w-fit bg-sky-400 rounded-lg">
-        Create Basket
-    </Button>
-    
-    </div>
-</footer>
+      <footer className="sticky bottom-0 bg-white border-t-2 w-full p-6 shadow-md">
+        <div className="flex flex-row justify-end gap-4">
+          <Link href={`/${currentUser?.username}`}>
+            <Button className="w-fit bg-slate-100 text-gray-700 hover:bg-slate-200 rounded-lg">
+              Cancel
+            </Button>
+          </Link>
+          <Button
+            onClick={handleSubmit}
+            className="w-fit bg-sky-400 rounded-lg"
+          >
+            Create Basket
+          </Button>
+        </div>
+      </footer>
     </div>
   );
 }
