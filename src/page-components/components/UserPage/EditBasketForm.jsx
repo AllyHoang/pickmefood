@@ -1,16 +1,15 @@
-import { TextField } from "@mui/material";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import "mapbox-gl/dist/mapbox-gl.css";
 import mapboxgl from "mapbox-gl";
 import "react-datepicker/dist/react-datepicker.css";
-import "mapbox-gl/dist/mapbox-gl.css";
 import Select from "react-select";
 import { useRouter } from "next/navigation"; // Import useRouter from Next.js
 import useUser from "@/hook/useUser";
 
 function EditBasketForm({ basket, userId }) {
   const router = useRouter();
+  const { user, error } = useUser(userId); // Fetch user data here
   const [title, setTitle] = useState(basket?.title || "");
   const [description, setDescription] = useState(
     basket?.type === "Donation" ? basket?.description : basket?.reason || ""
@@ -55,22 +54,6 @@ function EditBasketForm({ basket, userId }) {
     setNames(items.map((item) => item.itemName));
     setEmojis(items.map((item) => item.emoji));
   }, [items, foodItems]);
-  const [map, setMap] = useState(null);
-  const [marker, setMarker] = useState(null);
-  mapboxgl.accessToken =
-    "pk.eyJ1IjoicGlja21lZm9vZCIsImEiOiJjbHZwbHdyMzgwM2hmMmtvNXJ6ZHU2NXh3In0.aITfZvPY-sKGwepyPVPGOg";
-  //   useEffect(() => {
-  //     const mapInstance = new mapboxgl.Map({
-  //       container: "map",
-  //       style: "mapbox://styles/mapbox/streets-v11",
-  //       center: [-74.5, 40],
-  //       zoom: 9,
-  //     });
-
-  //     setMap(mapInstance);
-
-  //     return () => mapInstance.remove();
-  //   }, []);
 
   const handleItemChange = (selectedOption, index) => {
     const newSelectedOptions = [...selectedOptions];
@@ -116,37 +99,7 @@ function EditBasketForm({ basket, userId }) {
   const handleSuggestionClick = (address) => {
     setLocation(address);
     setAddressSuggestions([]);
-    // reverseGeocodeSelectedAddress(address);
   };
-
-  //   const reverseGeocodeSelectedAddress = async (address) => {
-  //     try {
-  //       const response = await fetch(
-  //         `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-  //           address
-  //         )}.json?access_token=${mapboxgl.accessToken}`
-  //       );
-  //       const data = await response.json();
-  //       const coordinates = data.features[0].center;
-  //       const [longitude, latitude] = coordinates;
-
-  //       if (map) {
-  //         map.setCenter([longitude, latitude]);
-  //         map.setZoom(15);
-
-  //         if (marker) {
-  //           marker.remove();
-  //         }
-
-  //         const newMarker = new mapboxgl.Marker()
-  //           .setLngLat([longitude, latitude])
-  //           .addTo(map);
-  //         setMarker(newMarker);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error reverse geocoding selected address:", error);
-  //     }
-  //   };
 
   const handleSave = async () => {
     try {
@@ -183,9 +136,8 @@ function EditBasketForm({ basket, userId }) {
       }
 
       if (response.ok) {
-        console.log(useUser(userId).user.username);
         const updatedBasket = await response.json();
-        console.log(updatedBasket);
+        router.refresh(); // Use username from useUser hook
       } else {
         const errorData = await response.json();
         console.error("Error updating basket:", errorData.message);
@@ -215,16 +167,6 @@ function EditBasketForm({ basket, userId }) {
           onChange={(e) => setDescription(e.target.value)}
         />
       </label>
-
-      {/* <label className="block mb-2">
-        Location:
-        <input
-          type="text"
-          className="w-full border rounded p-2"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-        />
-      </label> */}
       <label className="block mb-2">
         Location:
         <input

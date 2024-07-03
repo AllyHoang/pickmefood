@@ -64,8 +64,9 @@ function MyDrawer({
             query: { id: id },
           }}
           shallow={true}
+          className="self-center"
         >
-          <Button className="">View Details</Button>
+          View Details
         </Link>
       </DrawerTrigger>
 
@@ -81,32 +82,31 @@ function MyDrawer({
           </div>
         )}
 
-        <div className="flex flex-col ">
+        <div className="flex flex-col gap-3">
           <h2 className="text-heading2-bold font-bold">
             {selectedBasket?.title}
           </h2>
-          <div className="flex flex-wrap gap-2 mt-2">
-            <div className="flex flex-wrap gap-2 mt-2">
-              {selectedBasket?.type === "Donation"
-                ? selectedBasket?.items.map((item) => (
-                    <Badge
-                      key={item.id}
-                      className="bg-sky-100 text-black flex items-center gap-1"
-                    >
-                      <span>{item.emoji}</span>
-                      <span>{item.itemName}</span>
-                    </Badge>
-                  ))
-                : selectedBasket?.requests.map((request) => (
-                    <Badge
-                      key={request.id}
-                      className="bg-sky-100 text-black flex items-center gap-1"
-                    >
-                      <span>{request.emoji}</span>
-                      <span>{request.itemName}</span>
-                    </Badge>
-                  ))}
-            </div>
+
+          <div className="flex flex-wrap gap-2 ">
+            {selectedBasket?.type === "Donation"
+              ? selectedBasket?.items.map((item) => (
+                  <Badge
+                    key={item.id}
+                    className="bg-sky-100 text-black flex items-center gap-1"
+                  >
+                    <span>{item.emoji}</span>
+                    <span>{item.itemName}</span>
+                  </Badge>
+                ))
+              : selectedBasket?.requests.map((request) => (
+                  <Badge
+                    key={request.id}
+                    className="bg-sky-100 text-black flex items-center gap-1"
+                  >
+                    <span>{request.emoji}</span>
+                    <span>{request.itemName}</span>
+                  </Badge>
+                ))}
           </div>
 
           <p className="text-gray-500">

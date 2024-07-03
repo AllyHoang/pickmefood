@@ -33,6 +33,7 @@ export default async function handler(req, res) {
                   status:basket.status,
                   userId: basket.userId,
                   type: "Donation",
+                  image: basket.image,
                   // requestId: request._id,
                   // requestTitle: request.title,
                   // requestReason: request.reason,

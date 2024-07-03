@@ -45,6 +45,26 @@ const EventSchema = new Schema(
     description: {
       type: String, // Remove whitespace from the description
     },
+    channel: [
+      {
+        playbackUrl: {
+          type: String,
+        },
+        streamKey: {
+          type: String,
+        },
+        ingestServer: {
+          type: String,
+        },
+      },
+    ],
+    chatRoom: [
+      {
+        roomIdentifier: {
+          type: String,
+        },
+      },
+    ],
     image: {
       type: String,
       validate: {
@@ -57,6 +77,7 @@ const EventSchema = new Schema(
       },
     },
   },
+
   {
     toJSON: { virtuals: true },
     toObject: { virtuals: true },

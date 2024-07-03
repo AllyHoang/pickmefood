@@ -11,17 +11,8 @@ import DialogComponent from "./DialogComponent";
 import { useSelector } from "react-redux";
 import PreferenceModal from "./PreferenceModal";
 import CardComponent from "./CardComponent";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import PaginationComponent from "../Pagination/Pagination";
+import TopMatchComponent from "./TopMatchComponent";
 
 function DashboardPage({ userId }) {
   const [selectedBasket, setSelectedBasket] = useState(null);
@@ -41,7 +32,6 @@ function DashboardPage({ userId }) {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const cardsPerPage = 10;
-  console.log(baskets);
 
   const truncateDescription = (description, maxWords) => {
     const words = description?.split(" ");
@@ -175,7 +165,7 @@ function DashboardPage({ userId }) {
               </select>
             </div>
           </div>
-          <div className="max-w-screen-2xl mx-auto w-full pb-4 mt-10">
+          {/* <div className="max-w-screen-2xl mx-auto w-full pb-4 mt-10">
             <Card className="border-none drop-shadow-sm ">
               <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
                 <CardTitle className="text-heading3-bold line-clamp-1">
@@ -195,7 +185,7 @@ function DashboardPage({ userId }) {
                 </div>
               </CardHeader>
               <CardContent className="w-full">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-3 gap-4">
                   {paginatedMatches?.map((match) => {
                     return (
                       <CardComponent
@@ -208,7 +198,7 @@ function DashboardPage({ userId }) {
                     );
                   })}
                   {/* Dialog UI */}
-                  {selectedBasket && openDialog && (
+          {/* {selectedBasket && openDialog && (
                     <DialogComponent
                       itemKey={JSON.stringify(selectedBasket)}
                       openDialog={openDialog}
@@ -219,8 +209,19 @@ function DashboardPage({ userId }) {
                 </div>
               </CardContent>
             </Card>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
+
+          </div> */}{" "}
+          <TopMatchComponent
+            matches={paginatedMatches}
+            handleOpenPreferenceModal={handleOpenPreferenceModal}
+            setOpenDialog={setOpenDialog}
+            selectedBasket={selectedBasket}
+            handleCloseModal={handleCloseModal}
+            openDialog = {openDialog}
+          ></TopMatchComponent>
+          
+          <p className="text-heading2-bold mt-6 mb-6 ">All Postings</p>
+          <div className="grid grid-cols-3 gap-7">
             {paginatedBaskets?.map((basket) => {
               return (
                 <CardComponent
@@ -255,6 +256,7 @@ function DashboardPage({ userId }) {
         onRequestClose={handleClosePreferenceModal}
         onSave={handleSavePreferences}
       />
+
       <div className="mt-3">
         <PaginationComponent
           totalCards={totalCards}

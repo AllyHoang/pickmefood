@@ -1,3 +1,5 @@
+import { ChannelLayout } from "./ChannelLayout";
+
 export { HomeLayout } from "./HomeLayout";
 export { ActiveDonationLayout } from "./ActiveDonationLayout";
 export { AddItemLayout } from "./AddItemLayout";
@@ -18,3 +20,4 @@ export { SignUpLayout } from "./SignUpLayout";
 export { ForgetPasswordLayout } from "./ForgetPasswordLayout";
 export { EventLayout } from "./EventLayout";
 export { PaymentLayout } from "./PaymentLayout";
+export { ChannelLayout } from "./ChannelLayout";
