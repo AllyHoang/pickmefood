@@ -16,6 +16,9 @@ import { GoSearch } from "react-icons/go";
 import CardComponent from "../DashboardPage/CardComponent";
 import MapCard from "./MapCard";
 import { set } from "mongoose";
+import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
+import { BiMap } from "react-icons/bi";
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoicGlja21lZm9vZCIsImEiOiJjbHZwbHdyMzgwM2hmMmtvNXJ6ZHU2NXh3In0.aITfZvPY-sKGwepyPVPGOg";
@@ -511,10 +514,45 @@ const MapComponent = ({ userId }) => {
         </div>
       )}
       {selectedPlaces.map((place, index) => (
-        <div className={styles.sidebarPlaces}>
-          <div key={index} className={styles.placeWrapper}>
-            <div className={styles.placeDetails}>
-              <p className={styles.titlePlace}>{place.displayName.text}</p>
+        <div
+          className="fixed w-[300px] bg-white shadow-lg rounded-lg z-50 overflow-y-auto gap-5"
+          style={{
+            top: `${clickPosition.top}px`,
+            left: `${clickPosition.left}px`,
+          }}
+        >
+          <div
+            key={index}
+            className="flex flex-col flex-grow w-[300px] max-h-[550px] justify-around rounded-2xl p-4 "
+          >
+            <div className="flex flex-col gap-2">
+              <div className="text-heading3-bold line-clamp-2">
+                <p>{place.displayName.text}</p>
+              </div>
+
+              {place.photos && place.photos.length > 0 && (
+                <div className={styles.photoSlider}>
+                  <Slider {...settings}>
+                    {place.photos.map((photo, photoIndex) => (
+                      <div key={photoIndex} className={styles.slide}>
+                        <img
+                          src={`https://places.googleapis.com/v1/${photo.name}/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyDlHBXX4KF-W6Dbn4DZySC6y4kfCd3ffeM`}
+                          alt={`Photo ${photoIndex}`}
+                          className="rounded-2xl w-full"
+                        />
+                      </div>
+                    ))}
+                  </Slider>
+                </div>
+              )}
+              {/* <p className={styles.location}>{place.formattedAddress}</p> */}
+              <div className="flex items-center gap-1 align-center relative bottom-3">
+                <BiMap></BiMap>
+                <p className="font-medium relative top-3 ">
+                  {place.formattedAddress}
+                </p>
+              </div>
+
               <button
                 className={styles.closeButton}
                 onClick={() => setSelectedPlaces([])}
@@ -522,9 +560,10 @@ const MapComponent = ({ userId }) => {
                 &times;
               </button>
             </div>
+
             <Dialog>
-              <DialogTrigger>
-                <Button className={styles.addPlaceButton}>Donate</Button>
+              <DialogTrigger className="mt-2">
+                <Button className="w-full bg-sky-400 text-black">Donate</Button>
               </DialogTrigger>
               <DialogContent className="min-w-fit w-3/4 h-4/5">
                 <PaymentPagePlaces
@@ -534,34 +573,6 @@ const MapComponent = ({ userId }) => {
                 />
               </DialogContent>
             </Dialog>
-            <p className={styles.location}>
-              <svg
-                className={styles.locationIcon}
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="red"
-                width="30px"
-                height="30px"
-              >
-                <path d="M12 2C8.14 2 5 5.14 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.86-3.14-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" />
-              </svg>
-              {place.formattedAddress}
-            </p>
-            {place.photos && place.photos.length > 0 && (
-              <div className={styles.photoSlider}>
-                <Slider {...settings}>
-                  {place.photos.map((photo, photoIndex) => (
-                    <div key={photoIndex} className={styles.slide}>
-                      <img
-                        src={`https://places.googleapis.com/v1/${photo.name}/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyDlHBXX4KF-W6Dbn4DZySC6y4kfCd3ffeM`}
-                        alt={`Photo ${photoIndex}`}
-                        className={styles.photo}
-                      />
-                    </div>
-                  ))}
-                </Slider>
-              </div>
-            )}
           </div>
         </div>
       ))}
