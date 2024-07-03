@@ -112,7 +112,7 @@ const UserPage = ({ userId, loggedInUserId }) => {
                       <p className="text-body-medium ">Choose a Method </p>
                       <Separator />
                       <Link href="/add-item">
-                        <p className="text-sky-400 font-bold"> Manual Add </p>
+                        <p className=" font-bold"> Manual Add </p>
                       </Link>
                       <Separator />
                       <Link href="/image-scan">
@@ -124,7 +124,7 @@ const UserPage = ({ userId, loggedInUserId }) => {
                       </Link>
                       <Separator />
                       <Link href="/video-scan ">
-                        <p className="text-pink-400 font-bold"> Video Scan </p>
+                        <p className="text-sky-400 font-bold"> Video Scan </p>
                       </Link>
                     </div>
                   </DialogContent>

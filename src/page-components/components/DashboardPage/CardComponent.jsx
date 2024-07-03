@@ -51,7 +51,7 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
           <></>
         )}
       </div>
-      <CardTitle className="text-heading3-bold h-10 line-clamp-1">{basket?.title}</CardTitle>
+      <CardTitle className="text-heading3-bold line-clamp-1">{basket?.title}</CardTitle>
       <img
         className="rounded-3xl w-full object-cover h-48"
         src={basket?.image}
@@ -81,7 +81,7 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
           </CardDescription>
         </div>
       </div>
-      <p className="h-11 line-clamp-2">
+      <p className="h-12 line-clamp-2">
           {basket.type === "Donation" ? basket?.description : basket?.reason}
         {" "}
       </p>
