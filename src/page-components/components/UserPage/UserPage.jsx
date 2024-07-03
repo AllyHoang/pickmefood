@@ -30,6 +30,11 @@ const UserPage = ({ userId, loggedInUserId }) => {
           <TabsTrigger value="my-donations">
             {userId === loggedInUserId ? "My Donations" : "Donations"}
           </TabsTrigger>
+          {userId === loggedInUserId ? (
+            <TabsTrigger value="my-receipts">My Receipts</TabsTrigger>
+          ) : (
+            <></>
+          )}
         </TabsList>
 
         <div className="overflow-y-auto h-screen">
@@ -51,7 +56,9 @@ const UserPage = ({ userId, loggedInUserId }) => {
               type="Request"
             />
           </TabsContent>
-
+          {
+            //receipts content goes here
+          }
           <TabsContent
             value="my-donations"
             className="flex flex-col justify-normal gap-5 "
@@ -93,6 +100,8 @@ const UserPage = ({ userId, loggedInUserId }) => {
               type="Donation"
             />
           </TabsContent>
+
+          <TabsContent value="my-receipts"></TabsContent>
         </div>
       </Tabs>
     </div>
