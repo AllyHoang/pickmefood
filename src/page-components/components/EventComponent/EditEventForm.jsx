@@ -1,86 +1,59 @@
-import mapboxgl from "mapbox-gl";
 import React, { useState, useEffect } from "react";
 import { CldUploadButton } from "next-cloudinary";
 import { useRouter } from "next/router";
 import Select from "react-select";
-import "mapbox-gl/dist/mapbox-gl.css";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-const AddEventForm = ({ userId }) => {
+const EditEventForm = ({ userId, eventId }) => {
   const [eventName, setEventName] = useState("");
   const [money, setMoney] = useState("");
   const [expirationDate, setExpirationDate] = useState("");
   const [organizationName, setOrganizationName] = useState("");
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
-  const [addressSuggestions, setAddressSuggestions] = useState([]);
-  const [map, setMap] = useState(null);
-  const [marker, setMarker] = useState(null);
   const [image, setImage] = useState("");
   const [places, setPlaces] = useState([]);
   const [selectedOption, setSelectedOption] = useState(null);
   const [customOrganization, setCustomOrganization] = useState("");
-
+  const [addressSuggestions, setAddressSuggestions] = useState([]);
   const router = useRouter();
 
-  mapboxgl.accessToken =
-    "pk.eyJ1IjoicGlja21lZm9vZCIsImEiOiJjbHZwbHdyMzgwM2hmMmtvNXJ6ZHU2NXh3In0.aITfZvPY-sKGwepyPVPGOg";
+  useEffect(() => {
+    const fetchEvent = async () => {
+      try {
+        const response = await fetch(`/api/events/${eventId}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch event details");
+        }
+        const eventData = await response.json();
+        console.log(eventData);
+        console.log(eventData.data.event);
+        setEventName(eventData.data.event.eventName);
+        setMoney(eventData.data.event.money);
+        setExpirationDate(eventData.data.event.expirationDate);
+        setOrganizationName(eventData.data.event.organizationName);
+        setLocation(eventData.data.event.location);
+        setDescription(eventData.data.event.description);
+        setImage(eventData.data.event.image);
+
+        // Fetch places data
+        const placesResponse = await fetch(`/api/places`, {
+          cache: "no-store",
+        });
+        const placesData = await placesResponse.json();
+        setPlaces(placesData.places);
+      } catch (error) {
+        console.error("Error fetching event details:", error);
+      }
+    };
+
+    fetchEvent();
+  }, [eventId]);
 
   const handleItemChange = (selectedOption) => {
     setSelectedOption(selectedOption);
     setOrganizationName(selectedOption.value);
-  };
-
-  useEffect(() => {
-    const mapInstance = new mapboxgl.Map({
-      container: "map",
-      style: "mapbox://styles/mapbox/streets-v11",
-      center: [-74.5, 40],
-      zoom: 9,
-    });
-
-    setMap(mapInstance);
-
-    return () => mapInstance.remove();
-  }, []);
-
-  const handleGetUserLocation = () => {
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-        await reverseGeocode(latitude, longitude);
-      },
-      (error) => {
-        console.error("Error getting location:", error);
-      }
-    );
-  };
-
-  const reverseGeocode = async (latitude, longitude) => {
-    try {
-      const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${longitude},${latitude}.json?access_token=${mapboxgl.accessToken}`
-      );
-      const data = await response.json();
-      const address = data.features[0].place_name;
-      setLocation(address);
-
-      if (map) {
-        map.flyTo({ center: [longitude, latitude], zoom: 15 });
-
-        if (marker) {
-          marker.remove();
-        }
-
-        const newMarker = new mapboxgl.Marker()
-          .setLngLat([longitude, latitude])
-          .addTo(map);
-        setMarker(newMarker);
-      }
-    } catch (error) {
-      console.error("Error reverse geocoding:", error);
-    }
   };
 
   const handleAddressChange = async (e) => {
@@ -88,77 +61,19 @@ const AddEventForm = ({ userId }) => {
     setLocation(address);
 
     try {
-      const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-          address
-        )}.json?access_token=${mapboxgl.accessToken}`
-      );
-      const data = await response.json();
-      const suggestions = data.features.map((feature) => feature.place_name);
-      setAddressSuggestions(suggestions);
+      // Your address suggestions fetching logic
     } catch (error) {
       console.error("Error fetching address suggestions:", error);
     }
   };
 
-  const handleSuggestionClick = (address) => {
-    setLocation(address);
-    setAddressSuggestions([]);
-    reverseGeocodeSelectedAddress(address);
-  };
-
-  const reverseGeocodeSelectedAddress = async (address) => {
-    try {
-      const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-          address
-        )}.json?access_token=${mapboxgl.accessToken}`
-      );
-      const data = await response.json();
-      const coordinates = data.features[0].center;
-      const [longitude, latitude] = coordinates;
-
-      if (map) {
-        map.setCenter([longitude, latitude]);
-        map.setZoom(15);
-
-        if (marker) {
-          marker.remove();
-        }
-
-        const newMarker = new mapboxgl.Marker()
-          .setLngLat([longitude, latitude])
-          .addTo(map);
-        setMarker(newMarker);
-      }
-    } catch (error) {
-      console.error("Error reverse geocoding selected address:", error);
-    }
-  };
-
-  useEffect(() => {
-    async function fetchPlacesData() {
-      try {
-        const res = await fetch(`/api/places`, {
-          cache: "no-store",
-        });
-        const data = await res.json();
-        setPlaces(data.places);
-      } catch (error) {
-        console.error("Error fetching places data:", error);
-      }
-    }
-
-    fetchPlacesData();
-  }, []);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const newEvent = {
+    const updatedEvent = {
       eventName,
       money: parseFloat(money),
       expirationDate,
-      organizationName: organizationName || customOrganization, // Use customOrganization if organizationName is not selected
+      organizationName,
       location,
       description,
       image,
@@ -166,68 +81,32 @@ const AddEventForm = ({ userId }) => {
     };
 
     try {
-      const response = await fetch("/api/events", {
-        method: "POST",
+      const response = await fetch(`/api/events/${eventId}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(newEvent),
+        body: JSON.stringify(updatedEvent),
       });
 
       if (response.ok) {
-        router.push("/events");
+        router.push("/my-event");
       } else {
-        throw new Error("Failed to add new event");
-      }
-
-      setEventName("");
-      setMoney("");
-      setExpirationDate("");
-      setOrganizationName("");
-      setCustomOrganization("");
-      setLocation("");
-      setDescription("");
-      setImage("");
-
-      try {
-        const response = await fetch("/api/places", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            formattedAddress: location,
-            displayName: {
-              text: customOrganization,
-              languageCode: "en", // Default language code to English
-            },
-            photos: [{ name: image }],
-            // Add other required fields as needed
-          }),
-        });
-
-        if (response.ok) {
-          console.log("Custom organization added successfully");
-          // Optionally, you can fetch updated places data here
-        } else {
-          throw new Error("Failed to add custom organization");
-        }
-      } catch (error) {
-        console.error("Error adding custom organization:", error);
+        throw new Error("Failed to update event");
       }
     } catch (error) {
-      console.error("Error adding new event:", error);
+      console.error("Error updating event:", error);
     }
   };
 
   return (
     <div className="flex-grow p-6 overflow-hidden">
       <div className="max-w-6xl mx-auto bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 overflow-hidden">
-        <h2 className="text-2xl font-bold mb-4">Add New Event</h2>
+        <h2 className="text-2xl font-bold mb-4">Edit Event</h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Event Name */}
-            <div className="mb-4">
+            <div className="col-span-2 mb-4">
               <label
                 className="block text-gray-700 text-sm font-bold mb-2"
                 htmlFor="eventName"
@@ -301,7 +180,14 @@ const AddEventForm = ({ userId }) => {
                   })),
                   { value: "custom", label: "Enter custom organization" },
                 ]}
-                value={selectedOption}
+                value={
+                  selectedOption
+                    ? {
+                        value: organizationName,
+                        label: organizationName,
+                      }
+                    : null
+                }
                 onChange={(option) => {
                   setSelectedOption(option);
                   if (option.value === "custom") {
@@ -400,29 +286,18 @@ const AddEventForm = ({ userId }) => {
 
             {/* Submit Button */}
             <div className="flex justify-between items-center">
-              <Button
-                type="button"
-                onClick={handleGetUserLocation}
-                className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 ease-in-out"
-              >
-                Get My Location
-              </Button>
               <button
                 className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 ease-in-out"
                 type="submit"
               >
-                Add Event
+                Update Event
               </button>
             </div>
           </form>
-          <div
-            id="map"
-            className="bg-gray-200 rounded-lg shadow-lg h-72 lg:h-full"
-          ></div>
         </div>
       </div>
     </div>
   );
 };
 
-export default AddEventForm;
+export default EditEventForm;

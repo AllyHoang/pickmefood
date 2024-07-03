@@ -13,6 +13,7 @@ import DialogComponent from "../DashboardPage/DialogComponent";
 import PaymentPagePlaces from "../CheckOutForm/PaymentPagePlaces";
 import useFetchAllBaskets from "@/hook/useFetchAllBaskets";
 import { GoSearch } from "react-icons/go";
+import { GoSearch } from "react-icons/go";
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoicGlja21lZm9vZCIsImEiOiJjbHZwbHdyMzgwM2hmMmtvNXJ6ZHU2NXh3In0.aITfZvPY-sKGwepyPVPGOg";
@@ -34,9 +35,7 @@ const MapComponent = ({ userId }) => {
   const [openDialogForBasket, setOpenDialogForBasket] = useState(null);
   const [requestMarkers, setRequestMarkers] = useState([]);
   const [placesMarkers, setPlacesMarkers] = useState([]);
-  const [selectedBasket, setSelectedBasket] = useState(null);
   const router = useRouter();
-  const [openDialog, setOpenDialog] = useState(false);
   const [selectedView, setSelectedView] = useState("Donation");
 
   const settings = {
@@ -548,11 +547,13 @@ const MapComponent = ({ userId }) => {
       <div className="absolute top-5 left-5 z-10 flex items-center justify-start space-x-6">
         <ToggleView viewType={viewType} handleToggleView={handleToggleView} />
         <form className="flex items-center gap-5" onSubmit={handleSearchSubmit}>
+        <form className="flex items-center gap-5" onSubmit={handleSearchSubmit}>
           <input
             type="text"
             value={searchValue}
             onChange={handleSearchChange}
             placeholder="Enter Zipcode, City, or State..."
+            className="pl-10 pr-4 py-2 w-[500px] border border-gray-300 rounded-xl"
             className="pl-10 pr-4 py-2 w-[500px] border border-gray-300 rounded-xl"
           />
           <button
@@ -580,11 +581,25 @@ const MapComponent = ({ userId }) => {
       )}
       {searchError && <p className={styles.error}>{searchError}</p>}
       <div className="absolute top-[25px] right-[20px] h-20">
+      <div className="absolute top-[25px] right-[20px] h-20">
         <select
+          className="ml-4 p-2 border border-gray-300 rounded"
           className="ml-4 p-2 border border-gray-300 rounded"
           value={selectedView}
           onChange={(e) => setSelectedView(e.target.value)}
         >
+          <option value="Donation" className="font-bold">
+            Donation
+          </option>
+          <option value="Request" className="font-bold">
+            Request
+          </option>
+          <option value="Donation and Request" className="font-bold">
+            Donation and Request
+          </option>
+          <option value="Places" className="font-bold">
+            Places
+          </option>
           <option value="Donation" className="font-bold">
             Donation
           </option>

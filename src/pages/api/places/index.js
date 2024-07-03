@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   if (req.method === "POST") {
     // Process a POST request
     await connectToDB();
-    const newItem = await FoodModel.create(req.body);
+    const newItem = await PlacesModel.create(req.body);
     res.status(201).json({ message: "Item Created", data: { item: newItem } });
   } else if (req.method === "GET") {
     // Handle a GET request

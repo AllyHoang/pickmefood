@@ -1,26 +1,22 @@
 // src/pages/EventPage.jsx
 
 import React, { useState, useEffect } from "react";
-import EventCard from "./EventCard";
+import MyEventCard from "./MyEventCard";
 import { useRouter } from "next/router";
-import { useChat } from "@/lib/ChatContext";
 
-const EventPage = ({ userId }) => {
+const MyEvents = ({ userId }) => {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const eventsPerPage = 4; // Number of events per page
-  const { isChatLive, eventId } = useChat();
 
   const router = useRouter();
-  console.log(isChatLive);
-  console.log(eventId);
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch("/api/events");
+        const response = await fetch(`/api/users/${userId}/events`);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -71,23 +67,7 @@ const EventPage = ({ userId }) => {
       {/* Sticky header */}
       <div className="sticky top-0 bg-white z-50 shadow-md">
         <div className="container mx-auto py-4 flex justify-between items-center">
-          <span className="text-5xl font-bold text-gray-800">
-            Upcoming Events
-          </span>
-          <div className="flex space-x-4">
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-1.5 px-3 rounded focus:outline-none focus:shadow-outline text-sm"
-              onClick={() => router.push("/add-event")}
-            >
-              Add New Event
-            </button>
-            <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-1.5 px-3 rounded focus:outline-none focus:shadow-outline text-sm"
-              onClick={() => router.push("/my-event")}
-            >
-              My Events
-            </button>
-          </div>
+          <span className="text-5xl font-bold text-gray-800">My Events</span>
         </div>
       </div>
 
@@ -100,12 +80,7 @@ const EventPage = ({ userId }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {currentEvents.map((event) => (
               <div key={event._id} className="w-full">
-                <EventCard
-                  event={event}
-                  userId={userId}
-                  currentEventId={eventId}
-                  isChatLive={isChatLive}
-                />
+                <MyEventCard event={event} userId={userId} />
               </div>
             ))}
           </div>
@@ -140,4 +115,4 @@ const EventPage = ({ userId }) => {
   );
 };
 
-export default EventPage;
+export default MyEvents;

@@ -26,7 +26,7 @@ import { extractStateAndZip } from "@/lib/utils";
 function DrawerComponent({ selectedBasket, id, handleOpenDialog }) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
-
+  console.log(selectedBasket);
   const calculateDaysDifference = (date) => {
     const currentDate = new Date();
     const givenDate = new Date(date);
@@ -44,13 +44,16 @@ function DrawerComponent({ selectedBasket, id, handleOpenDialog }) {
       }}
       direction="right"
     >
-      <DrawerTrigger asChild>
+      <DrawerTrigger asChild className="self-center">
         {/* //item._id */}
         <Link
           href={{ pathname: "/dashboard", query: { id: id } }}
           shallow={true}
+          className="font-medium"
         >
-          <Button className="">View Details</Button>
+          {/* <Button className="text-black bg-white hover:bg-white border-none"> */}
+          View Details
+          {/* </Button> */}
         </Link>
       </DrawerTrigger>
 
@@ -73,13 +76,19 @@ function DrawerComponent({ selectedBasket, id, handleOpenDialog }) {
           <div className="flex flex-wrap gap-2 mt-2">
             {selectedBasket?.type === "Donation"
               ? selectedBasket?.items.map((item) => (
-                  <Badge key={item.id} className="bg-sky-100 text-black flex items-center gap-1">
+                  <Badge
+                    key={item.id}
+                    className="bg-sky-100 text-black flex items-center gap-1"
+                  >
                     <span>{item.emoji}</span>
                     <span>{item.itemName}</span>
                   </Badge>
                 ))
               : selectedBasket?.requests.map((request) => (
-                  <Badge key={request.id} className="bg-sky-100 text-black flex items-center gap-1">
+                  <Badge
+                    key={request.id}
+                    className="bg-sky-100 text-black flex items-center gap-1"
+                  >
                     <span>{request.emoji}</span>
                     <span>{request.itemName}</span>
                   </Badge>
