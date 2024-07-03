@@ -34,7 +34,9 @@ const MapComponent = ({ userId }) => {
   const [openDialogForBasket, setOpenDialogForBasket] = useState(null);
   const [requestMarkers, setRequestMarkers] = useState([]);
   const [placesMarkers, setPlacesMarkers] = useState([]);
+  const [selectedBasket, setSelectedBasket] = useState(null);
   const router = useRouter();
+  const [openDialog, setOpenDialog] = useState(false);
   const [selectedView, setSelectedView] = useState("Donation");
 
   const settings = {
@@ -149,7 +151,7 @@ const MapComponent = ({ userId }) => {
       console.log(geocodedRequests);
       setRequests(geocodedRequests);
     } catch (error) {
-      console.error("Error fetching requests:", error);
+      console.error("Error fetching donations:", error);
     }
   };
 
@@ -164,7 +166,7 @@ const MapComponent = ({ userId }) => {
       console.log(geocodedPlaces);
       setPlaces(geocodedPlaces);
     } catch (error) {
-      console.error("Error fetching places:", error);
+      console.error("Error fetching donations:", error);
     }
   };
 
@@ -258,7 +260,7 @@ const MapComponent = ({ userId }) => {
   };
 
   const addMarkersToMap = () => {
-    // Group donations by their coordinates
+    // Group requests by their coordinates
     const donationsByCoordinates = donations.reduce((acc, donation) => {
       const key = `${donation.coordinates.longitude},${donation.coordinates.latitude}`;
       if (!acc[key]) {
@@ -268,35 +270,25 @@ const MapComponent = ({ userId }) => {
       return acc;
     }, {});
 
-    // Create a marker for each coordinate group
-    const markers = Object.keys(donationsByCoordinates).map((key) => {
-      const donations = donationsByCoordinates[key];
-      const popup = new mapboxgl.Popup({
-        closeButton: false,
-        closeOnClick: false,
-      });
+    const newDonationMarkers = Object.entries(donationsByCoordinates).map(
+      ([coordinates, donationsAtLocation]) => {
+        const [longitude, latitude] = coordinates.split(",").map(Number);
 
-      const coordinates = key.split(",").map((str) => parseFloat(str));
-      const marker = new mapboxgl.Marker()
-        .setLngLat(coordinates)
-        .setPopup(
-          popup.setHTML(
-            `<div>
-                <h3>Donations</h3>
-                <ul>
-                  ${donations
-                    .map((donation) => `<li>${donation.item}</li>`)
-                    .join("")}
-                </ul>
-              </div>`
-          )
-        )
-        .addTo(map);
+        const marker = new mapboxgl.Marker({
+          color: "#efaeb1", // Change this color to the desired marker color
+        })
+          .setLngLat([longitude, latitude])
+          .addTo(map);
 
-      return marker;
-    });
+        marker.getElement().addEventListener("click", () => {
+          setSelectedDonations(donationsAtLocation);
+        });
 
-    setDonationMarkers(markers);
+        return marker;
+      }
+    );
+
+    setDonationMarkers(newDonationMarkers);
   };
 
   const addMarkersToMapRequests = () => {
@@ -310,147 +302,153 @@ const MapComponent = ({ userId }) => {
       return acc;
     }, {});
 
-    // Create a marker for each coordinate group
-    const markers = Object.keys(requestsByCoordinates).map((key) => {
-      const requests = requestsByCoordinates[key];
-      const popup = new mapboxgl.Popup({
-        closeButton: false,
-        closeOnClick: false,
-      });
+    const newRequestMarkers = Object.entries(requestsByCoordinates).map(
+      ([coordinates, requestsAtLocation]) => {
+        const [longitude, latitude] = coordinates.split(",").map(Number);
 
-      const coordinates = key.split(",").map((str) => parseFloat(str));
-      const marker = new mapboxgl.Marker()
-        .setLngLat(coordinates)
-        .setPopup(
-          popup.setHTML(
-            `<div>
-                <h3>Requests</h3>
-                <ul>
-                  ${requests
-                    .map((request) => `<li>${request.item}</li>`)
-                    .join("")}
-                </ul>
-              </div>`
-          )
-        )
-        .addTo(map);
+        const marker = new mapboxgl.Marker({
+          color: "#95d3b7", // Change this color to the desired marker color
+        })
+          .setLngLat([longitude, latitude])
+          .addTo(map);
 
-      return marker;
-    });
+        marker.getElement().addEventListener("click", () => {
+          setSelectedRequests(requestsAtLocation);
+        });
+        return marker;
+      }
+    );
 
-    setRequestMarkers(markers);
+    setRequestMarkers(newRequestMarkers);
   };
 
   const addMarkersToMapPlaces = () => {
-    // Create a marker for each place
-    const markers = places.map((place) => {
-      const popup = new mapboxgl.Popup({
-        closeButton: false,
-        closeOnClick: false,
-      });
+    // Group requests by their coordinates
+    const placesByCoordinates = places.reduce((acc, place) => {
+      const key = `${place.coordinates.longitude},${place.coordinates.latitude}`;
+      if (!acc[key]) {
+        acc[key] = [];
+      }
+      acc[key].push(place);
+      return acc;
+    }, {});
 
-      const coordinates = [
-        place.coordinates.longitude,
-        place.coordinates.latitude,
-      ];
-      const marker = new mapboxgl.Marker()
-        .setLngLat(coordinates)
-        .setPopup(
-          popup.setHTML(
-            `<div>
-                <h3>Places</h3>
-                <p>${place.formattedAddress}</p>
-              </div>`
-          )
-        )
-        .addTo(map);
+    const newPlacesMarkers = Object.entries(placesByCoordinates).map(
+      ([coordinates, placesAtLocation]) => {
+        const [longitude, latitude] = coordinates.split(",").map(Number);
 
-      return marker;
-    });
+        const marker = new mapboxgl.Marker({
+          color: "#a0bded", // Change this color to the desired marker color
+        })
+          .setLngLat([longitude, latitude])
+          .addTo(map);
 
-    setPlacesMarkers(markers);
+        marker.getElement().addEventListener("click", () => {
+          setSelectedPlaces(placesAtLocation);
+        });
+        return marker;
+      }
+    );
+
+    setPlacesMarkers(newPlacesMarkers);
+  };
+
+  const handleSearchChange = async (e) => {
+    setSearchValue(e.target.value);
+    setSearchError("");
+
+    try {
+      const response = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+          e.target.value
+        )}.json?access_token=${
+          mapboxgl.accessToken
+        }&autocomplete=true&types=postcode,place`
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch suggestions");
+      }
+
+      const data = await response.json();
+
+      if (data.features && data.features.length > 0) {
+        setSuggestions(data.features.map((feature) => feature.place_name));
+      } else {
+        setSuggestions([]);
+      }
+    } catch (error) {
+      console.error("Error fetching suggestions:", error);
+      setSuggestions([]);
+    }
+  };
+
+  const handleSearchSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!searchValue) {
+      setSearchError("Please enter a Zipcode, City, or State");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+          searchValue
+        )}.json?access_token=${mapboxgl.accessToken}`
+      );
+      const data = await response.json();
+
+      if (data.features && data.features.length > 0) {
+        const [longitude, latitude] = data.features[0].center;
+        map.flyTo({ center: [longitude, latitude], zoom: 12 });
+      } else {
+        setSearchError("Location not found");
+      }
+    } catch (error) {
+      console.error("Error searching location:", error);
+      setSearchError("Failed to search location");
+    }
   };
 
   useEffect(() => {
     initializeMap();
   }, []);
 
-  const handleSearchChange = async (event) => {
-    const { value } = event.target;
-    setSearchValue(value);
-    if (value.trim().length > 0) {
-      try {
-        const response = await fetch(
-          `/api/search?q=${encodeURIComponent(value)}`
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch suggestions");
-        }
-        const data = await response.json();
-        setSuggestions(data.results);
-        setSearchError("");
-      } catch (error) {
-        console.error("Error fetching suggestions:", error);
-        setSearchError("Failed to fetch suggestions. Please try again later.");
-      }
-    } else {
-      setSuggestions([]);
-      setSearchError("");
-    }
-  };
-
-  const handleSearchSubmit = (event) => {
-    event.preventDefault();
-    if (searchValue.trim().length > 0) {
-      router.push(`/search?q=${encodeURIComponent(searchValue)}`);
-    }
-  };
-
-  const handleSelectRequest = (request) => {
-    setSelectedRequests([request]);
-  };
-
-  const handleSelectDonation = (donation) => {
-    setSelectedDonations([donation]);
-  };
-
-  const handleSelectPlace = (place) => {
-    setSelectedPlaces([place]);
-  };
-
-  const handleViewTypeChange = (event) => {
-    setViewType(event.target.value);
-  };
-
   return (
-    <div className={styles.mapContainer}>
-      <div className={styles.sidebar}>
-        <ToggleView
-          viewType={viewType}
-          onViewTypeChange={handleViewTypeChange}
-          className={styles.toggleView}
-        />
-        <div className={styles.searchContainer}>
-          <form onSubmit={handleSearchSubmit}>
-            <input
-              type="text"
-              placeholder="Search..."
-              value={searchValue}
-              onChange={handleSearchChange}
-              className={styles.searchInput}
-            />
-            <button type="submit" className={styles.searchButton}>
-              <GoSearch />
-            </button>
-          </form>
-          {searchError && <p className={styles.error}>{searchError}</p>}
-          <div className={styles.suggestions}>
-            {suggestions.map((suggestion) => (
-              <p key={suggestion.id} className={styles.suggestion}>
-                {suggestion.name}
-              </p>
-            ))}
-          </div>
+    <div className={styles.container}>
+      <div id="map" className={styles.mapContainer}></div>
+      {selectedRequests.length > 0 && (
+        <div className={styles.sidebar}>
+          <button
+            className={styles.closeButton}
+            onClick={() => setSelectedRequests([])}
+          >
+            &times;
+          </button>
+          {selectedRequests.map((request, index) => (
+            <div className={styles.requestDetails} key={index}>
+              <button
+                className={styles.addButton}
+                onClick={() => handleOpenDialog(request)}
+              >
+                Donate
+              </button>
+              {request && openDialogForBasket === request && (
+                <DialogComponent
+                  itemKey={JSON.stringify(request)}
+                  openDialog={Boolean(openDialogForBasket)}
+                  handleCloseModal={handleCloseModal}
+                  otherBasket={request}
+                />
+              )}
+              <div className={styles.requestItem}>
+                <p className={styles.title}>{request.title}</p>
+                <p>{request.reason}</p>
+                <p>Location: {request.location}</p>
+              </div>
+            </div>
+          ))}
         </div>
       )}
       {selectedDonations.length > 0 && (
