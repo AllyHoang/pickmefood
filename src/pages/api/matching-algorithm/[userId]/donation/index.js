@@ -37,6 +37,7 @@ export default async function handler(req, res) {
                   requests: request.requests,
                   type: "Request",
                   userId: request.userId,
+                  image: request.image,
                   matchPercentage
                 });
               }
