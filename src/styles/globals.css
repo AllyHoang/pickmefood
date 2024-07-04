@@ -326,3 +326,7 @@ a {
 .rotate-oscillate {
   @apply animate-[rotateOscillate_1s_ease-in-out];
 }
+
+.base-container {
+  @apply w-full max-w-[95%] mx-auto px-12;
+}
