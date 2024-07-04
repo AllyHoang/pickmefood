@@ -41,19 +41,9 @@ const UserSchema = new Schema({
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: "Chat" }],
     default: [],
   },
-  channel: [
-    {
-      playbackUrl: {
-        type: String,
-      },
-      streamKey: {
-        type: String,
-      },
-      ingestServer: {
-        type: String,
-      },
-    },
-  ],
+  chatToken: {
+    type: String,
+  },
 });
 
 export const UserModel = models?.User || model("User", UserSchema);

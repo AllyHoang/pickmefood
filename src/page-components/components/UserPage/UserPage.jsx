@@ -15,6 +15,11 @@ import { Input } from "@/components/ui/input";
 
 const UserPage = ({ userId, loggedInUserId }) => {
   const router = useRouter();
+  const [searchTerm, setSearchTerm] = useState("");
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
   return (
     <div className="flex flex-col overflow-hidden gap-5 pt-5 pl-5 ">
       <TestProfilePage userId={userId} loggedInUserId={loggedInUserId}>
@@ -32,6 +37,11 @@ const UserPage = ({ userId, loggedInUserId }) => {
           <TabsTrigger value="my-donations">
             {userId === loggedInUserId ? "My Donations" : "Donations"}
           </TabsTrigger>
+          {userId === loggedInUserId ? (
+            <TabsTrigger value="my-receipts">My Receipts</TabsTrigger>
+          ) : (
+            <></>
+          )}
         </TabsList>
 
         <div className="overflow-y-auto h-screen">
@@ -65,9 +75,12 @@ const UserPage = ({ userId, loggedInUserId }) => {
               userId={userId}
               loggedInUserId={loggedInUserId}
               type="Request"
+              searchTerm={searchTerm}
             />
           </TabsContent>
-
+          {
+            //receipts content goes here
+          }
           <TabsContent
             value="my-donations"
             className="flex flex-col justify-normal gap-5 "
@@ -125,8 +138,11 @@ const UserPage = ({ userId, loggedInUserId }) => {
               userId={userId}
               loggedInUserId={loggedInUserId}
               type="Donation"
+              searchTerm={searchTerm}
             />
           </TabsContent>
+
+          <TabsContent value="my-receipts"></TabsContent>
         </div>
       </Tabs>
     </div>

@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import DialogComponent from "../DashboardPage/DialogComponent";
 import PaymentPagePlaces from "../CheckOutForm/PaymentPagePlaces";
 import useFetchAllBaskets from "@/hook/useFetchAllBaskets";
+import { GoSearch } from "react-icons/go";
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoicGlja21lZm9vZCIsImEiOiJjbHZwbHdyMzgwM2hmMmtvNXJ6ZHU2NXh3In0.aITfZvPY-sKGwepyPVPGOg";
@@ -544,16 +545,20 @@ const MapComponent = ({ userId }) => {
           </div>
         </div>
       ))}
-      <div className="absolute top-5 left-5 z-10 flex items-center justify-start space-x-2">
+      <div className="absolute top-5 left-5 z-10 flex items-center justify-start space-x-5">
         <ToggleView viewType={viewType} handleToggleView={handleToggleView} />
-        <form className="flex items-center" onSubmit={handleSearchSubmit}>
+        <form className="flex items-center gap-5" onSubmit={handleSearchSubmit}>
           <input
             type="text"
             value={searchValue}
             onChange={handleSearchChange}
             placeholder="Enter Zipcode, City, or State..."
-            className={styles.searchInput}
+            className="pl-10 pr-4 py-2 w-[500px] border border-gray-300 rounded-xl"
           />
+          <div className="absolute left-64 pl-3 flex items-center pointer-events-none">
+            <GoSearch className="h-5 w-5 text-gray-500" />
+          </div>
+
           <button type="submit" className={styles.searchButton}>
             Search
           </button>
@@ -575,16 +580,24 @@ const MapComponent = ({ userId }) => {
         </ul>
       )}
       {searchError && <p className={styles.error}>{searchError}</p>}
-      <div className={styles.controls}>
+      <div className="absolute top-[25px] right-[20px] h-20">
         <select
-          className={styles.dropdown}
+          className="ml-4 p-2 border border-gray-300 rounded"
           value={selectedView}
           onChange={(e) => setSelectedView(e.target.value)}
         >
-          <option value="Donation">Donation</option>
-          <option value="Request">Request</option>
-          <option value="Donation and Request">Donation and Request</option>
-          <option value="Places">Places</option>
+          <option value="Donation" className="font-bold">
+            Donation
+          </option>
+          <option value="Request" className="font-bold">
+            Request
+          </option>
+          <option value="Donation and Request" className="font-bold">
+            Donation and Request
+          </option>
+          <option value="Places" className="font-bold">
+            Places
+          </option>
         </select>
       </div>
     </div>
