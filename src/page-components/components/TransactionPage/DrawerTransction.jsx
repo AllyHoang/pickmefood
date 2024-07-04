@@ -114,13 +114,13 @@ function DrawerTransaction({ selectedTransaction, id, handleOpenDialog }) {
       }}
       direction="right"
     >
-      <DrawerTrigger asChild>
+      <DrawerTrigger asChild className="self-center">
         {/* //item._id */}
         <Link
           href={{ pathname: "/transactions", query: { id: id } }}
           shallow={true}
         >
-          <Button className="">View Details</Button>
+          View Details
         </Link>
       </DrawerTrigger>
       <DrawerContent
