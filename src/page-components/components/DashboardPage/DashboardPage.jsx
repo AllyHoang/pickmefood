@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { GoSearch } from "react-icons/go";
 import { Button } from "@/components/ui/button";
 import MapComponent from "../MapDonation/mapComponent";
@@ -123,6 +123,7 @@ function DashboardPage({ userId }) {
     <div>
       {viewType === "list" ? (
         <>
+
           <div className="container mx-auto px-4 mt-6">
             <div className="grid grid-cols-3 items-center gap-4 mb-5">
               {/* Heading */}

@@ -58,6 +58,7 @@ const Status = {
   PENDING: "pending",
   ACCEPTED: "accepted",
   CANCELED: "canceled",
+  CONNECTED: "connected",
 };
 
 export { Status };

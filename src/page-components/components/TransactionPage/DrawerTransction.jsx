@@ -30,6 +30,7 @@ function DrawerTransaction({ selectedTransaction, id, handleOpenDialog }) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const { loading, error, currentUser } = useSelector((state) => state.user);
+  const isDonor = currentUser?.id === selectedTransaction?.donorId._id;
 
   const handleAccept = async (selectedTransaction) => {
     try {
@@ -141,11 +142,14 @@ function DrawerTransaction({ selectedTransaction, id, handleOpenDialog }) {
             ></SubDrawer>
           </div>
 
-          {/*buttons*/}
-          <div className="fixed bottom-1 w-full">
-            <div className="mt-2 flex items-center justify-center gap-2">
+          <div className="mt-2 flex items-center justify-center gap-2">
+            {((isDonor && !selectedTransaction?.agreedByDonor) ||
+              (!isDonor && !selectedTransaction?.agreedByRequester)) && (
               <button
-                onClick={() => handleAccept(selectedTransaction)}
+                onClick={() => {
+                  handleAccept(selectedTransaction);
+                  // router.reload();
+                }}
                 className="flex items-center justify-center gap-1 w-1/2 bg-green-500 hover:bg-green-400 text-white py-2 rounded transition duration-150 ease-in-out"
               >
                 <IoMdCheckmarkCircleOutline
@@ -153,22 +157,30 @@ function DrawerTransaction({ selectedTransaction, id, handleOpenDialog }) {
                 ></IoMdCheckmarkCircleOutline>
                 Accept
               </button>
-              <button
-                onClick={() => handleCancel(selectedTransaction)}
-                className="flex items-center justify-center gap-1 w-1/2 bg-red-500 hover:bg-red-400 text-white py-2 rounded transition duration-150 ease-in-out"
-              >
-                <AiOutlineCloseCircle size={20}></AiOutlineCloseCircle>
-                Cancel
-              </button>
-            </div>
+            )}
             <button
-              onClick={() => handleChat(selectedTransaction)}
-              className="flex items-center justify-center gap-1 w-full bg-sky-500 hover:bg-sky-400 text-white py-2 rounded transition duration-150 ease-in-out mt-2"
+              onClick={() => {
+                handleCancel(selectedTransaction);
+                // router.reload();
+              }}
+              className="flex items-center justify-center gap-1 w-1/2 bg-red-500 hover:bg-red-400 text-white py-2 rounded transition duration-150 ease-in-out"
             >
-              <CiChat2 size={20}></CiChat2>
-              Let's connect
+              <AiOutlineCloseCircle size={20}></AiOutlineCloseCircle>
+              Cancel
             </button>
           </div>
+          {selectedTransaction?.agreedByRequester &&
+            selectedTransaction?.agreedByDonor && (
+              <button
+                onClick={() => {
+                  handleChat(selectedTransaction);
+                }}
+                className="flex items-center justify-center gap-1 w-full bg-sky-500 hover:bg-sky-400 text-white py-2 rounded transition duration-150 ease-in-out mt-2"
+              >
+                <CiChat2 size={20} />
+                Let's connect
+              </button>
+            )}
         </div>
       </DrawerContent>
     </Drawer>
