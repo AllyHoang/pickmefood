@@ -34,16 +34,16 @@ function SubCard({ user, basket, type }) {
         </div>
       </div>
 
-      <p className="text-heading4-bold line-clamp-1">{basket.title}</p>
+      <p className="text-heading4-bold line-clamp-1">{basket?.title}</p>
       <p className="line-clamp-2 h-12">
         {" "}
-        {type === "Donation" ? basket.description : basket.reason}
+        {type === "Donation" ? basket?.description : basket?.reason}
       </p>
 
       <div className="flex items-center gap-1 align-center relative">
         <BiMap></BiMap>
         <p className="font-medium text-sm">
-          {extractStateAndZip(basket.location) || "N/A"}
+          {extractStateAndZip(basket?.location) || "N/A"}
         </p>
       </div>
     </div>

@@ -22,9 +22,6 @@ import {
   signInStart,
   signInSuccess,
 } from "@/redux/user/userSlice";
-import { cn } from "@/lib/utils";
-import { toast } from "react-toastify";
-import { Knock } from "@knocklabs/node";
 
 const validateEmail = (value) => {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -72,12 +69,12 @@ export default function SignInFormTest() {
       });
       if (res.ok) {
         const data = await res.json();
-        const knock = new Knock(process.env.KNOCK_SECRET_KEY);
-        console.log("data",data.data);
-        const knockUser = await knock.users.identify(data.data.id, {
-          name: data.data.username,
-          email: data.data.email,
-        })
+        // const knock = new Knock(process.env.KNOCK_SECRET_KEY);
+        // console.log("data",data.data);
+        // const knockUser = await knock.users.identify(data.data.id, {
+        //   name: data.data.username,
+        //   email: data.data.email,
+        // })
         dispatch(signInSuccess(data.data));
         router.push("/dashboard");
       } else if (res.status === 401 || res.status === 400) {
