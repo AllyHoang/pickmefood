@@ -43,7 +43,7 @@ function SubCard({ user, basket, type }) {
       <div className="flex items-center gap-1 align-center relative">
         <BiMap></BiMap>
         <p className="font-medium text-sm">
-          {extractStateAndZip(basket.location) || "N/A"}
+          {extractStateAndZip(basket?.location) || "N/A"}
         </p>
       </div>
     </div>
