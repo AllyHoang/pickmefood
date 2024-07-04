@@ -2,27 +2,44 @@
 import React, { useState, useEffect } from "react";
 import MyCard from "./MyCard";
 import useFetchUserBaskets from "@/hook/useFetchUserBaskets";
-import { Router } from "lucide-react";
 import { useRouter } from "next/router";
+import MyCardReceipt from "./MyCardReceipt";
 
 const ActiveCardsList = ({ userId, loggedInUserId, type, searchTerm }) => {
   const { donationBaskets, requestBaskets, loading, error } =
-    useFetchUserBaskets((userId = userId));
-  // const baskets = [...donationBaskets, ...requestBaskets];
+    useFetchUserBaskets(userId);
   const [selectedBasket, setSelectedBasket] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
+  const [receiptData, setReceiptData] = useState(null);
   const router = useRouter();
 
-  if (!donationBaskets || !requestBaskets) {
-    return <div>Loading...</div>;
-  }
+  useEffect(() => {
+    const fetchReceipts = async () => {
+      try {
+        const response = await fetch(`/api/receipts/${userId}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch receipts");
+        }
+        const data = await response.json();
+        setReceiptData(data.receipts); // Set receipt data to state
+      } catch (error) {
+        console.error("Error fetching receipts:", error);
+      }
+    };
+
+    if (userId) {
+      fetchReceipts(); // Fetch receipts when userId is available
+    }
+  }, [userId]);
 
   useEffect(() => {
     if (router.query.id) {
-      const basket = baskets.find((basket) => basket._id === router.query.id);
+      const basket = [...donationBaskets, ...requestBaskets].find(
+        (basket) => basket._id === router.query.id
+      );
       setSelectedBasket(basket);
     }
-  }, [router.query.id]);
+  }, [router.query.id, donationBaskets, requestBaskets]);
 
   const baskets = type === "Donation" ? donationBaskets : requestBaskets;
 
@@ -35,19 +52,37 @@ const ActiveCardsList = ({ userId, loggedInUserId, type, searchTerm }) => {
     );
   });
 
+  const filteredReceipts = receiptData
+    ? receiptData.filter((receipt) =>
+        receipt.organization[0].organizationName
+          .toLowerCase()
+          .includes(searchTerm.toLowerCase())
+      )
+    : [];
+
   return (
     <div className="grid grid-cols-3 gap-8 w-full p-3">
-      {filteredBaskets.map((basket) => (
-        <MyCard
-          key={basket._id}
-          basket={basket}
-          setOpenDialog={setOpenDialog}
-          selectedBasket={selectedBasket}
-          loggedInUserId={loggedInUserId}
-          userId={userId}
-          type={type}
-        />
-      ))}
+      {type !== "Receipts" &&
+        filteredBaskets.map((basket) => (
+          <MyCard
+            key={basket._id}
+            basket={basket}
+            setOpenDialog={setOpenDialog}
+            selectedBasket={selectedBasket}
+            loggedInUserId={loggedInUserId}
+            userId={userId}
+            type={type}
+          />
+        ))}
+      {type === "Receipts" &&
+        filteredReceipts.map((receipt) => (
+          <MyCardReceipt
+            key={receipt._id}
+            receipt={receipt}
+            userId={userId}
+            type={type}
+          />
+        ))}
     </div>
   );
 };

@@ -4,6 +4,7 @@ import PaymentPage from "../CheckOutForm/PaymentPage";
 import EditEventForm from "./EditEventForm";
 import { useRouter } from "next/router";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { format } from "date-fns";
 
 const MyEventCard = ({ event, userId }) => {
   const {
@@ -62,6 +63,9 @@ const MyEventCard = ({ event, userId }) => {
       pathname: `/channel/${eventName}`,
     });
   };
+  const formatDate = (date) => {
+    return format(new Date(date), "MMMM d, yyyy");
+  };
 
   return (
     <div className="event-card bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
@@ -76,7 +80,7 @@ const MyEventCard = ({ event, userId }) => {
             {eventName}
           </h2>
           <div className="date-box bg-white text-gray-700 border border-gray-300 px-2 py-1 rounded shadow-sm">
-            <span className="text-xs">{expirationDate}</span>
+            <span className="text-xs">{formatDate(expirationDate)}</span>
           </div>
         </div>
         <p className="card-organization text-sm text-gray-600 mb-1">
@@ -101,14 +105,6 @@ const MyEventCard = ({ event, userId }) => {
           <Button onClick={handleLivestreamClick} className="bg-green-500">
             Livestream
           </Button>
-          <Dialog>
-            <DialogTrigger>
-              <Button className="bg-sky-400">Donate</Button>
-            </DialogTrigger>
-            <DialogContent className="min-w-fit w-3/4 h-4/5">
-              <PaymentPage eventId={_id} userId={userId} event={event} />
-            </DialogContent>
-          </Dialog>
           <Dialog>
             <DialogTrigger>
               <Button className="bg-sky-400">Edit</Button>

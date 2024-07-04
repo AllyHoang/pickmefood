@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import TestProfilePage from "./TestProfilePage";
 import { GoSearch } from "react-icons/go";
 import { Input } from "@/components/ui/input";
+import { useState } from "react";
 
 const UserPage = ({ userId, loggedInUserId }) => {
   const router = useRouter();
@@ -142,7 +143,14 @@ const UserPage = ({ userId, loggedInUserId }) => {
             />
           </TabsContent>
 
-          <TabsContent value="my-receipts"></TabsContent>
+          <TabsContent value="my-receipts">
+            <ActiveCardsList
+              userId={userId}
+              loggedInUserId={loggedInUserId}
+              type="Receipts"
+              searchTerm={searchTerm}
+            />
+          </TabsContent>
         </div>
       </Tabs>
     </div>

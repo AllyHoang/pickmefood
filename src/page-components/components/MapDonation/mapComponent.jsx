@@ -506,7 +506,7 @@ const MapComponent = ({ userId }) => {
               <DialogTrigger>
                 <Button className={styles.addPlaceButton}>Donate</Button>
               </DialogTrigger>
-              <DialogContent className="min-w-fit w-3/4 h-4/5">
+              <DialogContent className="min-w-fit w-3/4 h-3/2">
                 <PaymentPagePlaces
                   userId={userId}
                   placeId={place._id}
