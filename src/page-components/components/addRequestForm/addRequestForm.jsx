@@ -16,8 +16,6 @@ import { CldUploadButton } from "next-cloudinary";
 import Link from "next/link";
 import { CiTrash } from "react-icons/ci";
 
-import DatePicker from "react-datepicker";
-
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export default function AddRequest({ userId }) {
@@ -40,6 +38,7 @@ export default function AddRequest({ userId }) {
   const [prediction, setPrediction] = useState(null);
   const [error, setError] = useState(null);
   const { currentUser } = useSelector((state) => state.user);
+  
 
   mapboxgl.accessToken =
     "pk.eyJ1IjoicGlja21lZm9vZCIsImEiOiJjbHZwbHdyMzgwM2hmMmtvNXJ6ZHU2NXh3In0.aITfZvPY-sKGwepyPVPGOg";
@@ -700,7 +699,7 @@ export default function AddRequest({ userId }) {
                 <textarea
                   id="basketReason"
                   value={reason}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={(e) => setReason(e.target.value)}
                   className="w-full border-2 rounded-lg p-2"
                   type="text"
                   placeholder="Please provide input for the reason of request"

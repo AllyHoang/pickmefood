@@ -168,11 +168,11 @@ function DrawerComponent({ selectedBasket, id, handleOpenDialog, onPage }) {
 
         <div className="mt-4" onClick={() => handleOpenDialog(true)}>
           {selectedBasket?.type === "Request" ? (
-            <button className="w-full bg-sky-500 hover:bg-sky-400 text-white py-2 rounded transition duration-150 ease-in-out fixed bottom-2">
+            <button className="w-10/12 fixed bottom-1 left-10 bg-sky-500">
               Donate
             </button>
           ) : (
-            <button className="w-full bg-emerald-500 hover:bg-emerald-400 text-white py-2 rounded transition duration-150 ease-in-out fixed bottom-2">
+            <button className="w-10/12 fixed bottom-1 left-10 bg-emerald-500">
               Request
             </button>
           )}

@@ -40,7 +40,7 @@ function MyCard({
       <div className="flex gap-3">
         <Badge
           variant={`${basket?.type === "Request" ? "primary" : "secondary"}`}
-          className={`px-3 py-1 rounded-full text-small-bold font-md w-28 ${
+          className={`px-3 py-1 rounded-full text-small-bold font-md w-fit ${
             basket.type === "Request" ? "bg-sky-100" : "bg-emerald-100"
           }`}
         >
@@ -50,7 +50,7 @@ function MyCard({
         </Badge>
         {basket?.matchPercentage ? (
           <Badge
-            className={`px-3 py-1 rounded-full text-small-bold font-md w-28 bg-amber-200`}
+            className={`px-3 py-1 rounded-full text-small-bold font-md w-fit bg-amber-200`}
           >
             {" "}
             {basket.matchPercentage}% match{" "}

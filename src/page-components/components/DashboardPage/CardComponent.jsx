@@ -23,7 +23,7 @@ function CardComponent({ basket, setOpenDialog, selectedBasket, onPage }) {
     >
       <div className="flex gap-3">
         <Badge
-          variant={`${basket?.type === "Request" ? "primary" : "secondary"}`}
+          variant="primary"
           className={`px-3 py-1 rounded-full text-small-bold font-md w-28 ${
             basket.type === "Request" ? "bg-sky-100" : "bg-emerald-100"
           }`}
