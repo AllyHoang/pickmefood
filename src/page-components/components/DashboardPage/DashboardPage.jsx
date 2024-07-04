@@ -66,9 +66,19 @@ function DashboardPage({ userId }) {
 
   const filteredBaskets = baskets.filter((basket) => {
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
+
     return (
-      basket.title.toLowerCase().includes(lowerCaseSearchTerm) ||
-      basket.description.toLowerCase().includes(lowerCaseSearchTerm)
+      basket?.title?.toLowerCase().includes(lowerCaseSearchTerm) &&
+      (filterType === "all" || basket.type === filterType)
+    );
+  });
+
+  const filteredMatches = matches.filter((match) => {
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+
+    return (
+      match?.title?.toLowerCase().includes(lowerCaseSearchTerm) &&
+      (filterType === "all" || match.type === filterType)
     );
   });
 
@@ -98,14 +108,16 @@ function DashboardPage({ userId }) {
   }, []);
 
   const totalCards = matches.length + baskets.length;
+
   const paginatedMatches = matches.slice(
     (currentPage - 1) * cardsPerPage,
     currentPage * cardsPerPage
   );
-  const paginatedBaskets = baskets.slice(
-    (currentPage - 1) * cardsPerPage,
-    currentPage * cardsPerPage
-  );
+
+  // const paginatedBaskets = baskets.slice(
+  //   (currentPage - 1) * cardsPerPage,
+  //   currentPage * cardsPerPage
+  // );
 
   return (
     <div>
@@ -140,25 +152,24 @@ function DashboardPage({ userId }) {
                     <GoSearch className="h-5 w-5 text-gray-500" />
                   </div>
                 </div>
-                <Button className="px-4 py-2 text-white bg-sky-500 hover:bg-sky-400 rounded transition duration-150 ease-in-out">
-                  Search
-                </Button>
               </div>
 
               {/* Filter Dropdown */}
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
-                className="ml-4 p-2 border border-gray-300 rounded"
+                className="ml-4 p-2 border border-gray-300 rounded-xl"
               >
                 <option value="all">All</option>
-                <option value="donation">Donations</option>
-                <option value="request">Requests</option>
+                <option value="Donation">Donations</option>
+                <option value="Request">Requests</option>
               </select>
             </div>
           </div>
+
+          <p className="text-heading2-bold mt-6 mb-6 ">Top Matches</p>
           <TopMatchComponent
-            matches={paginatedMatches}
+            matches={filteredMatches}
             handleOpenPreferenceModal={handleOpenPreferenceModal}
             setOpenDialog={setOpenDialog}
             selectedBasket={selectedBasket}
@@ -168,7 +179,7 @@ function DashboardPage({ userId }) {
 
           <p className="text-heading2-bold mt-6 mb-6 ">All Postings</p>
           <div className="grid grid-cols-3 gap-7">
-            {paginatedBaskets?.map((basket) => {
+            {filteredBaskets?.map((basket) => {
               return (
                 <CardComponent
                   basket={basket}

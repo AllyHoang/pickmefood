@@ -22,6 +22,7 @@ import { useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import { MdDescription } from "react-icons/md";
 import { extractStateAndZip } from "@/lib/utils";
+import { TfiAlignLeft } from "react-icons/tfi";
 
 function DrawerComponent({ selectedBasket, id, handleOpenDialog, onPage }) {
   const [open, setOpen] = useState(false);
@@ -72,28 +73,81 @@ function DrawerComponent({ selectedBasket, id, handleOpenDialog, onPage }) {
         )}
       </DrawerTrigger>
 
-      <DrawerContent className="bg-white flex flex-col justify-start gap-4 rounded-t-lg shadow-xl transition-all duration-300 h-full w-[500px] fixed bottom-0 right-0 p-3">
+      <DrawerContent className="bg-white flex flex-col justify-start gap-4 rounded-t-lg shadow-xl transition-all duration-300 h-full w-[600px] fixed bottom-0 right-0 p-3 mt-5 tracking-wide">
         {selectedBasket?.image && (
           <div className="overflow-hidden rounded-t-lg">
             <img
               src={`${selectedBasket?.image}`}
               alt="Donation"
-              className="w-full object-cover hover:scale-105 transition-scale duration-300"
-              style={{ height: "200px" }}
+              className="w-full h-full object-cover hover:scale-105 transition-scale duration-300"
+              style={{ height: "300px" }}
             />
           </div>
         )}
-
-        <div className="flex flex-col">
+        <div>
           <h2 className="text-heading2-bold font-bold">
             {selectedBasket?.title}
           </h2>
+          <p className="text-neutral-500">
+            {selectedBasket?.type === "Donation"
+              ? "Donation posted"
+              : "Request posted"}{" "}
+            {selectedBasket?.type === "Donation"
+              ? calculateDaysDifference(selectedBasket?.items[0].createdAt)
+              : calculateDaysDifference(
+                  selectedBasket?.requests[0].createdAt
+                )}{" "}
+            days ago at {extractStateAndZip(selectedBasket?.location)}
+          </p>
+        </div>
+
+        <div className="flex justify-between ">
+          <div className="flex gap-2">
+            <Avatar>
+              <AvatarImage
+                src={`${selectedBasket?.userId?.profileImage}`}
+                alt="Donation Image"
+              />
+              <AvatarFallback></AvatarFallback>
+            </Avatar>
+
+            <div className="font-bold"> {selectedBasket?.userId.username} </div>
+          </div>
+
+          {/* <p className="self-center text-[20px] leading-3 font-medium tracking-wide mt-4 mb-2">
+          ITEM INFORMATION
+        </p> */}
+        </div>
+
+        <div className="">
+          <div className="text-heading4-bold ">Description</div>
+          <p className="font-light">
+            {selectedBasket?.type === "Donation"
+              ? selectedBasket?.description
+              : selectedBasket?.reason}{" "}
+          </p>
+        </div>
+
+        <div>
+          <p className="flex items-center  font-bold">
+            {/* <RxSewingPin className="mr-2" size="20px" />  */}
+            <span className="text-heading4-bold">Location</span>
+          </p>
+          <span className="font-light">{selectedBasket?.location}</span>
+        </div>
+
+        <div>
+          <p className="flex items-center  font-bold">
+            {/* <RxSewingPin className="mr-2" size="20px" />  */}
+            <span className="text-heading4-bold">Items</span>
+          </p>
+
           <div className="flex flex-wrap gap-2 mt-2">
             {selectedBasket?.type === "Donation"
               ? selectedBasket?.items.map((item) => (
                   <Badge
                     key={item.id}
-                    className="bg-sky-100 text-black flex items-center gap-1"
+                    className="bg-sky-100 text-black flex items-center gap-1 font-medium"
                   >
                     <span>{item.emoji}</span>
                     <span>{item.itemName}</span>
@@ -102,7 +156,8 @@ function DrawerComponent({ selectedBasket, id, handleOpenDialog, onPage }) {
               : selectedBasket?.requests.map((request) => (
                   <Badge
                     key={request.id}
-                    className="bg-sky-100 text-black flex items-center gap-1"
+                    className="bg-sky-100 text-black flex items-center gap-1 font-medium"
+                    c
                   >
                     <span>{request.emoji}</span>
                     <span>{request.itemName}</span>
@@ -110,60 +165,6 @@ function DrawerComponent({ selectedBasket, id, handleOpenDialog, onPage }) {
                 ))}
           </div>
         </div>
-
-        <p className="text-gray-500">
-          Created{" "}
-          {selectedBasket?.type === "Donation"
-            ? calculateDaysDifference(selectedBasket?.items[0].createdAt)
-            : calculateDaysDifference(
-                selectedBasket?.requests[0].createdAt
-              )}{" "}
-          days ago at {extractStateAndZip(selectedBasket?.location)}
-        </p>
-
-        <div className="flex gap-2">
-          <Avatar>
-            <AvatarImage
-              src={`${selectedBasket?.userId?.profileImage}`}
-              alt="Donation Image"
-            />
-            <AvatarFallback></AvatarFallback>
-          </Avatar>
-
-          <div className="font-bold">
-            {" "}
-            Created by {selectedBasket?.userId.username}{" "}
-          </div>
-        </div>
-
-        <Separator className="h-[1px] w-full mt-2"></Separator>
-        <div>
-          <div className="flex">
-            {/* <MdDescription className="mr-2" size="20px" /> */}
-            <div className="font-bold italic">Description</div>
-          </div>
-          <p className="">
-            {selectedBasket?.type === "Donation"
-              ? selectedBasket?.description
-              : selectedBasket?.reason}
-          </p>
-        </div>
-        <div>
-          <p className="flex items-center text-gray-800 font-bold">
-            {/* <RxSewingPin className="mr-2" size="20px" /> */}
-            <span className="font-bold italic">Location</span>
-          </p>
-          <span className="">{selectedBasket?.location}</span>
-        </div>
-        {selectedBasket?.expiryDate && (
-          <div className="flex justify-between align-middle ">
-            <p className="flex items-center text-gray-800 font-bold">
-              {/* <RxClock className="mr-2" size="20px" /> */}
-              Expires:
-            </p>
-            <span>{selectedBasket?.expiryDate}</span>
-          </div>
-        )}
 
         <div className="mt-4" onClick={() => handleOpenDialog(true)}>
           {selectedBasket?.type === "Request" ? (

@@ -54,6 +54,10 @@ function EditBasketForm({ basket, userId }) {
     setNames(items.map((item) => item.itemName));
     setEmojis(items.map((item) => item.emoji));
   }, [items, foodItems]);
+  const [map, setMap] = useState(null);
+  const [marker, setMarker] = useState(null);
+  mapboxgl.accessToken =
+    "pk.eyJ1IjoicGlja21lZm9vZCIsImEiOiJjbHZwbHdyMzgwM2hmMmtvNXJ6ZHU2NXh3In0.aITfZvPY-sKGwepyPVPGOg";
 
   const handleItemChange = (selectedOption, index) => {
     const newSelectedOptions = [...selectedOptions];
@@ -149,9 +153,9 @@ function EditBasketForm({ basket, userId }) {
 
   return (
     <div>
-      <h2 className="text-heading2-bold mb-4">Edit Basket</h2>
-      <label className="block mb-2">
-        Title:
+      <h2 className="text-heading2-bold mb-4 text-sky-500">Edit Basket</h2>
+      <label className="block mb-3 font-medium">
+        <p className="text-lg font-semibold text-gray-800 mb-2"> Title </p>
         <input
           type="text"
           className="w-full border rounded p-2"
@@ -159,16 +163,18 @@ function EditBasketForm({ basket, userId }) {
           onChange={(e) => setTitle(e.target.value)}
         />
       </label>
-      <label className="block mb-2">
-        Description:
+      <label className="block mb-3 ">
+        <p className="text-lg font-semibold text-gray-800 mb-2"> Description</p>
         <textarea
           className="w-full border rounded p-2"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
       </label>
-      <label className="block mb-2">
-        Location:
+
+      <label className="block mb-3 font-medium">
+        <p className="text-lg font-semibold text-gray-800 mb-2"> Location</p>
+
         <input
           type="text"
           className="w-full border rounded p-2"
@@ -193,7 +199,7 @@ function EditBasketForm({ basket, userId }) {
       {items?.map((item, index) => (
         <div key={index} className="flex gap-5">
           <label className="w-44">
-            Item
+            <p className="text-lg font-semibold text-gray-800 mb-2"> Title </p>
             <Select
               options={foodItems.map((choice) => ({
                 value: choice.name,
@@ -208,7 +214,10 @@ function EditBasketForm({ basket, userId }) {
             />
           </label>
           <label className="w-14">
-            Quantity
+            <p className="text-lg font-semibold text-gray-800 mb-2">
+              {" "}
+              Quantity{" "}
+            </p>
             <input
               type="number"
               className="w-full border rounded p-2"

@@ -28,9 +28,7 @@ function CardComponent({ basket, setOpenDialog, selectedBasket, onPage }) {
             basket.type === "Request" ? "bg-sky-100" : "bg-emerald-100"
           }`}
         >
-          {basket.type === "Request"
-            ? `${basket.type} 🤲`
-            : `${basket.type} 🚀`}
+          {basket.type === "Request" ? `${"Request 🤲"} ` : `${"Donation 🚀"} `}
         </Badge>
         {basket?.matchPercentage ? (
           <Badge
