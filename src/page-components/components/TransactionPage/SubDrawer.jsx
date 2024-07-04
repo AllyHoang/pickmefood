@@ -69,8 +69,8 @@ function SubDrawer({ user, basket, type }) {
                   key={item.id}
                   className="bg-sky-100 text-black flex items-center gap-1 font-medium"
                 >
-                  <span>{item.emoji}</span>
-                  <span>{item.itemName}</span>
+                  <span>{item?.emoji}</span>
+                  <span>{item?.itemName}</span>
                 </Badge>
               ))
             : basket?.requests.map((request) => (
@@ -79,8 +79,8 @@ function SubDrawer({ user, basket, type }) {
                   className="bg-sky-100 text-black flex items-center gap-1 font-medium"
                   c
                 >
-                  <span>{request.emoji}</span>
-                  <span>{request.itemName}</span>
+                  <span>{request?.emoji}</span>
+                  <span>{request?.itemName}</span>
                 </Badge>
               ))}
         </div>

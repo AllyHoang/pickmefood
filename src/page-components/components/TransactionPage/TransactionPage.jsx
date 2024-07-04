@@ -57,28 +57,6 @@ function TransactionPage() {
     setSelectedBasket(null);
   };
 
-  const handleDoneTransaction = async (transaction) => {
-    try {
-      const response = await fetch(
-        `/api/transactions/${transaction._id}/done`,
-        {
-          method: "PUT",
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-
-      const data = await response.json();
-      console.log("Transaction accepted:", data);
-      toast.success("Congratulation! Your transaction is completed");
-    } catch (error) {
-      console.error("Failed to finish transaction:", error);
-      toast.error(error);
-    }
-  };
-
   useEffect(() => {
     if (router.query.id) {
       const transaction = transactions.find(
@@ -140,7 +118,7 @@ function TransactionPage() {
                     }`}
                     className={`px-3 py-1 rounded-sm text-base-bold w-fit ${
                       transaction.status === "pending"
-                        ? "bg-orange-200"
+                        ? "bg-sky-200"
                         : transaction.status === "accepted"
                         ? "bg-emerald-200"
                         : transaction.status === "canceled"
@@ -174,14 +152,14 @@ function TransactionPage() {
 
                 <Separator></Separator>
 
-                {transaction.status !== "accepted" && (
+                {/* {transaction.status !== "accepted" && ( */}
                   <DrawerTransaction
                     id={transaction._id}
                     handleOpenDialog={setOpenDialog}
                     selectedTransaction={selectedTransaction}
                     className="self-center"
                   />
-                )}
+                {/* )} */}
               </Card>
             );
           })}
