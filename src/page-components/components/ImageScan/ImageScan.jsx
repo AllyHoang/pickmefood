@@ -15,6 +15,9 @@ import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import ConfirmationPage from "../Confirmation/ConfirmationPage";
 import Image from "next/image";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import AddItem from "../addItemForm/addItemForm";
+import Breadcrumbs from "@/components/ui/breadcrumbs";
+import { useSelector } from "react-redux";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -30,6 +33,9 @@ const ImageScan = ({ userId }) => {
   const [error, setError] = useState(null);
   const router = useRouter();
   const [scanningItem, setScanningItem] = useState(false);
+  const { currentUser } = useSelector((state) => state.user);
+
+  const { confirmedItems: confirmedItemsFromQuery } = router.query;
 
   const runClarifai = async () => {
     const PAT = "dda115b63573404e9acee82bb952af34";
@@ -172,8 +178,26 @@ const ImageScan = ({ userId }) => {
     });
   };
 
-  return (
-    <div className="flex flex-col gap-6 overflow-auto h-full pb-8">
+  return confirmedItemsFromQuery ? (
+    <AddItem
+      userId={userId}
+      itemsFromQuery={confirmedItemsFromQuery}
+      externalImageSource={uploadedImage}
+    />
+  ) : (
+    <div className="flex flex-col gap-6 overflow-auto h-full pb-16">
+      <div className="base-container">
+        <Breadcrumbs
+          crumbs={[
+            {
+              title: "Profile",
+              href: `/profile?username=${currentUser?.username}`,
+            },
+            { title: "Add Donation With Image" },
+          ]}
+          className="text-small-medium mt-8"
+        />
+      </div>
       <div className="mx-auto flex flex-col items-center gap-2 mt-4">
         <h1 className="text-heading2-bold text-gray-700">Scan your photo</h1>
         <p className="text-body-medium font-normal">
@@ -214,7 +238,7 @@ const ImageScan = ({ userId }) => {
           </CldUploadButton>
         )}
       </div>
-      <div className="grid grid-cols-2 max-w-[90%] self-center gap-8 w-full flex-1 mt-2">
+      <div className="grid grid-cols-2 base-container self-center gap-8 w-full flex-1 mt-2">
         {uploadedImage && (
           <div className="col-span-1">
             <div className="w-full h-full relative">
@@ -243,84 +267,82 @@ const ImageScan = ({ userId }) => {
               </Button>
             )}
           </div>
-        ) : (
-          <div>
-            {detectedItems.length > 0 && (
-              <div className="flex flex-col gap-8 h-full">
-                <Card className="flex flex-col max-h-72 overflow-hidden">
-                  <CardHeader className="text-base-bold pb-2">
-                    <CardTitle>Detected items</CardTitle>
-                    <CardDescription
-                      className="text-small-medium"
-                      style={{ fontWeight: "400" }}
+        ) : uploadedImage && detectedItems.length > 0 ? (
+          <div className="flex flex-col gap-8 h-full">
+            <Card className="flex flex-col max-h-72 overflow-hidden">
+              <CardHeader className="text-base-bold pb-2">
+                <CardTitle>Detected items</CardTitle>
+                <CardDescription
+                  className="text-small-medium"
+                  style={{ fontWeight: "400" }}
+                >
+                  <p className="text-muted-foreground">
+                    Tick to choose the items
+                  </p>
+                </CardDescription>
+              </CardHeader>
+              <div className="flex-1 overflow-y-scroll px-6">
+                <ul className="list-none p-0 m-0">
+                  {detectedItems.map((item, index) => (
+                    <li
+                      key={item}
+                      className={`flex items-center ${
+                        index !== detectedItems.length - 1
+                          ? "border-b border-gray-300 py-2"
+                          : "pt-2 pb-3"
+                      }`}
                     >
-                      <p className="text-muted-foreground">
-                        Tick to choose the items
-                      </p>
-                    </CardDescription>
-                  </CardHeader>
-                  <div className="flex-1 overflow-y-scroll px-6">
-                    <ul className="list-none p-0 m-0">
-                      {detectedItems.map((item, index) => (
-                        <li
-                          key={item}
-                          className={`flex items-center ${
-                            index !== detectedItems.length - 1
-                              ? "border-b border-gray-300 py-2"
-                              : "pt-2 pb-3"
-                          }`}
-                        >
-                          <input
-                            type="checkbox"
-                            id={`item-${index}`}
-                            checked={confirmedItems.has(item)}
-                            onChange={(e) =>
-                              e.target.checked
-                                ? handleItemCheck(item)
-                                : handleItemUncheck(item)
-                            }
-                            className="mr-2"
-                          />
-                          <label
-                            htmlFor={`item-${index}`}
-                            className="text-gray-700"
-                          >
-                            {item}
-                          </label>
-                        </li>
-                      ))}
-                    </ul>
+                      <input
+                        type="checkbox"
+                        id={`item-${index}`}
+                        checked={confirmedItems.has(item)}
+                        onChange={(e) =>
+                          e.target.checked
+                            ? handleItemCheck(item)
+                            : handleItemUncheck(item)
+                        }
+                        className="mr-2"
+                      />
+                      <label
+                        htmlFor={`item-${index}`}
+                        className="text-gray-700"
+                      >
+                        {item}
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Card>
+            <Card className="flex flex-col flex-1 overflow-hidden">
+              <CardHeader className="text-base-bold">
+                <CardTitle>Confirmed items</CardTitle>
+              </CardHeader>
+              <div className="flex-1 overflow-y-scroll px-6 max-h-64">
+                {[...confirmedItems].length === 0 ? (
+                  <div className="h-full flex flex-col justify-center">
+                    <p className="text-center text-muted-foreground">
+                      Please choose at least one item.
+                    </p>
                   </div>
-                </Card>
-                <Card className="flex flex-col flex-1 overflow-hidden">
-                  <CardHeader className="text-base-bold">
-                    <CardTitle>Confirmed items</CardTitle>
-                  </CardHeader>
-                  <div className="flex-1 overflow-y-scroll px-6 max-h-64">
-                    {[...confirmedItems].length === 0 ? (
-                      <div className="h-full flex flex-col justify-center">
-                        <p className="text-center text-muted-foreground">
-                          Please choose at least one item.
-                        </p>
-                      </div>
-                    ) : (
-                      <ul className="list-none p-0 m-0">
-                        {[...confirmedItems].reverse().map((item, index) => (
-                          <li
-                            key={item}
-                            className={`flex items-center ${
-                              index !== [...confirmedItems].length - 1
-                                ? "border-b border-gray-300 py-2"
-                                : "pt-2 pb-4"
-                            }`}
-                          >
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                  <Dialog>
+                ) : (
+                  <ul className="list-none p-0 m-0">
+                    {[...confirmedItems].reverse().map((item, index) => (
+                      <li
+                        key={item}
+                        className={`flex items-center ${
+                          index !== [...confirmedItems].length - 1
+                            ? "border-b border-gray-300 py-2"
+                            : "pt-2 pb-4"
+                        }`}
+                      >
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              {/* <Dialog>
                     <DialogTrigger>
                       <Button
                         onClick={redirectToConfirmationPage}
@@ -333,12 +355,17 @@ const ImageScan = ({ userId }) => {
                     <DialogContent className="min-w-[80%] min-h-fit overflow-auto">
                       <ConfirmationPage userId={userId}></ConfirmationPage>
                     </DialogContent>
-                  </Dialog>
-                </Card>
-              </div>
-            )}
+                  </Dialog> */}
+              <Button
+                onClick={redirectToConfirmationPage}
+                className="bg-sky-400 mx-6 mt-auto mb-4"
+                disabled={[...confirmedItems].length === 0}
+              >
+                Go to confirmation page
+              </Button>
+            </Card>
           </div>
-        )}
+        ) : null}
       </div>
     </div>
   );
