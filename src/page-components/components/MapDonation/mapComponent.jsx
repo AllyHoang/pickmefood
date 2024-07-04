@@ -13,6 +13,12 @@ import DialogComponent from "../DashboardPage/DialogComponent";
 import PaymentPagePlaces from "../CheckOutForm/PaymentPagePlaces";
 import useFetchAllBaskets from "@/hook/useFetchAllBaskets";
 import { GoSearch } from "react-icons/go";
+import CardComponent from "../DashboardPage/CardComponent";
+import MapCard from "./MapCard";
+import { set } from "mongoose";
+import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
+import { BiMap } from "react-icons/bi";
 
 mapboxgl.accessToken =
   "pk.eyJ1IjoicGlja21lZm9vZCIsImEiOiJjbHZwbHdyMzgwM2hmMmtvNXJ6ZHU2NXh3In0.aITfZvPY-sKGwepyPVPGOg";
@@ -37,7 +43,25 @@ const MapComponent = ({ userId }) => {
   const [selectedBasket, setSelectedBasket] = useState(null);
   const router = useRouter();
   const [openDialog, setOpenDialog] = useState(false);
+  const [openPlaceDialog, setOpenPlaceDialog] = useState(false);
   const [selectedView, setSelectedView] = useState("Donation");
+  // State to store the position of the mouse click
+  const [clickPosition, setClickPosition] = useState({ top: 0, left: 0 });
+
+  useEffect(() => {
+    console.log("Normal dialog open", openDialog);
+    console.log("Place dialog open", openPlaceDialog);
+
+    if (!openDialog && !openPlaceDialog) {
+      document.addEventListener("click", function (event) {
+        // Retrieve the mouse coordinates relative to the document
+        var mouseX = event.pageX;
+        var mouseY = event.pageY;
+        setClickPosition({ top: mouseY, left: mouseX });
+        console.log(clickPosition.top, clickPosition.left);
+      });
+    }
+  }, []);
 
   const settings = {
     dots: true, // Show navigation dots
@@ -46,6 +70,14 @@ const MapComponent = ({ userId }) => {
     slidesToShow: 1, // Show one slide at a time
     slidesToScroll: 1, // Scroll one slide at a time
   };
+
+  useEffect(() => {
+    console.log(router.query);
+    if (router.query.id) {
+      const basket = baskets.find((basket) => basket._id === router.query.id);
+      setSelectedBasket(basket);
+    }
+  }, [router.query.id, baskets]);
 
   const handleToggleView = () => {
     if (viewType === "list") {
@@ -61,8 +93,17 @@ const MapComponent = ({ userId }) => {
     setOpenDialogForBasket(request);
   };
 
+  const handleOpenPlaceDialog = () => {
+    setOpenPlaceDialog(true);
+  };
+
+  const handleClosePlaceDialog = () => {
+    setOpenPlaceDialog(false);
+  };
+
   const handleCloseModal = () => {
     setOpenDialogForBasket(null);
+    setOpenDialog(false);
   };
 
   useEffect(() => {
@@ -148,7 +189,6 @@ const MapComponent = ({ userId }) => {
       }
       const data = await response.json();
       const geocodedRequests = await geocodeRequests(data.baskets);
-      console.log(geocodedRequests);
       setRequests(geocodedRequests);
     } catch (error) {
       console.error("Error fetching donations:", error);
@@ -163,7 +203,6 @@ const MapComponent = ({ userId }) => {
       }
       const data = await response.json();
       const geocodedPlaces = await geocodePlaces(data.places);
-      console.log(geocodedPlaces);
       setPlaces(geocodedPlaces);
     } catch (error) {
       console.error("Error fetching donations:", error);
@@ -218,7 +257,6 @@ const MapComponent = ({ userId }) => {
         }
       })
     );
-    console.log(geocodedPlaces);
     return geocodedPlaces.filter((place) => place !== null);
   };
 
@@ -419,82 +457,116 @@ const MapComponent = ({ userId }) => {
     <div className={styles.container}>
       <div id="map" className={styles.mapContainer}></div>
       {selectedRequests.length > 0 && (
-        <div className={styles.sidebar}>
-          <button
-            className={styles.closeButton}
-            onClick={() => setSelectedRequests([])}
-          >
-            &times;
-          </button>
+        <div
+          id="requests-sidebar"
+          className="fixed w-[300px] h-[400px] bg-white shadow-lg rounded-lg z-50 overflow-y-auto"
+          style={{
+            top: `${clickPosition.top}px`,
+            left: `${clickPosition.left}px`,
+          }}
+        >
           {selectedRequests.map((request, index) => (
-            <div className={styles.requestDetails} key={index}>
-              <button
-                className={styles.addButton}
-                onClick={() => handleOpenDialog(request)}
-              >
-                Donate
-              </button>
-              {request && openDialogForBasket === request && (
+            <div className="flex flex-col " key={index}>
+              <MapCard
+                basket={request}
+                // selectedBasket={request}
+                selectedBasket={selectedBasket}
+                setOpenDialog={setOpenDialog}
+                onPage="map"
+              ></MapCard>
+              {selectedBasket && openDialog === request && (
                 <DialogComponent
-                  itemKey={JSON.stringify(request)}
-                  openDialog={Boolean(openDialogForBasket)}
+                  itemKey={JSON.stringify(selectedBasket)}
+                  openDialog={openDialog}
                   handleCloseModal={handleCloseModal}
-                  otherBasket={request}
+                  otherBasket={selectedBasket}
                 />
               )}
-              <div className={styles.requestItem}>
-                <p className={styles.title}>{request.title}</p>
-                <p>{request.reason}</p>
-                <p>Location: {request.location}</p>
-              </div>
+              <button
+                className={styles.closeButton}
+                onClick={() => setSelectedRequests([])}
+              >
+                &times;
+              </button>
             </div>
           ))}
         </div>
       )}
       {selectedDonations.length > 0 && (
-        <div className={styles.sidebar}>
-          <button
-            className={styles.closeButton}
-            onClick={() => setSelectedDonations([])}
-          >
-            &times;
-          </button>
+        <div
+          id="donations-sidebar"
+          className=" fixed w-[300px] h-[400px] bg-white shadow-lg rounded-lg z-50 overflow-y-auto"
+          style={{
+            top: `${clickPosition.top}px`,
+            left: `${clickPosition.left}px`,
+          }}
+        >
           {selectedDonations.map((donation, index) => (
-            <div className={styles.donationDetails} key={index}>
-              <button
-                className={styles.addButton}
-                onClick={() => setOpenDialog(true)}
-              >
-                Request
-              </button>
-              {donation && openDialogForBasket === donation && (
+            <div key={index}>
+              <MapCard
+                basket={donation}
+                selectedBasket={selectedBasket}
+                setOpenDialog={setOpenDialog}
+                onPage="map"
+              ></MapCard>
+              {selectedBasket && openDialog && (
                 <DialogComponent
-                  itemKey={JSON.stringify(donation)}
-                  openDialog={Boolean(openDialogForBasket)}
+                  itemKey={JSON.stringify(selectedBasket)}
+                  openDialog={openDialog}
                   handleCloseModal={handleCloseModal}
-                  otherBasket={donation}
+                  otherBasket={selectedBasket}
                 />
               )}
-              <div className={styles.requestItem}>
-                <p className={styles.title}>{donation.title}</p>
-                <p>{donation.description}</p>
-                <p>
-                  Expiration Date:{" "}
-                  {new Date(
-                    donation.items[0].expirationDate
-                  ).toLocaleDateString()}
-                </p>
-                <p>Location: {donation.location}</p>
-              </div>
+              <button
+                className={styles.closeButton}
+                onClick={() => setSelectedDonations([])}
+              >
+                &times;
+              </button>
             </div>
           ))}
         </div>
       )}
       {selectedPlaces.map((place, index) => (
-        <div className={styles.sidebarPlaces}>
-          <div key={index} className={styles.placeWrapper}>
-            <div className={styles.placeDetails}>
-              <p className={styles.titlePlace}>{place.displayName.text}</p>
+        <div
+          className="fixed w-[300px] bg-white shadow-lg rounded-lg z-50 overflow-y-auto gap-5"
+          style={{
+            top: `${clickPosition.top}px`,
+            left: `${clickPosition.left}px`,
+          }}
+        >
+          <div
+            key={index}
+            className="flex flex-col flex-grow w-[300px] max-h-[550px] justify-around rounded-2xl p-4 "
+          >
+            <div className="flex flex-col gap-2">
+              <div className="text-heading3-bold line-clamp-2">
+                <p>{place.displayName.text}</p>
+              </div>
+
+              {place.photos && place.photos.length > 0 && (
+                <div className={styles.photoSlider}>
+                  <Slider {...settings}>
+                    {place.photos.map((photo, photoIndex) => (
+                      <div key={photoIndex} className={styles.slide}>
+                        <img
+                          src={`https://places.googleapis.com/v1/${photo.name}/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyDlHBXX4KF-W6Dbn4DZySC6y4kfCd3ffeM`}
+                          alt={`Photo ${photoIndex}`}
+                          className="rounded-2xl w-full"
+                        />
+                      </div>
+                    ))}
+                  </Slider>
+                </div>
+              )}
+              {/* <p className={styles.location}>{place.formattedAddress}</p> */}
+              <div className="flex items-center gap-1 align-center relative bottom-3">
+                <BiMap></BiMap>
+                <p className="font-medium relative top-3 ">
+                  {place.formattedAddress}
+                </p>
+              </div>
+
               <button
                 className={styles.closeButton}
                 onClick={() => setSelectedPlaces([])}
@@ -502,9 +574,16 @@ const MapComponent = ({ userId }) => {
                 &times;
               </button>
             </div>
-            <Dialog>
-              <DialogTrigger>
-                <Button className={styles.addPlaceButton}>Donate</Button>
+
+            <Dialog
+              onOpenChange={(open) =>
+                open ? handleOpenPlaceDialog() : handleClosePlaceDialog()
+              }
+            >
+              <DialogTrigger className="mt-2">
+                <Button className="w-full bg-sky-400 text-black hover:bg-sky-400">
+                  Donate
+                </Button>
               </DialogTrigger>
               <DialogContent className="min-w-fit w-3/4 h-4/5">
                 <PaymentPagePlaces
@@ -514,34 +593,6 @@ const MapComponent = ({ userId }) => {
                 />
               </DialogContent>
             </Dialog>
-            <p className={styles.location}>
-              <svg
-                className={styles.locationIcon}
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="red"
-                width="30px"
-                height="30px"
-              >
-                <path d="M12 2C8.14 2 5 5.14 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.86-3.14-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5s2.5 1.12 2.5 2.5S13.38 11.5 12 11.5z" />
-              </svg>
-              {place.formattedAddress}
-            </p>
-            {place.photos && place.photos.length > 0 && (
-              <div className={styles.photoSlider}>
-                <Slider {...settings}>
-                  {place.photos.map((photo, photoIndex) => (
-                    <div key={photoIndex} className={styles.slide}>
-                      <img
-                        src={`https://places.googleapis.com/v1/${photo.name}/media?maxHeightPx=400&maxWidthPx=400&key=AIzaSyDlHBXX4KF-W6Dbn4DZySC6y4kfCd3ffeM`}
-                        alt={`Photo ${photoIndex}`}
-                        className={styles.photo}
-                      />
-                    </div>
-                  ))}
-                </Slider>
-              </div>
-            )}
           </div>
         </div>
       ))}
@@ -578,10 +629,12 @@ const MapComponent = ({ userId }) => {
           ))}
         </ul>
       )}
+
       {searchError && <p className={styles.error}>{searchError}</p>}
-      <div className="absolute top-[25px] right-[20px] h-20">
+
+      <div className="absolute top-[25px] right-[20px] h-20 ">
         <select
-          className="ml-4 p-2 border border-gray-300 rounded"
+          className="ml-4 p-2 border border-gray-300 rounded-xl"
           value={selectedView}
           onChange={(e) => setSelectedView(e.target.value)}
         >

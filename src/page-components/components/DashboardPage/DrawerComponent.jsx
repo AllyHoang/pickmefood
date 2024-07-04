@@ -17,16 +17,15 @@ import { RxSewingPin } from "react-icons/rx";
 import { RxPerson } from "react-icons/rx";
 import { Button } from "@/components/ui/button";
 import { Router } from "lucide-react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Separator } from "@/components/ui/separator";
 import { MdDescription } from "react-icons/md";
 import { extractStateAndZip } from "@/lib/utils";
 
-function DrawerComponent({ selectedBasket, id, handleOpenDialog }) {
+function DrawerComponent({ selectedBasket, id, handleOpenDialog, onPage }) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
-  console.log(selectedBasket);
   const calculateDaysDifference = (date) => {
     const currentDate = new Date();
     const givenDate = new Date(date);
@@ -39,22 +38,38 @@ function DrawerComponent({ selectedBasket, id, handleOpenDialog }) {
       onOpenChange={(open) => {
         setOpen(open);
         if (!open) {
-          router.push("/dashboard");
+          if (onPage === "dashboard") {
+            router.push("/dashboard");
+          } else {
+            router.push("/map-view");
+          }
         }
       }}
       direction="right"
     >
-      <DrawerTrigger asChild className="self-center">
+      <DrawerTrigger asChild className="self-center -pb-8">
         {/* //item._id */}
-        <Link
-          href={{ pathname: "/dashboard", query: { id: id } }}
-          shallow={true}
-          className="font-medium"
-        >
-          {/* <Button className="text-black bg-white hover:bg-white border-none"> */}
-          View Details
-          {/* </Button> */}
-        </Link>
+        {onPage === "dashboard" ? (
+          <Link
+            href={{ pathname: "/dashboard", query: { id: id } }}
+            shallow={true}
+            className="font-medium"
+          >
+            {/* <Button className="text-black bg-white hover:bg-white border-none"> */}
+            View Details
+            {/* </Button> */}
+          </Link>
+        ) : (
+          <Link
+            href={{ pathname: "/map-view", query: { id: id } }}
+            shallow={true}
+            className="font-medium"
+          >
+            {/* <Button className="text-black bg-white hover:bg-white border-none"> */}
+            View Details
+            {/* </Button> */}
+          </Link>
+        )}
       </DrawerTrigger>
 
       <DrawerContent className="bg-white flex flex-col justify-start gap-4 rounded-t-lg shadow-xl transition-all duration-300 h-full w-[500px] fixed bottom-0 right-0 p-3">

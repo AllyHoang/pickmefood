@@ -5,7 +5,7 @@ export default function WelcomeMessage() {
   return (
     <>
       <div className="flex flex-col bg-gradient-to-tr from-sky-400 via-sky-500 to-sky-600 h-screen w-1/2 items-center">
-        <div className="flex flex-col gap-10 items-center relative top-32">
+        <div className="flex flex-col gap-10 items-center relative top-32 ml-10">
           <p className="text-white text-[3.75rem] leading-[1] ml-7 self-start">
             Welcome to
           </p>
@@ -21,7 +21,7 @@ export default function WelcomeMessage() {
             Find a donation center near me
           </Button>
         </div>
-        <p className=" absolute bottom-10 left-10 text-white self-start font-medium hover:underline focus:underline hover:cursor-pointer">
+        <p className=" absolute bottom-10 left-10 text-white self-start font-medium hover:underline focus:underline hover:cursor-pointer ml-7">
           About us
         </p>
       </div>
