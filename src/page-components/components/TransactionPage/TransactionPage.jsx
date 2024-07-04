@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Card,
   CardContent,
@@ -23,6 +23,17 @@ import getMatchingItems, {
 import { Badge } from "@/components/ui/badge";
 import DrawerTransaction from "./DrawerTransction";
 
+import {
+  NotificationFeedPopover,
+  NotificationIconButton,
+  NotificationCell,
+} from "@knocklabs/react";
+// Required CSS import, unless you're overriding the styling
+import "@knocklabs/react/dist/index.css";
+import { Button } from "@/components/ui/button";
+import { IoMdCheckmarkCircleOutline } from "react-icons/io";
+import { toast } from "react-toastify";
+
 function TransactionPage() {
   const [selectedTransaction, setSelectedTransaction] = useState(null);
   const { currentUser } = useSelector((state) => state.user);
@@ -30,6 +41,8 @@ function TransactionPage() {
   const { transactions, isLoading } = useFetchTransaction(currentUser.id);
   const [openDialog, setOpenDialog] = useState(false);
   console.log(transactions);
+  const [isVisible, setIsVisible] = useState(false);
+  const notifButtonRef = useRef(null);
 
   const handleOpenDialog = (basket) => {
     setSelectedBasket(basket);
@@ -39,6 +52,28 @@ function TransactionPage() {
   const handleCloseModal = () => {
     setOpenDialog(false);
     setSelectedBasket(null);
+  };
+
+  const handleDoneTransaction = async (transaction) => {
+    try {
+      const response = await fetch(
+        `/api/transactions/${transaction._id}/done`,
+        {
+          method: "PUT",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      console.log("Transaction accepted:", data);
+      toast.success("Congratulation! Your transaction is completed");
+    } catch (error) {
+      console.error("Failed to finish transaction:", error);
+      toast.error(error);
+    }
   };
 
   useEffect(() => {
@@ -51,6 +86,36 @@ function TransactionPage() {
   }, [router.query.id, transactions]);
   return (
     <div className="w-full">
+      <NotificationIconButton
+        ref={notifButtonRef}
+        onClick={(e) => setIsVisible(!isVisible)}
+      />
+      <NotificationFeedPopover
+        buttonRef={notifButtonRef}
+        isVisible={isVisible}
+        onClose={() => setIsVisible(false)}
+        renderItem={({ item, ...props }) => (
+          <NotificationCell {...props} item={item}>
+            <div className="rounded-xl">
+              <Link
+                className="flex items-center space-x-4 p-2  rounded-md text-blue-500 transition duration-150 ease-in-out"
+                onClick={() => {
+                  setIsVisible(false);
+                }}
+                href={`/transactions`}
+              >
+                {/* User and Message Container */}
+                <div className="flex flex-col">
+                  <span className="font-bold">{item.data.name}</span>
+                  <span className="text-gray-500 "> {item.data.message}</span>
+
+                </div>
+              </Link>
+            </div>
+          </NotificationCell>
+        )}
+      />
+
       <h1 className="text-heading1-bold">Transaction</h1>
       <TransactionSummary />
       <div className="max-w-screen-2xl mx-auto w-full pb-4 mt-4">
@@ -59,10 +124,6 @@ function TransactionPage() {
             <CardTitle className="text-heading3-bold line-clamp-1">
               All Transactions
             </CardTitle>
-            <div className="flex items-center space-x-2">
-              <Switch id="analytic-mode" />
-              <Label htmlFor="analytic-mode">Statistic Mode</Label>
-            </div>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -89,7 +150,7 @@ function TransactionPage() {
                             ? "bg-emerald-200"
                             : transaction.status === "canceled"
                             ? "bg-red-200"
-                            : "Unknown Status"
+                            : "bg-orange-200"
                         }`}
                       >
                         {transaction.status === "pending"
@@ -98,7 +159,7 @@ function TransactionPage() {
                           ? "Accepted"
                           : transaction.status === "canceled"
                           ? "Rejected"
-                          : "Unknown Status"}
+                          : "Matched"}
                       </Badge>
                       <div className="grid grid-cols-1 md:grid-cols-2 items-start gap-2">
                         <div className="flex flex-col items-start mt-4">
@@ -191,25 +252,24 @@ function TransactionPage() {
                         </div>
                       </div>
                       <CardFooter className="flex justify-between items-center mt-4">
-                     
                         {matchingItems.length > 0 ? (
                           <div className="flex justify-start align-start gap-2">
-                          <p>Matches: </p>
-                           <div className="flex gap-3 flex-wrap">
-                            {matchingItems?.slice(0, 3).map((match) => (
-                              <Badge
-                                key={match?.id}
-                                className="bg-sky-100 text-black"
-                              >
-                                {match?.emoji} {match?.itemName}
-                              </Badge>
-                            ))}
-                            {matchingItems?.length > 3 && (
-                              <Badge className="bg-sky-100 text-black">
-                                +{matchingItems.length - 3} more
-                              </Badge>
-                            )}
-                          </div>
+                            <p>Matches: </p>
+                            <div className="flex gap-3 flex-wrap">
+                              {matchingItems?.slice(0, 3).map((match) => (
+                                <Badge
+                                  key={match?.id}
+                                  className="bg-sky-100 text-black"
+                                >
+                                  {match?.emoji} {match?.itemName}
+                                </Badge>
+                              ))}
+                              {matchingItems?.length > 3 && (
+                                <Badge className="bg-sky-100 text-black">
+                                  +{matchingItems.length - 3} more
+                                </Badge>
+                              )}
+                            </div>
                           </div>
                         ) : (
                           <div className="flex justify-start align-middle gap-2">
@@ -217,14 +277,30 @@ function TransactionPage() {
                             <p>None items match</p>
                           </div>
                         )}
+                        <div className="flex gap-3 justify-between">
+                          {transaction.status !== "canceled" && (
+                            <button
+                              onClick={() => {
+                                handleDoneTransaction(transaction);
+                              }}
+                              className="flex items-center justify-center gap-1 bg-green-500 hover:bg-green-400 text-white p-2 rounded transition duration-150 ease-in-out"
+                            >
+                              <IoMdCheckmarkCircleOutline
+                                size={20}
+                              ></IoMdCheckmarkCircleOutline>
+                              Done
+                            </button>
+                          )}
 
-                        {transaction.status !== "accepted" && (
-                          <DrawerTransaction
-                            id={transaction._id}
-                            handleOpenDialog={setOpenDialog}
-                            selectedTransaction={selectedTransaction}
-                          />
-                        )}
+                          {transaction.status !== "accepted" &&
+                            transaction.status !== "canceled" && (
+                              <DrawerTransaction
+                                id={transaction._id}
+                                handleOpenDialog={setOpenDialog}
+                                selectedTransaction={selectedTransaction}
+                              />
+                            )}
+                        </div>
                       </CardFooter>
                     </Card>
                   </>

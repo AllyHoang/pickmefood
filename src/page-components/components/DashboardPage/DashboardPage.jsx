@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { GoSearch } from "react-icons/go";
 import { Button } from "@/components/ui/button";
 import MapComponent from "../MapDonation/mapComponent";
@@ -22,6 +22,14 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import PaginationComponent from "../Pagination/Pagination";
+import {
+  NotificationFeedPopover,
+  NotificationIconButton,
+  NotificationCell,
+} from "@knocklabs/react";
+// Required CSS import, unless you're overriding the styling
+import "@knocklabs/react/dist/index.css";
+import Link from "next/link";
 
 function DashboardPage({ userId }) {
   const [selectedBasket, setSelectedBasket] = useState(null);
@@ -41,6 +49,8 @@ function DashboardPage({ userId }) {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const cardsPerPage = 10;
+  const [isVisible, setIsVisible] = useState(false);
+  const notifButtonRef = useRef(null);
   console.log(baskets);
 
   const truncateDescription = (description, maxWords) => {
@@ -129,6 +139,37 @@ function DashboardPage({ userId }) {
     <div>
       {viewType === "list" ? (
         <>
+<NotificationIconButton
+        ref={notifButtonRef}
+        onClick={(e) => setIsVisible(!isVisible)}
+      />
+      <NotificationFeedPopover
+        buttonRef={notifButtonRef}
+        isVisible={isVisible}
+        onClose={() => setIsVisible(false)}
+        renderItem={({ item, ...props }) => (
+          <NotificationCell {...props} item={item}>
+            <div className="rounded-xl">
+              <Link
+                className="flex items-center space-x-4 p-2  rounded-md text-blue-500 transition duration-150 ease-in-out"
+                onClick={() => {
+                  setIsVisible(false);
+                }}
+                href="/transactions"
+              >
+                {/* User and Message Container */}
+                <div className="flex flex-col">
+                  <span className="font-bold">{item.data.name}</span>
+                  <span className="text-gray-500 "> {item.data.message}</span>
+
+                </div>
+                {console.log("item.data: ", item.data)}
+              </Link>
+            </div>
+          </NotificationCell>
+        )}
+      />
+
           <div className="container mx-auto px-4 mt-6">
             <div className="grid grid-cols-3 items-center gap-4 mb-5">
               {/* Heading */}
