@@ -37,7 +37,7 @@ const TopMatchComponent = ({
   };
 
   return (
-    <div>
+        <div>
       <div className="grid grid-cols-3 gap-4">
         {currentMatches.map((match) => (
           <CardComponent

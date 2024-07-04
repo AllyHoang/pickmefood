@@ -166,8 +166,8 @@ function DashboardPage({ userId }) {
               </select>
             </div>
           </div>
-          <p className="text-heading2-bold mt-6 mb-6 ">Top Matches</p>
 
+          <p className="text-heading2-bold mt-6 mb-6 ">Top Matches</p>
           <TopMatchComponent
             matches={filteredMatches}
             handleOpenPreferenceModal={handleOpenPreferenceModal}
