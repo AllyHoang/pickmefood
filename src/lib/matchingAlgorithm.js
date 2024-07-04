@@ -3,9 +3,9 @@
 // Define weights
 const weights = {
 //   location: 0.1,
-  items: 0.6,
-  urgency: 0.3,
-  points: 0.1,
+  items: 1,
+  // urgency: 0.3,
+  // points: 0.1,
 };
 
 // Normalize weights
@@ -49,14 +49,14 @@ function calculatePointsScore(basketPoints, requestPoints) {
 function calculateMatchPercentage(basket, request, type) {
 //   const locationScore = calculateLocationScore(basket.location, request.location);
   const itemsScore = type ==="Donation" ? calculateItemsScore(basket.items, request.requests) : calculateItemsScore2(basket.items, request.requests);
-  const urgencyScore = calculateUrgencyScore(5, 5);
-  const pointsScore = calculatePointsScore(50, 50);
+  // const urgencyScore = calculateUrgencyScore(5, 5);
+  // const pointsScore = calculatePointsScore(50, 50);
 
   const overallScore =
     // locationScore * normalizedWeights.location +
-    itemsScore * normalizedWeights.items +
-    urgencyScore * normalizedWeights.urgency +
-    pointsScore * normalizedWeights.points;
+    itemsScore * normalizedWeights.items;
+    // urgencyScore * normalizedWeights.urgency +
+    // pointsScore * normalizedWeights.points;
 
   return Math.round(overallScore * 100); 
 }

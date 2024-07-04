@@ -16,12 +16,12 @@ function SubCard({ user, basket, type }) {
     <div className="flex flex-col w-1/2 gap-3 p-2">
       <div className="flex items-center gap-2 -p-10 ">
         <Avatar>
-          <AvatarImage src={user.profileImage} alt={`${userType} image`} />
+          <AvatarImage src={user?.profileImage} alt={`${userType} image`} />
           <AvatarFallback />
         </Avatar>
         <div>
           <div className=" flex flex-col gap-1 ">
-            <p className="text-lg font-medium">{user.username}</p>
+            <p className="text-lg font-medium">{user?.username}</p>
             <Badge
               variant="primary"
               className={`px-3 py-1 rounded-full text-small-medium w-fit ${

@@ -63,6 +63,28 @@ function DrawerTransaction({ selectedTransaction, id, handleOpenDialog }) {
     }
   };
 
+  const handleDoneTransaction = async (transaction) => {
+    try {
+      const response = await fetch(
+        `/api/transactions/${transaction._id}/done`,
+        {
+          method: "PUT",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      const data = await response.json();
+      console.log("Transaction accepted:", data);
+      toast.success("Congratulation! Your transaction is completed");
+    } catch (error) {
+      console.error("Failed to finish transaction:", error);
+      toast.error(error);
+    }
+  };
+
   const handleCancel = async (selectedTransaction) => {
     try {
       const response = await fetch(
@@ -88,9 +110,9 @@ function DrawerTransaction({ selectedTransaction, id, handleOpenDialog }) {
 
   const handleChat = async (selectedTransaction) => {
     const otherMemberId =
-      selectedTransaction.donorId._id !== currentUser.id
-        ? selectedTransaction.donorId._id
-        : selectedTransaction.requesterId._id;
+      selectedTransaction?.donorId._id !== currentUser.id
+        ? selectedTransaction?.donorId._id
+        : selectedTransaction?.requesterId._id;
 
     const res = await fetch("/api/chats", {
       method: "POST",
@@ -125,7 +147,7 @@ function DrawerTransaction({ selectedTransaction, id, handleOpenDialog }) {
           View Details
         </Link>
       </DrawerTrigger>
-      
+
       <DrawerContent className="bg-white flex flex-grow flex-col rounded-t-lg shadow-xl transition-all duration-300 h-screen w-[600px] mt-24 fixed bottom-0 right-0">
         <div className="">
           <div className="flex flex-col gap-10 p-2 mt-5">
@@ -144,30 +166,51 @@ function DrawerTransaction({ selectedTransaction, id, handleOpenDialog }) {
 
           <div className="mt-2 flex items-center justify-center gap-2">
             {((isDonor && !selectedTransaction?.agreedByDonor) ||
-              (!isDonor && !selectedTransaction?.agreedByRequester)) && (
+              (!isDonor && !selectedTransaction?.agreedByRequester)) &&
+              selectedTransaction?.status === "pending" && (
+                <button
+                  onClick={() => {
+                    handleAccept(selectedTransaction);
+                    // router.reload();
+                  }}
+                  className="flex items-center justify-center gap-1 w-1/2 bg-green-500 hover:bg-green-400 text-white py-2 rounded transition duration-150 ease-in-out"
+                >
+                  <IoMdCheckmarkCircleOutline
+                    size={20}
+                  ></IoMdCheckmarkCircleOutline>
+                  Accept
+                </button>
+              )}
+            {selectedTransaction?.status === "connected" && (
               <button
                 onClick={() => {
-                  handleAccept(selectedTransaction);
+                  handleDoneTransaction(selectedTransaction);
                   // router.reload();
                 }}
                 className="flex items-center justify-center gap-1 w-1/2 bg-green-500 hover:bg-green-400 text-white py-2 rounded transition duration-150 ease-in-out"
               >
-                <IoMdCheckmarkCircleOutline
-                  size={20}
-                ></IoMdCheckmarkCircleOutline>
-                Accept
+                <AiOutlineCloseCircle size={20}></AiOutlineCloseCircle>
+                Done
               </button>
             )}
-            <button
-              onClick={() => {
-                handleCancel(selectedTransaction);
-                // router.reload();
-              }}
-              className="flex items-center justify-center gap-1 w-1/2 bg-red-500 hover:bg-red-400 text-white py-2 rounded transition duration-150 ease-in-out"
-            >
-              <AiOutlineCloseCircle size={20}></AiOutlineCloseCircle>
-              Cancel
-            </button>
+            {selectedTransaction?.status !== "canceled" &&
+              selectedTransaction?.status !== "accepted" && (
+                <button
+                  onClick={() => {
+                    handleCancel(selectedTransaction);
+                    // router.reload();
+                  }}
+                  className={`flex items-center justify-center gap-1 ${
+                    (isDonor && selectedTransaction?.agreedByDonor) ||
+                    (!isDonor && selectedTransaction?.agreedByRequester)
+                      ? "w-full"
+                      : "w-1/2"
+                  } bg-red-500 hover:bg-red-400 text-white py-2 gap-1 rounded transition duration-150 ease-in-out`}
+                >
+                  <AiOutlineCloseCircle size={20}></AiOutlineCloseCircle>
+                  Cancel
+                </button>
+              )}
           </div>
           {selectedTransaction?.agreedByRequester &&
             selectedTransaction?.agreedByDonor && (
