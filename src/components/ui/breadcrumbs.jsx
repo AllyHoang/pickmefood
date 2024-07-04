@@ -1,14 +1,14 @@
 // components/Breadcrumbs.js
 import Link from "next/link";
 
-const Breadcrumbs = ({ crumbs }) => {
+const Breadcrumbs = ({ crumbs, className }) => {
   return (
-    <nav aria-label="breadcrumb">
+    <nav aria-label="breadcrumb" className={className || ""}>
       <ol className="breadcrumb">
         {crumbs.map((crumb, index) => (
           <li
             key={index}
-            className={`breadcrumb-item ${
+            className={`breadcrumb-item text-muted-foreground ${
               index === crumbs.length - 1 ? "active" : ""
             }`}
           >
@@ -31,11 +31,8 @@ const Breadcrumbs = ({ crumbs }) => {
           align-items: center;
         }
         .breadcrumb-item.active {
-          font-weight: bold;
+          font-weight: 500;
           color: #333;
-        }
-        .breadcrumb-item:not(.active) {
-          color: #666;
         }
         .breadcrumb-item:not(.active):hover {
           color: #000;
