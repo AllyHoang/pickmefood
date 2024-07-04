@@ -3,11 +3,21 @@ import { CldUploadButton } from "next-cloudinary";
 import { useRouter } from "next/router";
 import styles from "./ImageScan.module.css";
 import { useImage } from "@/lib/ImageContext";
-import { Card } from "@/components/ui/card";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Car } from "lucide-react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import ConfirmationPage from "../Confirmation/ConfirmationPage";
+import Image from "next/image";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import AddItem from "../addItemForm/addItemForm";
+import Breadcrumbs from "@/components/ui/breadcrumbs";
+import { useSelector } from "react-redux";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -15,19 +25,17 @@ const ImageScan = ({ userId }) => {
   const { setImageUrl } = useImage();
   const [detectedItems, setDetectedItems] = useState([]);
   const [confirmedItems, setConfirmedItems] = useState(new Set());
-  const [currentPage, setCurrentPage] = useState(0);
   const [uploadedImage, setUploadedImage] = useState(null);
   const [useReplicate, setUseReplicate] = useState(false); // State for the Replicate checkbox
-  const [useCloudinary, setUseCloudinary] = useState(false);
   const [firstImageUploaded, setFirstImageUploaded] = useState(false); // Track first image upload
   const [secondImageUploaded, setSecondImageUploaded] = useState(false); // Track second image upload
   const [prediction, setPrediction] = useState(null);
   const [error, setError] = useState(null);
   const router = useRouter();
+  const [scanningItem, setScanningItem] = useState(false);
+  const { currentUser } = useSelector((state) => state.user);
 
-  console.log(userId);
-
-  const itemsPerPage = 10;
+  const { confirmedItems: confirmedItemsFromQuery } = router.query;
 
   const runClarifai = async () => {
     const PAT = "dda115b63573404e9acee82bb952af34";
@@ -66,21 +74,21 @@ const ImageScan = ({ userId }) => {
     };
 
     try {
+      setScanningItem(true);
       const response = await fetch(
         `https://api.clarifai.com/v2/models/${MODEL_ID}/versions/${MODEL_VERSION_ID}/outputs`,
         requestOptions
       );
       const data = await response.json();
-      console.log(data);
-
       // Extract detected items from 'data' and update 'detectedItems' state
       const concepts = data.outputs[0].data.concepts.map(
         (concept) => concept.name
       );
       setDetectedItems(concepts);
-      setCurrentPage(0); // Reset to first page on new scan
     } catch (error) {
       console.error("Error:", error);
+    } finally {
+      setScanningItem(false);
     }
   };
   const handleItemCheck = (item) => {
@@ -93,18 +101,6 @@ const ImageScan = ({ userId }) => {
       updatedSet.delete(item);
       return updatedSet;
     });
-  };
-
-  const handleNextPage = () => {
-    if ((currentPage + 1) * itemsPerPage < detectedItems.length) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-
-  const handlePrevPage = () => {
-    if (currentPage > 0) {
-      setCurrentPage(currentPage - 1);
-    }
   };
 
   const generateReplicateImage = async (prompt) => {
@@ -182,14 +178,36 @@ const ImageScan = ({ userId }) => {
     });
   };
 
-  return (
-    <div className="flex flex-col gap-6 overflow-auto">
-      <h1
-        className="self-start font-bold text-gray-700"
-        style={{ fontSize: "20px" }}
-      >
-        Scan Image To Add Donation🤳🏽
-      </h1>
+  return confirmedItemsFromQuery ? (
+    <AddItem
+      userId={userId}
+      itemsFromQuery={confirmedItemsFromQuery}
+      externalImageSource={uploadedImage}
+    />
+  ) : (
+    <div className="flex flex-col gap-6 overflow-auto h-full pb-16">
+      <div className="base-container">
+        <Breadcrumbs
+          crumbs={[
+            {
+              title: "Profile",
+              href: `/profile?username=${currentUser?.username}`,
+            },
+            { title: "Add Donation With Image" },
+          ]}
+          className="text-small-medium mt-8"
+        />
+      </div>
+      <div className="mx-auto flex flex-col items-center gap-2 mt-4">
+        <h1 className="text-heading2-bold text-gray-700">Scan your photo</h1>
+        <p className="text-body-medium font-normal">
+          We will detect items from your photo and use them to create a
+          donation.
+        </p>
+        <p className="text-muted-foreground">
+          Want a different way? Try creating manually or do a video scan.
+        </p>
+      </div>
       <div className="self-center flex gap-4">
         {!firstImageUploaded && (
           <CldUploadButton
@@ -201,10 +219,12 @@ const ImageScan = ({ userId }) => {
             }
             uploadPreset="zoa1vsa7"
           >
-            <Button className="bg-sky-400">Upload Image</Button>
+            <Button className="bg-sky-400 hover:bg-sky-700">
+              Upload your photo
+            </Button>
           </CldUploadButton>
         )}
-        {firstImageUploaded && useCloudinary && !secondImageUploaded && (
+        {firstImageUploaded && !secondImageUploaded && (
           <CldUploadButton
             options={{ maxFiles: 1 }}
             folder="images"
@@ -214,139 +234,138 @@ const ImageScan = ({ userId }) => {
             }
             uploadPreset="zoa1vsa7"
           >
-            <Button className="bg-sky-400">Upload Another Image</Button>
+            <Button variant="outline">Upload again</Button>
           </CldUploadButton>
         )}
-        {uploadedImage && (
-          <Button onClick={runClarifai} className="bg-sky-400">
-            Scan Image
-          </Button>
-        )}
       </div>
-      <div className="grid grid-cols-2 max-w-[90%] self-center gap-4">
-        <Card className="max-h-72 overflow-hidden">
-          {uploadedImage && (
-            <div className="overflow-hidden">
-              <img src={uploadedImage} alt="Uploaded" />
+      <div className="grid grid-cols-2 base-container self-center gap-8 w-full flex-1 mt-2">
+        {uploadedImage && (
+          <div className="col-span-1">
+            <div className="w-full h-full relative">
+              <Image
+                src={uploadedImage}
+                alt="Your uploaded photo"
+                fill
+                className="object-cover rounded object-top"
+              />
             </div>
-          )}
-        </Card>
-
-        <div>
-          {detectedItems.length > 0 && (
-            <div className="flex flex-col gap-3">
-              <Card className="flex flex-col mx-3 max-h-72 overflow-auto">
-                <h2 className="text-xl self-center font-bold my-2">
-                  Detected Items
-                </h2>
+          </div>
+        )}
+        {uploadedImage && detectedItems.length === 0 ? (
+          <div className="border border-dashed flex flex-col gap-1 items-center justify-center rounded p-8">
+            <p className="text-muted-foreground text-center">
+              Please note, your photo may be cropped for display purposes.
+            </p>
+            <p className="text-muted-foreground text-center">
+              All scanned items will appear here.
+            </p>
+            {scanningItem ? (
+              <AiOutlineLoading3Quarters className="animate-spin text-muted-foreground mt-4" />
+            ) : (
+              <Button onClick={runClarifai} className="bg-sky-400 mt-4">
+                Scan photo
+              </Button>
+            )}
+          </div>
+        ) : uploadedImage && detectedItems.length > 0 ? (
+          <div className="flex flex-col gap-8 h-full">
+            <Card className="flex flex-col max-h-72 overflow-hidden">
+              <CardHeader className="text-base-bold pb-2">
+                <CardTitle>Detected items</CardTitle>
+                <CardDescription
+                  className="text-small-medium"
+                  style={{ fontWeight: "400" }}
+                >
+                  <p className="text-muted-foreground">
+                    Tick to choose the items
+                  </p>
+                </CardDescription>
+              </CardHeader>
+              <div className="flex-1 overflow-y-scroll px-6">
                 <ul className="list-none p-0 m-0">
-                  {detectedItems
-                    .slice(
-                      currentPage * itemsPerPage,
-                      (currentPage + 1) * itemsPerPage
-                    )
-                    .map((item, index) => (
-                      <li
-                        key={item}
-                        className="flex items-center pl-4 py-2 border-b border-gray-300"
-                      >
-                        <input
-                          type="checkbox"
-                          id={`item-${index}`}
-                          checked={confirmedItems.has(item)}
-                          onChange={(e) =>
-                            e.target.checked
-                              ? handleItemCheck(item)
-                              : handleItemUncheck(item)
-                          }
-                          className="mr-2"
-                        />
-                        <label
-                          htmlFor={`item-${index}`}
-                          className="text-gray-700"
-                        >
-                          {item}
-                        </label>
-                      </li>
-                    ))}
-                </ul>
-                <div className="flex justify-between my-3 mx-3">
-                  <Button
-                    onClick={handlePrevPage}
-                    disabled={currentPage === 0}
-                    className="bg-sky-400 text-white rounded transition disabled:bg-gray-400 disabled:cursor-not-allowed"
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    onClick={handleNextPage}
-                    disabled={
-                      (currentPage + 1) * itemsPerPage >= detectedItems.length
-                    }
-                    className="bg-sky-400 text-white rounded transition disabled:bg-gray-400 disabled:cursor-not-allowed"
-                  >
-                    Next
-                  </Button>
-                </div>
-              </Card>
-              <Card className="flex flex-col mx-3 mb-3">
-                <h2 className="text-xl self-center font-bold my-2">
-                  Confirmed Items
-                </h2>
-                <ul className="list-none p-0 m-0">
-                  {[...confirmedItems].map((item) => (
+                  {detectedItems.map((item, index) => (
                     <li
                       key={item}
-                      className="py-2 border-b pl-4 border-gray-300"
+                      className={`flex items-center ${
+                        index !== detectedItems.length - 1
+                          ? "border-b border-gray-300 py-2"
+                          : "pt-2 pb-3"
+                      }`}
                     >
-                      {item}
+                      <input
+                        type="checkbox"
+                        id={`item-${index}`}
+                        checked={confirmedItems.has(item)}
+                        onChange={(e) =>
+                          e.target.checked
+                            ? handleItemCheck(item)
+                            : handleItemUncheck(item)
+                        }
+                        className="mr-2"
+                      />
+                      <label
+                        htmlFor={`item-${index}`}
+                        className="text-gray-700"
+                      >
+                        {item}
+                      </label>
                     </li>
                   ))}
                 </ul>
-                {confirmedItems.size > 0 && (
-                  <div className="mt-4 pl-4 mb-2">
-                    <input
-                      type="checkbox"
-                      id="useReplicate"
-                      checked={useReplicate}
-                      onChange={(e) => setUseReplicate(e.target.checked)}
-                      className="mr-2"
-                    />
-                    <label htmlFor="useReplicate" className="text-gray-700">
-                      Use Replicate to generate image?
-                    </label>
-                    <div className="mt-2">
-                      <input
-                        type="checkbox"
-                        id="useCloudinary"
-                        checked={useCloudinary}
-                        onChange={(e) => setUseCloudinary(e.target.checked)}
-                        className="mr-2"
-                      />
-                      <label htmlFor="useCloudinary" className="text-gray-700">
-                        Upload another image?
-                      </label>
-                    </div>
+              </div>
+            </Card>
+            <Card className="flex flex-col flex-1 overflow-hidden">
+              <CardHeader className="text-base-bold">
+                <CardTitle>Confirmed items</CardTitle>
+              </CardHeader>
+              <div className="flex-1 overflow-y-scroll px-6 max-h-64">
+                {[...confirmedItems].length === 0 ? (
+                  <div className="h-full flex flex-col justify-center">
+                    <p className="text-center text-muted-foreground">
+                      Please choose at least one item.
+                    </p>
                   </div>
+                ) : (
+                  <ul className="list-none p-0 m-0">
+                    {[...confirmedItems].reverse().map((item, index) => (
+                      <li
+                        key={item}
+                        className={`flex items-center ${
+                          index !== [...confirmedItems].length - 1
+                            ? "border-b border-gray-300 py-2"
+                            : "pt-2 pb-4"
+                        }`}
+                      >
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
                 )}
-
-                <Dialog>
-                  <DialogTrigger>
-                    <Button
-                      onClick={redirectToConfirmationPage}
-                      className=" bg-sky-400 mb-4 w-[93%]"
-                    >
-                      Go to Confirmation Page
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="min-w-[80%] min-h-fit overflow-auto">
-                    <ConfirmationPage userId={userId}></ConfirmationPage>
-                  </DialogContent>
-                </Dialog>
-              </Card>
-            </div>
-          )}
-        </div>
+              </div>
+              {/* <Dialog>
+                    <DialogTrigger>
+                      <Button
+                        onClick={redirectToConfirmationPage}
+                        className=" bg-sky-400 mb-4 w-[93%]"
+                        disabled={[...confirmedItems].length === 0}
+                      >
+                        Go to confirmation page
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="min-w-[80%] min-h-fit overflow-auto">
+                      <ConfirmationPage userId={userId}></ConfirmationPage>
+                    </DialogContent>
+                  </Dialog> */}
+              <Button
+                onClick={redirectToConfirmationPage}
+                className="bg-sky-400 mx-6 mt-auto mb-4"
+                disabled={[...confirmedItems].length === 0}
+              >
+                Go to confirmation page
+              </Button>
+            </Card>
+          </div>
+        ) : null}
       </div>
     </div>
   );

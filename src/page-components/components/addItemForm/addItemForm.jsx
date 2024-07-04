@@ -19,8 +19,14 @@ import { Badge } from "@/components/ui/badge";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { height } from "@mui/system";
+import Breadcrumbs from "@/components/ui/breadcrumbs";
+import Image from "next/image";
 
-export default function AddItem({ userId }) {
+export default function AddItem({
+  userId,
+  itemsFromQuery,
+  externalImageSource,
+}) {
   const [uploadedUrl, setUploadedUrl] = useState("");
   const [itemName, setName] = useState("");
   const [emoji, setEmoji] = useState("");
@@ -40,6 +46,8 @@ export default function AddItem({ userId }) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false); // Loading state
   const { currentUser } = useSelector((state) => state.user);
+
+  const parseFoodItems = itemsFromQuery ? JSON.parse(itemsFromQuery) : [];
 
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -158,7 +166,13 @@ export default function AddItem({ userId }) {
           cache: "no-store",
         });
         const data = await res.json();
-        setFoodItems(data.foods);
+        const filteredData =
+          parseFoodItems.length === 0
+            ? data.foods
+            : data.foods.filter((foodItem) =>
+                parseFoodItems.includes(foodItem.name.toLowerCase())
+              );
+        setFoodItems(filteredData);
       } catch (error) {
         console.error("Error fetching food data:", error);
       }
@@ -304,7 +318,7 @@ export default function AddItem({ userId }) {
         toast.success(
           `Create Basket Successfully. You earn total: ${totalPoints} Points`
         );
-        router.push(`/${currentUser?.username}`);
+        router.push(`/profile?username=${currentUser?.username}`);
       } else {
         throw new Error("Failed to create a basket");
       }
@@ -316,16 +330,34 @@ export default function AddItem({ userId }) {
 
   return (
     <div className="flex flex-col overflow-hidden h-screen">
-      <div className="flex flex-1 flex-col items-center gap-2 overflow-y-scroll pb-4">
+      <div className="base-container flex flex-1 flex-col gap-2 overflow-y-scroll pb-4 pt-6">
         <ToastContainer />
-        <h1
-          className="self-start font-bold text-gray-700 mt-2 mb-4 ml-8"
-          style={{ fontSize: "20px" }}
-        >
-          Add Donation Manually🚀
-        </h1>
+        {itemsFromQuery ? (
+          <span
+            role="button"
+            className="text-small-medium flex items-center gap-2"
+            onClick={() => router.back()}
+          >
+            <span className="text-muted-foreground">‹</span>
+            Back to scan
+          </span>
+        ) : (
+          <Breadcrumbs
+            crumbs={[
+              {
+                title: "Profile",
+                href: `/profile?username=${currentUser?.username}`,
+              },
+              { title: "Add Donation" },
+            ]}
+            className="text-small-medium"
+          />
+        )}
 
-        <div className="grid grid-cols-2 self-center gap-10">
+        <h1 className="text-heading2-bold mt-2 mb-4">
+          {itemsFromQuery ? "Confirm your items" : "Add a Donation"}
+        </h1>
+        <div className="grid grid-cols-2 self-center gap-10 w-full">
           <Card className="flex flex-col h-fit w-full">
             <form onSubmit={handleSubmit} className="p-5 bg-white rounded-lg">
               {/* Always show title and description fields */}
@@ -345,7 +377,7 @@ export default function AddItem({ userId }) {
                 />
               </div>
 
-              <div className="flex flex-row gap-4 mb-3">
+              <div className="grid grid-cols-2 gap-4 mb-3">
                 <div className="flex flex-col gap-2">
                   <label
                     htmlFor="expirationDate"
@@ -358,7 +390,7 @@ export default function AddItem({ userId }) {
                     selected={expirationDate}
                     onChange={(date) => setExpirationDate(date)}
                     dateFormat="MM/dd/yyyy"
-                    className="h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors"
+                    className="h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors grow w-full"
                     placeholderText="Choose a date"
                   />
                 </div>
@@ -416,17 +448,17 @@ export default function AddItem({ userId }) {
                 className="bg-gray-200 rounded-lg shadow-lg h-72 mb-3"
               ></div>
               <div className="flex flex-row justify-between">
-                <a
-                  href="#"
+                <span
+                  role="button"
                   onClick={handleGetUserLocation}
-                  className="text-small-medium text-muted underline pt-0"
+                  className="text-small-medium text-muted-foreground hover:underline pt-0"
                 >
                   Get my location
-                </a>
+                </span>
                 <Button
                   type="button"
                   onClick={handleAddItem}
-                  className="w-fit justify-center shadow-md  text-white bg-sky-400 mt-4 px-4 rounded-lg"
+                  className="w-fit justify-center shadow-md text-white bg-sky-400 mt-4 px-4 rounded-lg"
                 >
                   Add Item
                 </Button>
@@ -438,36 +470,36 @@ export default function AddItem({ userId }) {
             <div className="mb-2">
               <div className="flex flex-col gap-2 mb-3">
                 <p className="font-medium text-gray-700">Basket image</p>
-                <CldUploadButton
-                  className="flex flex-col w-full"
-                  options={{ maxFiles: 1 }}
-                  folder="images"
-                  onSuccess={handleUploadSuccess}
-                  onFailure={(error) =>
-                    console.error("Cloudinary upload error:", error)
-                  }
-                  uploadPreset="zoa1vsa7"
-                >
-                  <div className="flex flex-row justify-start gap-1">
-                    <p className="text-small-medium text-gray-700">
-                      Upload image
-                    </p>
-                    <IoCloudUploadOutline size={22} />
-                  </div>
-                </CldUploadButton>
-                {/* <p className="text-gray-700 font-normal">
-                Please upload your image to make your donation standout
-              </p> */}
+                {!externalImageSource && (
+                  <CldUploadButton
+                    className="flex flex-col w-full"
+                    options={{ maxFiles: 1 }}
+                    folder="images"
+                    onSuccess={handleUploadSuccess}
+                    onFailure={(error) =>
+                      console.error("Cloudinary upload error:", error)
+                    }
+                    uploadPreset="zoa1vsa7"
+                  >
+                    <div className="flex flex-row justify-start gap-1">
+                      <p className="text-small-medium text-gray-700">
+                        Upload image
+                      </p>
+                      <IoCloudUploadOutline size={22} />
+                    </div>
+                  </CldUploadButton>
+                )}
               </div>
-
-              {uploadedUrl && (
-                <img
-                  className="border-2 rounded-lg w-32 h-32 mb-2 overflow-hidden object-contain"
-                  src={uploadedUrl}
-                  alt="uploaded"
-                />
+              {(uploadedUrl || externalImageSource) && (
+                <div className="w-32 h-32 rounded relative mb-2">
+                  <Image
+                    fill
+                    className="object-cover object-top"
+                    src={uploadedUrl || externalImageSource}
+                    alt="Photo of basket"
+                  />
+                </div>
               )}
-
               <div className="flex flex-col gap-2 mb-3">
                 <label
                   htmlFor="basketTitle"
@@ -535,7 +567,7 @@ export default function AddItem({ userId }) {
       </div>
       <footer className="sticky bottom-0 bg-white border-t-2 w-full p-6 shadow-md">
         <div className="flex flex-row justify-end gap-4">
-          <Link href={`/${currentUser?.username}`}>
+          <Link href={`/profile?username=${currentUser?.username}`}>
             <Button className="w-fit bg-slate-100 text-gray-700 hover:bg-slate-200 rounded-lg">
               Cancel
             </Button>

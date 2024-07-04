@@ -6,12 +6,24 @@ import io from "socket.io-client";
 import styles from "./VideoScan.module.css";
 import { useImage } from "@/lib/ImageContext";
 import { CldUploadButton } from "next-cloudinary";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { RxCross2 } from "react-icons/rx";
+import AddItem from "../addItemForm/addItemForm";
+import Breadcrumbs from "@/components/ui/breadcrumbs";
+import { useSelector } from "react-redux";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 let socket;
 
-const VideoScan = () => {
+const VideoScan = ({ userId }) => {
   const { setImageUrl } = useImage();
   const [connected, setConnected] = useState(false);
   const [processing, setProcessing] = useState(false);
@@ -23,6 +35,10 @@ const VideoScan = () => {
   const [error, setError] = useState(null);
   const [generatedImageUrl, setGeneratedImageUrl] = useState(null); // Renamed state variable
   const router = useRouter();
+  const { currentUser } = useSelector((state) => state.user);
+  const [beginCamera, setBeginCamera] = useState(false);
+
+  const { confirmedItems: confirmedItemsFromQuery } = router.query;
 
   useEffect(() => {
     socket = io("http://localhost:5000");
@@ -46,6 +62,7 @@ const VideoScan = () => {
 
   const startVideo = () => {
     if (connected) {
+      setBeginCamera(true);
       setProcessing(true);
       socket.emit("start_video");
     }
@@ -121,17 +138,17 @@ const VideoScan = () => {
   };
 
   const navigateToConfirmation = async () => {
-    if (confirmedItems.length > 0 && generatedImageUrl == null) {
-      if (uploadImageChecked) {
-        // Handle upload image logic here
-        console.log("Upload image checked");
-      } else {
-        const prompt = `Generate an image that includes the following items: ${confirmedItems.join(
-          ", "
-        )}`;
-        generateReplicateImage(prompt);
-      }
-    }
+    // if (confirmedItems.length > 0 && generatedImageUrl == null) {
+    //   if (uploadImageChecked) {
+    //     // Handle upload image logic here
+    //     console.log("Upload image checked");
+    //   } else {
+    //     const prompt = `Generate an image that includes the following items: ${confirmedItems.join(
+    //       ", "
+    //     )}`;
+    //     generateReplicateImage(prompt);
+    //   }
+    // }
     setProcessing(false);
     socket.emit("stop_video");
     router.push({
@@ -146,101 +163,177 @@ const VideoScan = () => {
     setGeneratedImageUrl(uploadedUrl);
   };
 
-  return (
-    <div className={styles.videoScanContainer}>
-      <h1 className={styles.title}>Real-Time Object Detection</h1>
-      <div className={styles.buttons}>
-        <button
+  return confirmedItemsFromQuery ? (
+    <AddItem userId={userId} itemsFromQuery={confirmedItemsFromQuery} />
+  ) : (
+    <div className="flex flex-col gap-6 overflow-auto h-full pb-16">
+      <div className="base-container">
+        <Breadcrumbs
+          crumbs={[
+            {
+              title: "Profile",
+              href: `/profile?username=${currentUser?.username}`,
+            },
+            { title: "Add Donation With Video" },
+          ]}
+          className="text-small-medium mt-8"
+        />
+      </div>
+      <div className="mx-auto flex flex-col items-center gap-2 mt-6">
+        <h1 className="text-heading2-bold text-gray-700">Scan with video</h1>
+        <p className="text-body-medium font-normal">
+          We will detect items from your webcam and use them to create a
+          donation.
+        </p>
+        <p className="text-muted-foreground">
+          Want a different way? Try creating manually or do a image scan.
+        </p>
+      </div>
+      <div className="flex items-center gap-2 mx-auto">
+        <Button
+          className="bg-sky-400 hover:bg-sky-500"
           onClick={startVideo}
           disabled={processing}
-          className={styles.startButton}
         >
-          {processing ? "Scanning..." : "Start Video"}
-        </button>
-        <button
+          {processing ? "Scanning..." : "Start camera"}
+        </Button>
+        <Button
+          variant="destructive"
           onClick={stopVideo}
           disabled={!processing}
-          className={styles.stopButton}
         >
-          Stop Video
-        </button>
+          Pause camera
+        </Button>
       </div>
-      <div className={styles.videoContainer}>
-        <img ref={videoRef} alt="Video Stream" className={styles.videoStream} />
-      </div>
-      <div className={styles.detectedItems}>
-        <h2>Detected Items</h2>
-        <ul>
-          {detectedItems.map((item, index) => (
-            <li key={index}>
-              <input
-                type="checkbox"
-                id={`item-${index}`}
-                onChange={(e) =>
-                  e.target.checked
-                    ? handleItemCheck(item)
-                    : handleItemUncheck(item)
-                }
+      <div className="grid grid-cols-2 base-container self-center gap-8 w-full flex-1 mt-2">
+        {/* <div className={styles.videoContainer}>
+          <img
+            ref={videoRef}
+            src="https://images.pexels.com/photos/1132047/pexels-photo-1132047.jpeg"
+            alt="Video Stream"
+            className={styles.videoStream}
+          />
+        </div> */}
+        <div className="col-span-1">
+          {!beginCamera ? (
+            <div className="h-full border border-dashed flex flex-col gap-1 items-center justify-center rounded p-8">
+              <p className="text-muted-foreground text-center">
+                When you start the camera, the live view will be here.
+              </p>
+              <Button
+                className="bg-sky-400 hover:bg-sky-500 mt-4"
+                onClick={startVideo}
+              >
+                Start camera
+              </Button>
+            </div>
+          ) : (
+            <div className="w-full h-full relative">
+              <Image
+                src="https://images.pexels.com/photos/1132047/pexels-photo-1132047.jpeg"
+                alt="Your uploaded photo"
+                fill
+                className="object-cover rounded object-top"
               />
-              <label htmlFor={`item-${index}`}>{item}</label>
-            </li>
-          ))}
-        </ul>
-      </div>
-      <div className={styles.confirmedItems}>
-        <h2>Confirmed Items</h2>
-        <ul>
-          {confirmedItems.map((item, index) => (
-            <li key={index} className={styles.confirmedItem}>
-              <div className={styles.confirmedItemContent}>
-                <span>{item}</span>
-                <button
-                  onClick={() => handleRemoveItem(item)}
-                  className={styles.removeButton}
-                >
-                  Remove
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
-        <div className={styles.uploadReplicateSection}>
-          <div className={styles.checkboxContainer}>
-            <input
-              type="checkbox"
-              id="uploadImageCheckbox"
-              checked={uploadImageChecked}
-              onChange={handleCheckboxChange}
-            />
-            <label htmlFor="uploadImageCheckbox">Upload Image</label>
-          </div>
-          {uploadImageChecked && (
-            <CldUploadButton
-              options={{ maxFiles: 1 }}
-              folder="images"
-              onSuccess={handleUploadSuccess}
-              onFailure={(error) =>
-                console.error("Cloudinary upload error:", error)
-              }
-              uploadPreset="zoa1vsa7"
-            >
-              <div className={styles.uploadButton}>Upload Image</div>
-            </CldUploadButton>
+            </div>
           )}
-          <p className={styles.orText}>or</p>
-          <button
-            onClick={navigateToConfirmation}
-            className={styles.replicateButton}
-          >
-            Use Replicate to Generate
-          </button>
         </div>
-        <button
-          onClick={navigateToConfirmation}
-          className={styles.confirmButton}
-        >
-          Go to Confirmation Page
-        </button>
+        <div className="flex flex-col gap-8 h-full">
+          <Card className="flex flex-col max-h-72 h-[35%] overflow-hidden">
+            <CardHeader className="text-base-bold pb-2">
+              <CardTitle>Detected items</CardTitle>
+              <CardDescription
+                className="text-small-medium"
+                style={{ fontWeight: "400" }}
+              >
+                <p className="text-muted-foreground">
+                  Tick to choose the items
+                </p>
+              </CardDescription>
+            </CardHeader>
+            <div className="flex-1 overflow-y-scroll px-6">
+              {confirmedItems.length === 0 ? (
+                <div className="h-full w-full flex items-center justify-center">
+                  <p className="text-center text-muted-foreground">
+                    When detected, the items will automatically appear here.
+                  </p>
+                </div>
+              ) : (
+                <ul className="list-none p-0 m-0">
+                  {confirmedItems.map((item, index) => (
+                    <li
+                      key={index}
+                      className={`flex items-center ${
+                        index !== detectedItems.length - 1
+                          ? "border-b border-gray-300 py-2"
+                          : "pt-2 pb-3"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        id={`item-${index}`}
+                        checked={confirmedItems.has(item)}
+                        onChange={(e) =>
+                          e.target.checked
+                            ? handleItemCheck(item)
+                            : handleItemUncheck(item)
+                        }
+                        className="mr-2"
+                      />
+                      <label
+                        htmlFor={`item-${index}`}
+                        className="text-gray-700"
+                      >
+                        {item}
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </Card>
+          <Card className="flex flex-col flex-1 overflow-hidden">
+            <CardHeader className="text-base-bold">
+              <CardTitle>Confirmed items</CardTitle>
+            </CardHeader>
+            <div className="flex-1 overflow-y-scroll px-6 max-h-64">
+              {confirmedItems.length === 0 ? (
+                <div className="h-full flex flex-col justify-center">
+                  <p className="text-center text-muted-foreground">
+                    Please choose at least one item.
+                  </p>
+                </div>
+              ) : (
+                <ul className="list-none p-0 m-0">
+                  {confirmedItems.map((item, index) => (
+                    <li
+                      key={item}
+                      className={`flex items-center gap-2 ${
+                        index !== confirmedItems.length - 1
+                          ? "border-b border-gray-300 py-2"
+                          : "pt-2 pb-4"
+                      }`}
+                    >
+                      <RxCross2
+                        className="text-red-500"
+                        role="button"
+                        onClick={() => handleRemoveItem(item)}
+                      />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <Button
+              onClick={navigateToConfirmation}
+              className="bg-sky-400 mx-6 mt-auto mb-4"
+              disabled={confirmedItems.length === 0}
+            >
+              Go to confirmation page
+            </Button>
+          </Card>
+        </div>
       </div>
     </div>
   );
