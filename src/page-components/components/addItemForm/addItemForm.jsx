@@ -3,14 +3,13 @@ import mapboxgl from "mapbox-gl";
 import { useRouter } from "next/router";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import styles from "./AddItemForm.module.css";
 import Select from "react-select";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { HiOutlineTrash } from "react-icons/hi";
+import { CiTrash } from "react-icons/ci";
 import { CldUploadButton } from "next-cloudinary";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { POINTS } from "@/lib/utils";
@@ -18,9 +17,15 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { IoCloudUploadOutline } from "react-icons/io5";
 import { useSelector } from "react-redux";
-import { height } from "@mui/system";
+import { TiDeleteOutline } from "react-icons/ti";
+import Image from "next/image";
+import Breadcrumbs from "@/components/ui/breadcrumbs";
 
-export default function AddItem({ userId }) {
+export default function AddItem({
+  userId,
+  itemsFromQuery,
+  externalImageSource,
+}) {
   const [uploadedUrl, setUploadedUrl] = useState("");
   const [itemName, setName] = useState("");
   const [emoji, setEmoji] = useState("");
@@ -40,6 +45,7 @@ export default function AddItem({ userId }) {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false); // Loading state
   const { currentUser } = useSelector((state) => state.user);
+  const parseFoodItems = itemsFromQuery ? JSON.parse(itemsFromQuery) : [];
 
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -158,7 +164,13 @@ export default function AddItem({ userId }) {
           cache: "no-store",
         });
         const data = await res.json();
-        setFoodItems(data.foods);
+        const filteredData =
+          parseFoodItems.length === 0
+            ? data.foods
+            : data.foods.filter((foodItem) =>
+                parseFoodItems.includes(foodItem.name.toLowerCase())
+              );
+        setFoodItems(filteredData);
       } catch (error) {
         console.error("Error fetching food data:", error);
       }
@@ -250,6 +262,10 @@ export default function AddItem({ userId }) {
     }
   };
 
+  const handleRemoveImage = () => {
+    setUploadedUrl(!uploadedUrl);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -296,7 +312,7 @@ export default function AddItem({ userId }) {
           description,
           title,
           location: userAddress,
-          image: uploadedUrl,
+          image: uploadedUrl || externalImageSource,
           points: totalPoints,
         }),
       });
@@ -316,16 +332,35 @@ export default function AddItem({ userId }) {
 
   return (
     <div className="flex flex-col overflow-hidden h-screen">
-      <div className="flex flex-1 flex-col items-center gap-2 overflow-y-scroll pb-4">
+      <div className="base-container flex flex-1 flex-col gap-2 overflow-y-scroll pb-4 pt-6">
         <ToastContainer />
-        <h1
-          className="self-start font-bold text-gray-700 mt-2 mb-4 ml-8"
-          style={{ fontSize: "20px" }}
-        >
-          Add Donation Manually🚀
+        {itemsFromQuery ? (
+          <span
+            role="button"
+            className="text-small-medium flex items-center gap-2"
+            onClick={() => router.back()}
+          >
+            <span className="text-muted-foreground">‹</span>
+            Back to scan
+          </span>
+        ) : (
+          <Breadcrumbs
+            crumbs={[
+              {
+                title: "Profile",
+                href: `/profile?username=${currentUser?.username}`,
+              },
+              { title: "Add Donation" },
+            ]}
+            className="text-small-medium"
+          />
+        )}
+
+        <h1 className="text-heading2-bold mt-2 mb-4">
+          {itemsFromQuery ? "Confirm your items" : "Add a Donation"}
         </h1>
 
-        <div className="grid grid-cols-2 self-center gap-10">
+        <div className="grid grid-cols-2 w-full self-center gap-10">
           <Card className="flex flex-col h-fit w-full">
             <form onSubmit={handleSubmit} className="p-5 bg-white rounded-lg">
               {/* Always show title and description fields */}
@@ -345,7 +380,7 @@ export default function AddItem({ userId }) {
                 />
               </div>
 
-              <div className="flex flex-row gap-4 mb-3">
+              <div className="grid grid-cols-2 gap-4 mb-3">
                 <div className="flex flex-col gap-2">
                   <label
                     htmlFor="expirationDate"
@@ -358,7 +393,7 @@ export default function AddItem({ userId }) {
                     selected={expirationDate}
                     onChange={(date) => setExpirationDate(date)}
                     dateFormat="MM/dd/yyyy"
-                    className="h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors"
+                    className="h-9 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors grow w-full"
                     placeholderText="Choose a date"
                   />
                 </div>
@@ -416,13 +451,13 @@ export default function AddItem({ userId }) {
                 className="bg-gray-200 rounded-lg shadow-lg h-72 mb-3"
               ></div>
               <div className="flex flex-row justify-between">
-                <a
-                  href="#"
+                <span
+                  role="button"
                   onClick={handleGetUserLocation}
-                  className="text-small-medium text-muted underline pt-0"
+                  className="text-small-medium text-muted-foreground hover:underline pt-0"
                 >
                   Get my location
-                </a>
+                </span>
                 <Button
                   type="button"
                   onClick={handleAddItem}
@@ -434,38 +469,45 @@ export default function AddItem({ userId }) {
             </form>
           </Card>
 
-          <Card className="flex flex-col overflow-y-auto h-fit w-full p-5">
+          <Card className="flex flex-col overflow-y-auto h-fit w-full pt-5 px-5 pb-4">
             <div className="mb-2">
               <div className="flex flex-col gap-2 mb-3">
                 <p className="font-medium text-gray-700">Basket image</p>
-                <CldUploadButton
-                  className="flex flex-col w-full"
-                  options={{ maxFiles: 1 }}
-                  folder="images"
-                  onSuccess={handleUploadSuccess}
-                  onFailure={(error) =>
-                    console.error("Cloudinary upload error:", error)
-                  }
-                  uploadPreset="zoa1vsa7"
-                >
-                  <div className="flex flex-row justify-start gap-1">
-                    <p className="text-small-medium text-gray-700">
-                      Upload image
-                    </p>
-                    <IoCloudUploadOutline size={22} />
-                  </div>
-                </CldUploadButton>
-                {/* <p className="text-gray-700 font-normal">
-                Please upload your image to make your donation standout
-              </p> */}
+                {!externalImageSource && (
+                  <CldUploadButton
+                    className="flex flex-col w-full"
+                    options={{ maxFiles: 1 }}
+                    folder="images"
+                    onSuccess={handleUploadSuccess}
+                    onFailure={(error) =>
+                      console.error("Cloudinary upload error:", error)
+                    }
+                    uploadPreset="zoa1vsa7"
+                  >
+                    <div className="flex flex-row justify-start gap-1">
+                      <p className="text-small-medium text-gray-700">
+                        Upload image
+                      </p>
+                      <IoCloudUploadOutline size={22} />
+                    </div>
+                  </CldUploadButton>
+                )}
               </div>
 
-              {uploadedUrl && (
-                <img
-                  className="border-2 rounded-lg w-32 h-32 mb-2 overflow-hidden object-contain"
-                  src={uploadedUrl}
-                  alt="uploaded"
-                />
+              {(uploadedUrl || externalImageSource) && (
+                <div className="flex flex-row justify-start gap-1">
+                  <div className="w-32 h-32 rounded relative mb-2">
+                    <Image
+                      fill
+                      className="object-cover object-top"
+                      src={uploadedUrl || externalImageSource}
+                      alt="Photo of basket"
+                    />
+                  </div>
+                  <a href="#" onClick={handleRemoveImage}>
+                    <TiDeleteOutline size={24} />
+                  </a>
+                </div>
               )}
 
               <div className="flex flex-col gap-2 mb-3">
@@ -497,34 +539,40 @@ export default function AddItem({ userId }) {
                   onChange={(e) => setDescription(e.target.value)}
                   className="w-full border-2 rounded-lg p-2"
                   type="text"
+                  placeholder="Please provide input for the basket description"
                 />
               </div>
             </div>
 
             <h3 className="text-lg font-medium mb-2 text-gray-700">
-              Items in basket
+              Items in basket {"("}
+              {items.length}
+              {")"}
             </h3>
             {items.map((item, index) => (
               <div
                 key={index}
-                className="border border-gray-300 rounded-lg p-1 mb-4 self-center gap-2 w-full"
+                className="border border-gray-300 rounded-lg p-1 mb-2 self-center gap-3 w-full"
               >
-                <div className="flex flex-row justify-between">
-                  <div className="flex-grow mb-2">
-                    <Badge className="bg-emerald-100 text-gray-700 mt-2 ml-2">
-                      {item.itemName} {item.emoji}
+                <div className="flex flex-row justify-between p-1">
+                  <div className="flex flex-row justify-start gap-2">
+                    <Badge className="bg-emerald-100 flex items-center w-fit h-fit m-2">
+                      {item.emoji}
                     </Badge>
-                    <p className="text-gray-600 ml-4 mt-2">
-                      {item.quantity} - Expires on{" "}
-                      {item.expirationDate.toLocaleDateString()}
-                    </p>
+                    <div className="flex flex-col">
+                      <p className="text-gray-700 text-base-medium">
+                        {item.itemName}
+                      </p>
+                      <p className="text-gray-600">
+                        {item.quantity} - Expires on{" "}
+                        {item.expirationDate.toLocaleDateString()}
+                      </p>
+                    </div>
                   </div>
+
                   <div className="flex items-center">
-                    <a
-                      onClick={() => handleRemoveItem(index)}
-                      className="mr-4 hover:bg-slate-400"
-                    >
-                      <HiOutlineTrash size="25" style={{ color: "8585AB" }} />
+                    <a onClick={() => handleRemoveItem(index)} className="mr-2">
+                      <CiTrash size="25" style={{ color: "8585AB" }} />
                     </a>
                   </div>
                 </div>
@@ -536,7 +584,7 @@ export default function AddItem({ userId }) {
       <footer className="sticky bottom-0 bg-white border-t-2 w-full p-6 shadow-md">
         <div className="flex flex-row justify-end gap-4">
           <Link href={`/${currentUser?.username}`}>
-            <Button className="w-fit bg-slate-100 text-gray-700 hover:bg-slate-200 rounded-lg">
+            <Button className="w-fit bg-slate-100 text-gray-700 hover:bg-slate-300 rounded-lg">
               Cancel
             </Button>
           </Link>

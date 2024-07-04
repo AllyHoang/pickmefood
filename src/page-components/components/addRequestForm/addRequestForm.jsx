@@ -3,14 +3,20 @@ import mapboxgl from "mapbox-gl";
 import { useRouter } from "next/router";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import styles from "./AddRequestForm.module.css";
 import Select from "react-select";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { HiOutlineTrash } from "react-icons/hi";
+import { TiDeleteOutline } from "react-icons/ti";
+import { Badge } from "@/components/ui/badge";
+import { IoCloudUploadOutline } from "react-icons/io5";
+import { useSelector } from "react-redux";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { CldUploadButton } from "next-cloudinary";
+import Link from "next/link";
+import { CiTrash } from "react-icons/ci";
+
+import DatePicker from "react-datepicker";
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -33,6 +39,7 @@ export default function AddRequest({ userId }) {
   const router = useRouter();
   const [prediction, setPrediction] = useState(null);
   const [error, setError] = useState(null);
+  const { currentUser } = useSelector((state) => state.user);
 
   mapboxgl.accessToken =
     "pk.eyJ1IjoicGlja21lZm9vZCIsImEiOiJjbHZwbHdyMzgwM2hmMmtvNXJ6ZHU2NXh3In0.aITfZvPY-sKGwepyPVPGOg";
@@ -319,7 +326,9 @@ export default function AddRequest({ userId }) {
     setQuantity("");
     setSelectedOption(null);
   };
-
+  const handleRemoveImage = () => {
+    setUploadedUrl(!uploadedUrl);
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -364,7 +373,7 @@ export default function AddRequest({ userId }) {
 
       if (res.ok) {
         toast.success("Create Request Successfully");
-        // router.push("/dashboard");
+        router.push(`/${currentUser?.username}`);
       } else {
         throw new Error("Failed to create request");
       }
@@ -375,168 +384,381 @@ export default function AddRequest({ userId }) {
   };
 
   return (
-    <div className="flex flex-col items-center p-2 gap-2 overflow-auto">
-      <ToastContainer />
-      <h1
-        className="self-start font-bold text-gray-700 mb-4"
-        style={{ fontSize: "22px" }}
-      >
-        Add Request🤲
-      </h1>
+    // <div className="flex flex-col items-center p-2 gap-2 overflow-auto">
+    //   <ToastContainer />
+    //   <h1
+    //     className="self-start font-bold text-gray-700 mb-4"
+    //     style={{ fontSize: "22px" }}
+    //   >
+    //     Add Request🤲
+    //   </h1>
 
-      <div className="grid grid-cols-2 w-[90%] self-center gap-8">
-        <Card className="flex flex-col h-fit w-full">
-          <form onSubmit={handleSubmit} className="p-5 bg-white rounded-lg">
-            <label htmlFor="name" className="font-bold text-gray-700 mb-2">
-              Item name:
-            </label>
-            <Select
-              options={foodItems.map((item) => ({
-                value: item.name,
-                label: item.name,
-              }))}
-              value={selectedOption}
-              onChange={handleItemChange}
-              className="w-full mb-4"
-            />
-            <label htmlFor="quantity" className="font-bold text-gray-700 mb-2">
-              Item quantity:
-            </label>
-            <Input
-              id="quantity"
-              value={quantity}
-              onChange={(e) => setQuantity(e.target.value)}
-              className="w-full mb-4"
-              type="text"
-              placeholder="Ex: 1,2"
-            />
-            <label
-              htmlFor="userAddress"
-              className="font-bold text-gray-700 mb-2"
-            >
-              Your Address:
-            </label>
-            <Input
-              id="userAddress"
-              value={userAddress}
-              onChange={handleAddressChange}
-              className="w-full mb-4"
-              type="text"
-              placeholder="Enter your address"
-            />
-            <ul className="bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto mb-4">
-              {addressSuggestions.map((address, index) => (
-                <li
-                  key={index}
-                  onClick={() => handleSuggestionClick(address)}
-                  className="p-2 cursor-pointer hover:bg-gray-100"
-                >
-                  {address}
-                </li>
-              ))}
-            </ul>
-            <div
-              id="map"
-              className="bg-gray-200 rounded-lg shadow-lg h-72 mb-4"
-            ></div>
-            <div className="flex flex-row gap-6">
-              <Button
-                type="button"
-                onClick={handleGetUserLocation}
-                className="w-1/2 bg-sky-400 shadow-md shadow-sky-500/50 text-white py-2 px-4 rounded mb-4"
-              >
-                Get My Location
-              </Button>
-              <Button
-                type="button"
-                onClick={handleAddItem}
-                className="w-1/2 justify-center bg-sky-400 shadow-md shadow-sky-500/50 text-white py-2 px-4 rounded"
-              >
-                Add Request
-              </Button>
-            </div>
-          </form>
-        </Card>
+    //   <div className="grid grid-cols-2 w-[90%] self-center gap-8">
+    //     <Card className="flex flex-col h-fit w-full">
+    //       <form onSubmit={handleSubmit} className="p-5 bg-white rounded-lg">
+    //         <label htmlFor="name" className="font-bold text-gray-700 mb-2">
+    //           Item name:
+    //         </label>
+    //         <Select
+    //           options={foodItems.map((item) => ({
+    //             value: item.name,
+    //             label: item.name,
+    //           }))}
+    //           value={selectedOption}
+    //           onChange={handleItemChange}
+    //           className="w-full mb-4"
+    //         />
+    //         <label htmlFor="quantity" className="font-bold text-gray-700 mb-2">
+    //           Item quantity:
+    //         </label>
+    //         <Input
+    //           id="quantity"
+    //           value={quantity}
+    //           onChange={(e) => setQuantity(e.target.value)}
+    //           className="w-full mb-4"
+    //           type="text"
+    //           placeholder="Ex: 1,2"
+    //         />
+    //         <label
+    //           htmlFor="userAddress"
+    //           className="font-bold text-gray-700 mb-2"
+    //         >
+    //           Your Address:
+    //         </label>
+    //         <Input
+    //           id="userAddress"
+    //           value={userAddress}
+    //           onChange={handleAddressChange}
+    //           className="w-full mb-4"
+    //           type="text"
+    //           placeholder="Enter your address"
+    //         />
+    //         <ul className="bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto mb-4">
+    //           {addressSuggestions.map((address, index) => (
+    //             <li
+    //               key={index}
+    //               onClick={() => handleSuggestionClick(address)}
+    //               className="p-2 cursor-pointer hover:bg-gray-100"
+    //             >
+    //               {address}
+    //             </li>
+    //           ))}
+    //         </ul>
+    //         <div
+    //           id="map"
+    //           className="bg-gray-200 rounded-lg shadow-lg h-72 mb-4"
+    //         ></div>
+    //         <div className="flex flex-row gap-6">
+    //           <Button
+    //             type="button"
+    //             onClick={handleGetUserLocation}
+    //             className="w-1/2 bg-sky-400 shadow-md shadow-sky-500/50 text-white py-2 px-4 rounded mb-4"
+    //           >
+    //             Get My Location
+    //           </Button>
+    //           <Button
+    //             type="button"
+    //             onClick={handleAddItem}
+    //             className="w-1/2 justify-center bg-sky-400 shadow-md shadow-sky-500/50 text-white py-2 px-4 rounded"
+    //           >
+    //             Add Request
+    //           </Button>
+    //         </div>
+    //       </form>
+    //     </Card>
 
-        <Card className="flex flex-col overflow-y-auto h-fit w-full p-5">
-          <h3 className="text-lg font-bold mb-2 text-gray-700">
-            Items in Basket:
-          </h3>
-          <div className="mb-4">
-            <label
-              htmlFor="basketTitle"
-              className="font-bold text-gray-700 mb-2"
-            >
-              Basket title:
-            </label>
-            <Input
-              id="basketTitle"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full mb-2"
-              type="text"
-            />
-            <label
-              htmlFor="basketReason"
-              className="font-bold text-gray-700 mb-2"
-            >
-              Basket reason:
-            </label>
-            <Input
-              id="basketReason"
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              className="w-full mb-2"
-              type="text"
-            />
-          </div>
-          <CldUploadButton
-            className="flex flex-col w-full mb-4"
-            options={{ maxFiles: 1 }}
-            folder="images"
-            onSuccess={handleUploadSuccess}
-            onFailure={(error) =>
-              console.error("Cloudinary upload error:", error)
-            }
-            uploadPreset="zoa1vsa7"
-          >
-            <Button className="w-full bg-sky-400 shadow-md shadow-sky-500/50 text-white px-4 rounded">
-              Upload Image
-            </Button>
-          </CldUploadButton>
+    //     <Card className="flex flex-col overflow-y-auto h-fit w-full p-5">
+    //       <h3 className="text-lg font-bold mb-2 text-gray-700">
+    //         Items in Basket:
+    //       </h3>
+    //       <div className="mb-4">
+    //         <label
+    //           htmlFor="basketTitle"
+    //           className="font-bold text-gray-700 mb-2"
+    //         >
+    //           Basket title:
+    //         </label>
+    //         <Input
+    //           id="basketTitle"
+    //           value={title}
+    //           onChange={(e) => setTitle(e.target.value)}
+    //           className="w-full mb-2"
+    //           type="text"
+    //         />
+    //         <label
+    //           htmlFor="basketReason"
+    //           className="font-bold text-gray-700 mb-2"
+    //         >
+    //           Basket reason:
+    //         </label>
+    //         <Input
+    //           id="basketReason"
+    //           value={reason}
+    //           onChange={(e) => setReason(e.target.value)}
+    //           className="w-full mb-2"
+    //           type="text"
+    //         />
+    //       </div>
+    //       <CldUploadButton
+    //         className="flex flex-col w-full mb-4"
+    //         options={{ maxFiles: 1 }}
+    //         folder="images"
+    //         onSuccess={handleUploadSuccess}
+    //         onFailure={(error) =>
+    //           console.error("Cloudinary upload error:", error)
+    //         }
+    //         uploadPreset="zoa1vsa7"
+    //       >
+    //         <Button className="w-full bg-sky-400 shadow-md shadow-sky-500/50 text-white px-4 rounded">
+    //           Upload Image
+    //         </Button>
+    //       </CldUploadButton>
 
-          {items.map((item, index) => (
-            <div
-              key={index}
-              className="border border-gray-300 rounded-lg p-1 mb-4 self-center gap-2 w-[60%]"
-            >
-              <div className="flex-grow ml-4">
-                <p className="font-bold text-lg mb-2">
-                  {item.itemName} {item.emoji}
-                </p>
-                <p className="text-gray-600">Quantity: {item.quantity}</p>
+    //       {items.map((item, index) => (
+    //         <div
+    //           key={index}
+    //           className="border border-gray-300 rounded-lg p-1 mb-4 self-center gap-2 w-[60%]"
+    //         >
+    //           <div className="flex-grow ml-4">
+    //             <p className="font-bold text-lg mb-2">
+    //               {item.itemName} {item.emoji}
+    //             </p>
+    //             <p className="text-gray-600">Quantity: {item.quantity}</p>
+    //           </div>
+
+    //           <div className="flex flex-col">
+    //             <Button
+    //               onClick={() => handleRemoveItem(index)}
+    //               className="bg-black p-1 self-center"
+    //               style={{ width: "30px", height: "30px" }}
+    //             >
+    //               <HiOutlineTrash size="18" />
+    //             </Button>
+    //           </div>
+    //         </div>
+    //       ))}
+
+    //       <Button
+    //         onClick={handleSubmit}
+    //         className="w-full bg-sky-400 shadow-md shadow-sky-500/50 text-white px-4 rounded"
+    //       >
+    //         Submit Request
+    //       </Button>
+    //     </Card>
+    //   </div>
+    // </div>
+    <div className="flex flex-col overflow-hidden h-screen">
+      <div className="flex flex-1 flex-col items-center gap-2 overflow-y-scroll pb-4">
+        <ToastContainer />
+        <h1
+          className="self-start font-bold text-gray-700 mt-2 mb-4 ml-8"
+          style={{ fontSize: "20px" }}
+        >
+          Add Request🤲
+        </h1>
+        <div className="grid grid-cols-2 w-[95%] self-center gap-10">
+          <Card className="flex flex-col h-fit w-full">
+            <form onSubmit={handleSubmit} className="p-5 bg-white rounded-lg">
+              <div className="flex flex-col gap-2 mb-4">
+                <label htmlFor="name" className="font-medium text-gray-700">
+                  Item name
+                </label>
+                <Select
+                  options={foodItems.map((item) => ({
+                    value: item.name,
+                    label: item.name,
+                  }))}
+                  value={selectedOption}
+                  onChange={handleItemChange}
+                  className="w-full"
+                />
               </div>
-
-              <div className="flex flex-col">
-                <Button
-                  onClick={() => handleRemoveItem(index)}
-                  className="bg-black p-1 self-center"
-                  style={{ width: "30px", height: "30px" }}
+              <div className="flex flex-col gap-2 mb-2">
+                <label htmlFor="quantity" className="font-medium text-gray-700">
+                  Item quantity
+                </label>
+                <Input
+                  id="quantity"
+                  value={quantity}
+                  onChange={(e) => setQuantity(e.target.value)}
+                  className="w-full mb-2"
+                  type="number"
+                  placeholder="Ex: 1,2"
+                />
+              </div>
+              <div className="flex flex-col gap-2 mb-2">
+                <label
+                  htmlFor="userAddress"
+                  className="font-medium text-gray-700"
                 >
-                  <HiOutlineTrash size="18" />
+                  Your address
+                </label>
+                <Input
+                  id="userAddress"
+                  value={userAddress}
+                  onChange={handleAddressChange}
+                  className="w-full mb-4"
+                  type="text"
+                  placeholder="Enter your address"
+                />
+
+                {addressSuggestions.length > 0 && (
+                  <div className="relative w-full">
+                    <ul className="absolute z-10 top-0 w-full bg-white border border-gray-300 rounded-lg max-h-48 overflow-y-auto mb-2">
+                      {addressSuggestions.map((address, index) => (
+                        <li
+                          key={index}
+                          onClick={() => handleSuggestionClick(address)}
+                          className="p-2 cursor-pointer hover:bg-gray-100"
+                        >
+                          {address}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+              <div
+                id="map"
+                className="bg-gray-200 rounded-lg shadow-lg h-72 mb-3"
+              ></div>
+              <div className="flex flex-row justify-between">
+                <a
+                  href="#"
+                  onClick={handleGetUserLocation}
+                  className="text-small-medium text-muted-foreground underline pt-0"
+                >
+                  Get my location
+                </a>
+                <Button
+                  type="button"
+                  onClick={handleAddItem}
+                  className="w-fit justify-center shadow-md  text-white bg-sky-400 mt-4 px-4 rounded-lg"
+                >
+                  Add Request
                 </Button>
               </div>
+            </form>
+          </Card>
+          <Card className="flex flex-col overflow-y-auto h-fit w-full pt-5 px-5 pb-4">
+            <div className="mb-2">
+              <div className="flex flex-col gap-2 mb-3">
+                <p className="font-medium text-gray-700">Basket image</p>
+                <CldUploadButton
+                  className="flex flex-col w-full"
+                  options={{ maxFiles: 1 }}
+                  folder="images"
+                  onSuccess={handleUploadSuccess}
+                  onFailure={(error) =>
+                    console.error("Cloudinary upload error:", error)
+                  }
+                  uploadPreset="zoa1vsa7"
+                >
+                  <div className="flex flex-row justify-start gap-1">
+                    <p className="text-small-medium text-gray-700">
+                      Upload image
+                    </p>
+                    <IoCloudUploadOutline size={22} />
+                  </div>
+                </CldUploadButton>
+              </div>
+              {uploadedUrl && (
+                <div className="flex flex-row justify-start gap-1">
+                  <img
+                    className="border-2 rounded-lg w-48 h-32 mb-2 overflow-hidden object-contain"
+                    src={uploadedUrl}
+                    alt="uploaded"
+                  />
+                  <a href="#" onClick={handleRemoveImage}>
+                    <TiDeleteOutline size={24} />
+                  </a>
+                </div>
+              )}
+              <div className="flex flex-col gap-2 mb-3">
+                <label
+                  htmlFor="basketTitle"
+                  className="font-medium text-gray-700"
+                >
+                  Basket title
+                </label>
+                <Input
+                  id="basketTitle"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="w-full mb-2"
+                  type="text"
+                  placeholder="Please provide input for the basket title"
+                />
+              </div>
+              <div className="flex flex-col gap-2 mb-3">
+                <label
+                  htmlFor="basketDescription"
+                  className="font-medium text-gray-700"
+                >
+                  Request reason
+                </label>
+                <textarea
+                  id="basketReason"
+                  value={reason}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full border-2 rounded-lg p-2"
+                  type="text"
+                  placeholder="Please provide input for the reason of request"
+                />
+              </div>
             </div>
-          ))}
+            <h3 className="text-lg font-medium mb-2 text-gray-700">
+              Items in basket {"("}
+              {items.length}
+              {")"}
+            </h3>
+            {items.map((item, index) => (
+              <div
+                key={index}
+                className="border border-gray-300 rounded-lg p-1 mb-2 self-center gap-3 w-full"
+              >
+                <div className="flex flex-row justify-between p-1">
+                  <div className="flex flex-row justify-start gap-2">
+                    <Badge className="bg-emerald-100 flex items-center w-fit h-fit m-2">
+                      {item.emoji}
+                    </Badge>
+                    <div className="flex flex-col">
+                      <p className="text-gray-700 text-base-medium">
+                        {item.itemName}
+                      </p>
+                      <p className="text-gray-600">
+                      Quantity: {item.quantity}
+          
+                      </p>
+                    </div>
+                  </div>
 
+                  <div className="flex items-center">
+                    <a onClick={() => handleRemoveItem(index)} className="mr-2">
+                      <CiTrash size="25" style={{ color: "8585AB" }} />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </Card>
+        </div>
+      </div>
+      <footer className="sticky bottom-0 bg-white border-t-2 w-full p-6 shadow-md">
+        <div className="flex flex-row justify-end gap-4">
+          <Link href={`/${currentUser?.username}`}>
+            <Button className="w-fit bg-slate-100 text-gray-700 hover:bg-slate-300 rounded-lg">
+              Cancel
+            </Button>
+          </Link>
           <Button
             onClick={handleSubmit}
-            className="w-full bg-sky-400 shadow-md shadow-sky-500/50 text-white px-4 rounded"
+            className="w-fit bg-sky-400 rounded-lg"
           >
-            Submit Request
+            Create Basket
           </Button>
-        </Card>
-      </div>
+        </div>
+      </footer>
     </div>
   );
 }
