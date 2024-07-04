@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-ivs": "^3.606.0",
+    "@aws-sdk/client-ivschat": "^3.606.0",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@mapbox/mapbox-gl-geocoder": "^5.0.2",
@@ -34,6 +35,7 @@
     "agora-react-uikit": "^1.2.0",
     "agora-rtc-react": "^2.2.0",
     "agora-rtc-sdk-ng": "^4.21.0",
+    "amazon-ivs-chat-messaging": "^1.1.1",
     "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.0",
     "cloudinary": "^2.2.0",
@@ -65,6 +67,7 @@
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.51.5",
     "react-icons": "^5.0.1",
+    "react-player": "^2.16.0",
     "react-redux": "^9.1.2",
     "react-router-dom": "^6.22.3",
     "react-select": "^5.8.0",
@@ -79,7 +82,8 @@
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "toastify": "^2.0.1",
-    "vaul": "^0.9.1"
+    "vaul": "^0.9.1",
+    "ws": "^8.18.0"
   },
   "devDependencies": {
     "@types/node": "20.12.7",

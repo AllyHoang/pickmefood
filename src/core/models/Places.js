@@ -41,21 +41,17 @@ const PlacesSchema = new Schema(
         },
         widthPx: {
           type: Number,
-          required: true,
         },
         heightPx: {
           type: Number,
-          required: true,
         },
         authorAttributions: [
           {
             displayName: {
               type: String,
-              required: true,
             },
             uri: {
               type: String,
-              required: true,
               validate: {
                 validator: (v) =>
                   /^\/\/maps\.google\.com\/maps\/contrib\/\d+$/.test(v),
@@ -65,7 +61,6 @@ const PlacesSchema = new Schema(
             },
             photoUri: {
               type: String,
-              required: true,
               validate: {
                 validator: (v) =>
                   /^\/\/lh3\.googleusercontent\.com\/a-\/.+=s\d+-p-k-no-mo$/.test(

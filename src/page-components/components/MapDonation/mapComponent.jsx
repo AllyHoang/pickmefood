@@ -596,7 +596,7 @@ const MapComponent = ({ userId }) => {
           </div>
         </div>
       ))}
-      <div className="absolute top-5 left-5 z-10 flex items-center justify-start space-x-5">
+      <div className="absolute top-5 left-5 z-10 flex items-center justify-start space-x-6">
         <ToggleView viewType={viewType} handleToggleView={handleToggleView} />
         <form className="flex items-center gap-5" onSubmit={handleSearchSubmit}>
           <input
@@ -606,12 +606,11 @@ const MapComponent = ({ userId }) => {
             placeholder="Enter Zipcode, City, or State..."
             className="pl-10 pr-4 py-2 w-[500px] border border-gray-300 rounded-xl"
           />
-          <div className="absolute left-64 pl-3 flex items-center pointer-events-none">
+          <button
+            type="submit"
+            className="absolute left-64 pl-3 flex items-center pointer-events-none"
+          >
             <GoSearch className="h-5 w-5 text-gray-500" />
-          </div>
-
-          <button type="submit" className={styles.searchButton}>
-            Search
           </button>
         </form>
       </div>
