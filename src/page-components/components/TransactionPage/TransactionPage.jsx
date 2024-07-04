@@ -68,36 +68,7 @@ function TransactionPage() {
                 key={transaction._id}
                 className="flex flex-col bg-white rounded-lg shadow-lg p-3  gap-3"
               >
-                {/* Status Badge */}
                 <div className="flex justify-between">
-                  {/* {matchingItems.length > 0 ? (
-                    <div className="flex justify-start align-start gap-2">
-                      <p className="font-bold">Matches: </p>
-                      <div className="flex gap-3 flex-wrap">
-                        {matchingItems?.slice(0, 3).map((match) => (
-                          <Badge
-                            key={match?.id}
-                            className="bg-sky-100 text-black"
-                          >
-                            {match?.emoji} {match?.itemName}
-                          </Badge>
-                        ))}
-                        {matchingItems?.length > 3 && (
-                          <Badge className="bg-sky-100 text-black">
-                            +{matchingItems.length - 3} more
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex justify-start align-middle gap-2 font-bold">
-                      <p>Matches:</p>
-                      <p>None items match</p>
-                    </div>
-                  )} */}
-
-                  <></>
-
                   <Badge
                     variant={`${
                       transaction.status === "pending" ? "primary" : "secondary"
@@ -121,7 +92,6 @@ function TransactionPage() {
                       : "Unknown Status"}
                   </Badge>
                 </div>
-                {/* <Separator></Separator> */}
 
                 <div className="flex gap-4">
                   <SubCard
@@ -129,7 +99,7 @@ function TransactionPage() {
                     type="Donation"
                     basket={transaction?.basketId}
                   ></SubCard>
-                  {/* <Separator orientation="vertical" /> */}
+                  <Separator orientation="vertical" />
                   <SubCard
                     user={transaction?.requesterId}
                     type="Request"

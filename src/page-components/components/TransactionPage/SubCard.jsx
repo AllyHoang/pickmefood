@@ -34,27 +34,12 @@ function SubCard({ user, basket, type }) {
         </div>
       </div>
 
-      <p className="text-heading3-bold line-clamp-1">
-        {basket.title || "No Title"}
+      <p className="text-heading4-bold line-clamp-1">{basket.title}</p>
+      <p className="line-clamp-2 h-12">
+        {" "}
+        {type === "Donation" ? basket.description : basket.reason}
       </p>
-      <img
-        className="rounded-3xl w-full object-cover h-40"
-        src={basket.image}
-      ></img>
 
-      {/* <div className="flex gap-3 flex-wrap">
-        {basketContent?.slice(0, 2).map((item) => (
-          //   <Badge
-          //     key={item?.id}
-          //     className="bg-sky-100 text-black text-small-medium"
-          //   >
-          //     {item?.emoji} {item?.itemName}
-          //   </Badge>
-          <p key={item?.id}>
-            {item?.itemName}
-          </p>
-        ))}
-      </div> */}
       <div className="flex items-center gap-1 align-center relative">
         <BiMap></BiMap>
         <p className="font-medium text-sm">

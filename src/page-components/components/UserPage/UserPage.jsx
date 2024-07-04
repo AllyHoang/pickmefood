@@ -63,13 +63,10 @@ const UserPage = ({ userId, loggedInUserId }) => {
                   <GoSearch className="h-5 w-5 text-gray-500" />
                 </div>
               </div>
-              <Button className="px-4 py-2 text-white bg-sky-500 hover:bg-sky-400 rounded transition duration-150 ease-in-out relative right-3">
-                Search
-              </Button>
 
               {userId === loggedInUserId ? (
                 <Link href="/add-request">
-                  <Button className="bg-emerald-400">Add Request</Button>
+                  <Button className="bg-sky-400">Add Request</Button>
                 </Link>
               ) : (
                 <></>
@@ -103,9 +100,6 @@ const UserPage = ({ userId, loggedInUserId }) => {
                   <GoSearch className="h-5 w-5 text-gray-500" />
                 </div>
               </div>
-              <Button className="px-4 py-2 text-white bg-sky-500 hover:bg-sky-400 rounded transition duration-150 ease-in-out relative right-3">
-                Search
-              </Button>
 
               {userId === loggedInUserId ? (
                 <Dialog>
