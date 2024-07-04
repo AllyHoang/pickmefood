@@ -1,9 +1,6 @@
 import React from "react";
 import Head from "next/head";
 import SideBar from "../components/Navbar/SideBar";
-import RightBar from "../components/RightBar/RightBar";
-import { RootLayout } from "./RootLayout";
-import { Card, CardHeader } from "@/components/ui/card";
 export const DashboardLayout = ({ children }) => {
   return (
     <>

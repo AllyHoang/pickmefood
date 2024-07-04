@@ -1,16 +1,15 @@
-import { TextField } from "@mui/material";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import "mapbox-gl/dist/mapbox-gl.css";
 import mapboxgl from "mapbox-gl";
 import "react-datepicker/dist/react-datepicker.css";
-import "mapbox-gl/dist/mapbox-gl.css";
 import Select from "react-select";
 import { useRouter } from "next/navigation"; // Import useRouter from Next.js
 import useUser from "@/hook/useUser";
 
 function EditBasketForm({ basket, userId }) {
   const router = useRouter();
+  const { user, error } = useUser(userId); // Fetch user data here
   const [title, setTitle] = useState(basket?.title || "");
   const [description, setDescription] = useState(
     basket?.type === "Donation" ? basket?.description : basket?.reason || ""
@@ -59,18 +58,6 @@ function EditBasketForm({ basket, userId }) {
   const [marker, setMarker] = useState(null);
   mapboxgl.accessToken =
     "pk.eyJ1IjoicGlja21lZm9vZCIsImEiOiJjbHZwbHdyMzgwM2hmMmtvNXJ6ZHU2NXh3In0.aITfZvPY-sKGwepyPVPGOg";
-  //   useEffect(() => {
-  //     const mapInstance = new mapboxgl.Map({
-  //       container: "map",
-  //       style: "mapbox://styles/mapbox/streets-v11",
-  //       center: [-74.5, 40],
-  //       zoom: 9,
-  //     });
-
-  //     setMap(mapInstance);
-
-  //     return () => mapInstance.remove();
-  //   }, []);
 
   const handleItemChange = (selectedOption, index) => {
     const newSelectedOptions = [...selectedOptions];
@@ -116,37 +103,7 @@ function EditBasketForm({ basket, userId }) {
   const handleSuggestionClick = (address) => {
     setLocation(address);
     setAddressSuggestions([]);
-    // reverseGeocodeSelectedAddress(address);
   };
-
-  //   const reverseGeocodeSelectedAddress = async (address) => {
-  //     try {
-  //       const response = await fetch(
-  //         `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-  //           address
-  //         )}.json?access_token=${mapboxgl.accessToken}`
-  //       );
-  //       const data = await response.json();
-  //       const coordinates = data.features[0].center;
-  //       const [longitude, latitude] = coordinates;
-
-  //       if (map) {
-  //         map.setCenter([longitude, latitude]);
-  //         map.setZoom(15);
-
-  //         if (marker) {
-  //           marker.remove();
-  //         }
-
-  //         const newMarker = new mapboxgl.Marker()
-  //           .setLngLat([longitude, latitude])
-  //           .addTo(map);
-  //         setMarker(newMarker);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error reverse geocoding selected address:", error);
-  //     }
-  //   };
 
   const handleSave = async () => {
     try {
@@ -183,9 +140,8 @@ function EditBasketForm({ basket, userId }) {
       }
 
       if (response.ok) {
-        console.log(useUser(userId).user.username);
         const updatedBasket = await response.json();
-        console.log(updatedBasket);
+        router.refresh(); // Use username from useUser hook
       } else {
         const errorData = await response.json();
         console.error("Error updating basket:", errorData.message);
@@ -197,9 +153,9 @@ function EditBasketForm({ basket, userId }) {
 
   return (
     <div>
-      <h2 className="text-heading2-bold mb-4">Edit Basket</h2>
-      <label className="block mb-2">
-        Title:
+      <h2 className="text-heading2-bold mb-4 text-sky-500">Edit Basket</h2>
+      <label className="block mb-3 font-medium">
+        <p className="text-lg font-semibold text-gray-800 mb-2"> Title </p>
         <input
           type="text"
           className="w-full border rounded p-2"
@@ -207,8 +163,8 @@ function EditBasketForm({ basket, userId }) {
           onChange={(e) => setTitle(e.target.value)}
         />
       </label>
-      <label className="block mb-2">
-        Description:
+      <label className="block mb-3 ">
+        <p className="text-lg font-semibold text-gray-800 mb-2"> Description</p>
         <textarea
           className="w-full border rounded p-2"
           value={description}
@@ -216,17 +172,9 @@ function EditBasketForm({ basket, userId }) {
         />
       </label>
 
-      {/* <label className="block mb-2">
-        Location:
-        <input
-          type="text"
-          className="w-full border rounded p-2"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-        />
-      </label> */}
-      <label className="block mb-2">
-        Location:
+      <label className="block mb-3 font-medium">
+        <p className="text-lg font-semibold text-gray-800 mb-2"> Location</p>
+
         <input
           type="text"
           className="w-full border rounded p-2"
@@ -251,7 +199,7 @@ function EditBasketForm({ basket, userId }) {
       {items?.map((item, index) => (
         <div key={index} className="flex gap-5">
           <label className="w-44">
-            Item
+            <p className="text-lg font-semibold text-gray-800 mb-2"> Title </p>
             <Select
               options={foodItems.map((choice) => ({
                 value: choice.name,
@@ -266,7 +214,10 @@ function EditBasketForm({ basket, userId }) {
             />
           </label>
           <label className="w-14">
-            Quantity
+            <p className="text-lg font-semibold text-gray-800 mb-2">
+              {" "}
+              Quantity{" "}
+            </p>
             <input
               type="number"
               className="w-full border rounded p-2"

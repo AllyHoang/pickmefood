@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useEffect, useState } from "react";
 import {
   useReactTable,
@@ -9,7 +7,7 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal } from "lucide-react";
-
+import axios from "axios";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -34,102 +32,97 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 function Leaderboard() {
   const { loading, error, currentUser } = useSelector((state) => state.user);
   const [data, setData] = useState([]);
-  // Sample data for the table
-  useEffect(() => {
-    console.log(currentUser);
-    if (currentUser) {
-      const updatedData = [
-        {
-          id: "1",
-          username: (
-            <div className="flex items-center gap-2">
-              <img
-                src={`${currentUser.profileImage}`}
-                alt="Donation Image"
-                className="w-10 h-10 rounded-full object-cover"
-              />
-              <div>
-                <span className="block text-sm font-medium text-gray-900">
-                  Phan Anh Nguyen
-                </span>
-                {/* <span className="block text-sm text-gray-500">
-                  @{`${currentUser.username}`}
-                </span> */}
-              </div>
-            </div>
-          ),
-          donation: 316,
-          rank: 1,
-          transaction: 192,
-          point: "💎 18,000",
-          place:1,
-        },
-        {
-          id: "2",
-          username: (
-            <div className="flex items-center gap-2">
-              <img
-                src={`${currentUser.profileImage}`}
-                alt="Donation Image"
-                className="w-10 h-10 rounded-full object-cover"
-              />
-              <div>
-                <span className="block text-sm font-medium text-gray-900">
-                  Phan Anh Nguyen
-                </span>
-                {/* <span className="block text-sm text-gray-500">
-                  @{`${currentUser.username}`}
-                </span> */}
-              </div>
-            </div>
-          ),
-          donation: 316,
-          rank: 2,
-          transaction: 192,
-          point: "💎 18,000",
-          place: 2,
-        },
-        {
-          id: "3",
-          username: "Jane Smith",
-          transaction: 242,
-          point: "💎 18000",
-          rank: 3,
-          donation: 400,
-          place:3,
-        },
-        {
-          id: "4",
-          username: "Jane Smith",
-          transaction: 242,
-          point: "💎 18000",
-          rank: 4,
-          donation: 400,
-          place: 4,
-        },
-        {
-          id: "5",
-          username: "Jane Smith",
-          transaction: 242,
-          point: "💎 18000",
-          rank: 5,
-          donation: 400,
-          place:5,
-        },
-        {
-          id: "6",
-          username: "Jane Smith",
-          transaction: 242,
-          point: 18000,
-          rank: 6,
-          donation: 400,
+  const [sorting, setSorting] = useState([]);
+  const [pagination, setPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10,
+  });
+  const rankTiers = [
+    { name: "Bronze", minPoints: 0, maxPoints: 100 },
+    { name: "Silver", minPoints: 101, maxPoints: 200 },
+    { name: "Gold", minPoints: 201, maxPoints: 300 },
+    { name: "Platinum", minPoints: 301, maxPoints: Infinity }, // Infinity for the highest tier
+  ];
 
-        },
-      ];
-      setData(updatedData);
+  // Function to determine rank based on points
+  const getRank = (points) => {
+    const tier = rankTiers.find(
+      (tier) => points >= tier.minPoints && points <= tier.maxPoints
+    );
+    return tier ? tier.name : "Unknown";
+  };
+
+  // Function to fetch baskets data for a user
+  const fetchBasketsData = async (userId) => {
+    try {
+      const response = await axios.get(`/api/baskets/${userId}`);
+      return response.data.baskets || []; // Return baskets data or an empty array
+    } catch (error) {
+      console.error(`Error fetching baskets for user ${userId}:`, error);
+      return []; // Return empty array if fetching fails
     }
-  }, [currentUser]);
-  // Column definitions
+  };
+
+  // Function to fetch transactions data for a user
+  const fetchTransactionsData = async (userId) => {
+    try {
+      const response = await axios.get(`/api/transactions/users/${userId}`);
+      console.log(response.data.transactions);
+      return response.data.transactions || []; // Return transactions data or an empty array
+    } catch (error) {
+      console.error(`Error fetching transactions for user ${userId}:`, error);
+      return []; // Return empty array if fetching fails
+    }
+  };
+
+  useEffect(() => {
+    const fetchUsersData = async () => {
+      try {
+        const response = await axios.get("/api/users");
+        const users = response.data.allUsers;
+
+        const promises = users.map(async (user) => {
+          // Fetch baskets and transactions concurrently
+          const [baskets, transactions] = await Promise.all([
+            fetchBasketsData(user._id),
+            fetchTransactionsData(user._id),
+          ]);
+
+          // Update user object with donation and transaction counts
+          const donation = baskets.length;
+          const transaction = transactions.length;
+
+          return {
+            ...user,
+            donation,
+            transaction,
+            points: user.points, // Assuming 'points' is already available in user data
+          };
+        });
+
+        // Wait for all promises to resolve
+        const updatedUsers = await Promise.all(promises);
+
+        // Sort users based on descending points
+        updatedUsers.sort((a, b) => b.points - a.points);
+
+        // Update place and rank based on points
+        updatedUsers.forEach((user, index) => {
+          user.place = index + 1; // Place in the leaderboard
+          user.rank = getRank(user.points); // Rank based on points
+        });
+
+        setData(updatedUsers);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        // Handle specific error codes or messages here
+        // Example: Show a notification or retry mechanism
+      }
+    };
+
+    fetchUsersData();
+  }, []);
+
   const columns = [
     {
       accessorKey: "place",
@@ -138,19 +131,17 @@ function Leaderboard() {
     },
     {
       accessorKey: "username",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            size="h-10"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className=""
-          >
-            User
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          size="h-10"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          className=""
+        >
+          User
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      ),
       cell: ({ getValue }) => <div className="">{getValue()}</div>,
     },
     {
@@ -163,19 +154,8 @@ function Leaderboard() {
       header: () => <div className="text-center">Transaction</div>,
       cell: ({ getValue }) => <div className="text-center">{getValue()}</div>,
     },
-    // {
-    //   accessorKey: "amount",
-    //   header: () => <div className="">Amount</div>,
-    //   cell: ({ getValue }) => {
-    //     const formatted = new Intl.NumberFormat("en-US", {
-    //       style: "currency",
-    //       currency: "USD",
-    //     }).format(getValue());
-    //     return <div className=" font-medium">{formatted}</div>;
-    //   },
-    // },
     {
-      accessorKey: "point",
+      accessorKey: "points",
       header: () => <div className="text-center">Point</div>,
       cell: ({ getValue }) => <div className="text-center">{getValue()}</div>,
     },
@@ -187,41 +167,30 @@ function Leaderboard() {
     {
       id: "actions",
       enableHiding: false,
-      cell: ({ row }) => {
-        const payment = row.original;
-
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(payment.id)}
-              >
-                Copy payment ID
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>View customer</DropdownMenuItem>
-              <DropdownMenuItem>View payment details</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        );
-      },
+      cell: ({ row }) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(row.original.id)}
+            >
+              Copy payment ID
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>View customer</DropdownMenuItem>
+            <DropdownMenuItem>View payment details</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ),
     },
   ];
 
-  const [sorting, setSorting] = useState([]);
-  const [pagination, setPagination] = React.useState({
-    pageIndex: 0,
-    pageSize: 10,
-  });
-
-  // Initialize the table instance with useReaxctTable
   const table = useReactTable({
     data,
     columns,
@@ -246,21 +215,22 @@ function Leaderboard() {
             <CardTitle className="text-heading3-bold line-clamp-1">
               Top Donors
             </CardTitle>
-            {/* <Button className="bg-sky-400" size="sm">Point's System</Button> */}
           </CardHeader>
           <CardContent>
-            <TopDonors></TopDonors>
+            <TopDonors />
           </CardContent>
         </Card>
       </div>
-      {/* Donor Table */}
+
       <div className="max-w-screen-2xl mx-auto w-full pb-4">
         <Card className="border-none drop-shadow-sm ">
           <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
             <CardTitle className="text-heading3-bold line-clamp-1">
               All Users
             </CardTitle>
-            <Button className="bg-sky-400" size="sm">Point's System</Button>
+            <Button className="bg-sky-400" size="sm">
+              Point's System
+            </Button>
           </CardHeader>
           <CardContent>
             <div className="rounded-md border p-4">

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 /**
  * Custom React hook to fetch all baskets and requestbaskets
@@ -16,16 +16,16 @@ function useFetchAllBaskets() {
 
       try {
         const [donationRes, requestRes] = await Promise.all([
-          fetch('/api/baskets', {
-            cache: 'no-store',
+          fetch("/api/baskets", {
+            cache: "no-store",
           }),
-          fetch('/api/basketrequests', {
-            cache: 'no-store',
+          fetch("/api/basketrequests", {
+            cache: "no-store",
           }),
         ]);
 
         if (!donationRes.ok || !requestRes.ok) {
-          throw new Error('Failed to fetch items');
+          throw new Error("Failed to fetch items");
         }
 
         const [donationData, requestData] = await Promise.all([
@@ -33,10 +33,19 @@ function useFetchAllBaskets() {
           requestRes.json(),
         ]);
 
-        const combinedBaskets = [
-          ...donationData.baskets,
-          ...requestData.baskets,
-        ].filter(basket => basket.status !== 'accepted');
+        const donationBaskets = donationData.baskets.map((basket) => ({
+          ...basket,
+          type: "Donation",
+        }));
+
+        const requestBaskets = requestData.baskets.map((basket) => ({
+          ...basket,
+          type: "Request",
+        }));
+
+        const combinedBaskets = [...donationBaskets, ...requestBaskets].filter(
+          (basket) => basket.status !== "accepted"
+        );
 
         setBaskets(combinedBaskets);
         // dispatch(combinedBaskets);

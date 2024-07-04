@@ -22,6 +22,9 @@ import getMatchingItems, {
 } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import DrawerTransaction from "./DrawerTransction";
+import { Separator } from "@/components/ui/separator";
+import { BiMap } from "react-icons/bi";
+import SubCard from "./SubCard";
 
 import {
   NotificationFeedPopover,
@@ -84,6 +87,7 @@ function TransactionPage() {
       setSelectedTransaction(transaction);
     }
   }, [router.query.id, transactions]);
+
   return (
     <div className="w-full">
       <NotificationIconButton
@@ -119,165 +123,71 @@ function TransactionPage() {
       <h1 className="text-heading1-bold">Transaction</h1>
       <TransactionSummary />
       <div className="max-w-screen-2xl mx-auto w-full pb-4 mt-4">
-        <Card className="border-none drop-shadow-sm">
-          <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
-            <CardTitle className="text-heading3-bold line-clamp-1">
-              All Transactions
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {transactions?.map((transaction) => {
-                const matchingItems =
-                  getMatchingItemsInOneTransaction(transaction);
-                return (
-                  <>
-                    <Card
-                      key={transaction._id}
-                      className="flex flex-col bg-white rounded-lg shadow-lg pt-4 pl-8 relative"
-                    >
-                      {/* Status Badge */}
-                      <Badge
-                        variant={`${
-                          transaction.status === "pending"
-                            ? "primary"
-                            : "secondary"
-                        }`}
-                        className={`px-3 py-1 rounded-full text-sm text-s absolute right-2 top-2 ${
-                          transaction.status === "pending"
-                            ? "bg-sky-200"
-                            : transaction.status === "accepted"
-                            ? "bg-emerald-200"
-                            : transaction.status === "canceled"
-                            ? "bg-red-200"
-                            : "bg-orange-200"
-                        }`}
-                      >
-                        {transaction.status === "pending"
-                          ? "Pending"
-                          : transaction.status === "accepted"
-                          ? "Accepted"
-                          : transaction.status === "canceled"
-                          ? "Rejected"
-                          : "Matched"}
-                      </Badge>
-                      <div className="grid grid-cols-1 md:grid-cols-2 items-start gap-2">
-                        <div className="flex flex-col items-start mt-4">
-                          <div className="flex items-center gap-2">
-                            <Avatar>
-                              <AvatarImage
-                                src={transaction?.donorId?.profileImage}
-                                alt="Requester Image"
-                              />
-                              <AvatarFallback />
-                            </Avatar>
-                            <div>
-                              <CardTitle className=" flex flex-col gap-1">
-                                <p className="text-lg">
-                                  {transaction?.donorId?.username}
-                                </p>
-                                <p className="text-[14px] text-gray-400">
-                                  Donor
-                                </p>
-                              </CardTitle>
-                            </div>
-                          </div>
-                          <div className="mt-4">
-                            <p className=" font-semibold">
-                              Donor: {transaction?.donorId?.firstName || "N/A"}
-                            </p>
-                          </div>
+        <div className="text-heading3-bold line-clamp-1">All Transactions</div>
 
-                          <div className="">
-                            <hr className="my-2 border-t-2 border-gray-200 mr-2"></hr>
-                            <p className="font-semibold  text-gray-600">
-                              Basket Details:
-                            </p>
-                            <p className="text-sm text-gray-600">
-                              <span className="font-semibold">Title: </span>
-                              {transaction?.basketId?.title || "No Title"}
-                            </p>
-                            <p className="text-sm text-gray-600">
-                              <span className="font-semibold">Location: </span>
-                              {extractStateAndZip(
-                                transaction?.basketId?.location
-                              ) || "N/A"}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="flex flex-col items-start mt-4">
-                          <div className="flex items-center gap-2">
-                            <Avatar>
-                              <AvatarImage
-                                src={transaction?.requesterId?.profileImage}
-                                alt="Requester Image"
-                              />
-                              <AvatarFallback />
-                            </Avatar>
-                            <div>
-                              <CardTitle className=" flex flex-col gap-1">
-                                <p className="text-lg">
-                                  {transaction?.requesterId?.username}
-                                </p>
-                                <p className="text-[14px] text-gray-400">
-                                  Requester
-                                </p>
-                              </CardTitle>
-                            </div>
-                          </div>
-                          <div className="mt-4">
-                            <p className=" font-semibold">
-                              Requester:{" "}
-                              {transaction?.requesterId?.firstName || "N/A"}
-                            </p>
-                          </div>
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+          {transactions?.map((transaction) => {
+            const matchingItems = getMatchingItemsInOneTransaction(transaction);
+            return (
+              <Card
+                key={transaction._id}
+                className="flex flex-col bg-white rounded-lg shadow-lg p-3  gap-3"
+              >
+                <div className="flex justify-between">
+                  <Badge
+                    variant={`${
+                      transaction.status === "pending" ? "primary" : "secondary"
+                    }`}
+                    className={`px-3 py-1 rounded-sm text-base-bold w-fit ${
+                      transaction.status === "pending"
+                        ? "bg-orange-200"
+                        : transaction.status === "accepted"
+                        ? "bg-emerald-200"
+                        : transaction.status === "canceled"
+                        ? "bg-red-200"
+                        : "bg-orange-200"
+                    }`}
+                  >
+                    {transaction.status === "pending"
+                      ? "Pending"
+                      : transaction.status === "accepted"
+                      ? "Accepted"
+                      : transaction.status === "canceled"
+                      ? "Rejected"
+                      : "Matched"}
+                  </Badge>
+                </div>
 
-                          <div className="">
-                            <hr className="my-2 border-t-2 border-gray-200 mr-2"></hr>
-                            <p className="font-semibold  text-gray-600">
-                              Request Details:
-                            </p>
-                            <p className="text-sm text-gray-600">
-                              <span className="font-semibold">Title: </span>
-                              {transaction?.basketrequestId?.title ||
-                                "No Title"}
-                            </p>
-                            <p className="text-sm text-gray-600">
-                              <span className="font-semibold">Location: </span>
-                              {extractStateAndZip(
-                                transaction?.basketrequestId?.location
-                              ) || "N/A"}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      <CardFooter className="flex justify-between items-center mt-4">
-                        {matchingItems.length > 0 ? (
-                          <div className="flex justify-start align-start gap-2">
-                            <p>Matches: </p>
-                            <div className="flex gap-3 flex-wrap">
-                              {matchingItems?.slice(0, 3).map((match) => (
-                                <Badge
-                                  key={match?.id}
-                                  className="bg-sky-100 text-black"
-                                >
-                                  {match?.emoji} {match?.itemName}
-                                </Badge>
-                              ))}
-                              {matchingItems?.length > 3 && (
-                                <Badge className="bg-sky-100 text-black">
-                                  +{matchingItems.length - 3} more
-                                </Badge>
-                              )}
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="flex justify-start align-middle gap-2">
-                            <p>Matches:</p>
-                            <p>None items match</p>
-                          </div>
-                        )}
-                        <div className="flex gap-3 justify-between">
+                <div className="flex gap-4">
+                  <SubCard
+                    user={transaction?.donorId}
+                    type="Donation"
+                    basket={transaction?.basketId}
+                  ></SubCard>
+                  <Separator orientation="vertical" />
+                  <SubCard
+                    user={transaction?.requesterId}
+                    type="Request"
+                    basket={transaction?.basketrequestId}
+                  ></SubCard>
+                </div>
+
+                <Separator></Separator>
+
+                {transaction.status !== "accepted" && (
+                  <DrawerTransaction
+                    id={transaction._id}
+                    handleOpenDialog={setOpenDialog}
+                    selectedTransaction={selectedTransaction}
+                    className="self-center"
+                  />
+                )}
+              </Card>
+            );
+          })}
+        </CardContent>
+
+        {/* <div className="flex gap-3 justify-between">
                           {transaction.status !== "canceled" && (
                             <button
                               onClick={() => {
@@ -300,23 +210,7 @@ function TransactionPage() {
                                 selectedTransaction={selectedTransaction}
                               />
                             )}
-                        </div>
-                      </CardFooter>
-                    </Card>
-                  </>
-                );
-              })}
-              {/* {selectedBasket && openDialog && (
-                <DialogComponent
-                  itemKey={JSON.stringify(selectedBasket)}
-                  openDialog={openDialog}
-                  handleCloseModal={handleCloseModal}
-                  otherBasket={selectedBasket}
-                />
-              )} */}
-            </div>
-          </CardContent>
-        </Card>
+                        </div> */}
       </div>
     </div>
   );

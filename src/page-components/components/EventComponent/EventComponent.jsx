@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import EventCard from "./EventCard";
 import { useRouter } from "next/router";
+import { useChat } from "@/lib/ChatContext";
 
 const EventPage = ({ userId }) => {
   const [events, setEvents] = useState([]);
@@ -10,8 +11,11 @@ const EventPage = ({ userId }) => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const eventsPerPage = 4; // Number of events per page
+  const { isChatLive, eventId } = useChat();
 
   const router = useRouter();
+  console.log(isChatLive);
+  console.log(eventId);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -70,12 +74,20 @@ const EventPage = ({ userId }) => {
           <span className="text-5xl font-bold text-gray-800">
             Upcoming Events
           </span>
-          <button
-            className="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-1.5 px-3 rounded focus:outline-none focus:shadow-outline text-sm"
-            onClick={() => router.push("/add-event")}
-          >
-            Add New Event
-          </button>
+          <div className="flex space-x-4">
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-1.5 px-3 rounded focus:outline-none focus:shadow-outline text-sm"
+              onClick={() => router.push("/add-event")}
+            >
+              Add New Event
+            </button>
+            <button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-1.5 px-3 rounded focus:outline-none focus:shadow-outline text-sm"
+              onClick={() => router.push("/my-event")}
+            >
+              My Events
+            </button>
+          </div>
         </div>
       </div>
 
@@ -88,7 +100,12 @@ const EventPage = ({ userId }) => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {currentEvents.map((event) => (
               <div key={event._id} className="w-full">
-                <EventCard event={event} userId={userId} />
+                <EventCard
+                  event={event}
+                  userId={userId}
+                  currentEventId={eventId}
+                  isChatLive={isChatLive}
+                />
               </div>
             ))}
           </div>
