@@ -8,20 +8,38 @@ export function cn(...inputs) {
 }
 
 export function extractStateAndZip(location) {
+  // if (typeof location !== "string") {
+  //   return "";
+  // }
+
+  // const regex = /,\s*([A-Za-z\s]+)\s+(\d{5}),\s*United States$/;
+
+  // const match = location.match(regex);
+
+  // if (match) {
+  //   const state = match[1].trim();
+  //   const zip = match[2] ? match[2].trim() : "";
+  //   return zip ? `${state}, ${zip}` : state;
+  // }
+  // return "";
+
   if (typeof location !== "string") {
     return "";
   }
 
-  const regex = /,\s*([A-Za-z\s]+)\s+(\d{5}),\s*United States$/;
+  // Split the location by commas
+  const parts = location.split(",").map((part) => part.trim());
 
-  const match = location.match(regex);
-
-  if (match) {
-    const state = match[1].trim();
-    const zip = match[2] ? match[2].trim() : "";
-    return zip ? `${state}, ${zip}` : state;
+  // Handle cases with fewer than three parts
+  if (parts.length < 3) {
+    return location;
   }
-  return "";
+
+  // Extract the two parts before the last one
+  const state = parts[parts.length - 3];
+  const zip = parts[parts.length - 2];
+
+  return `${state}, ${zip}`;
 }
 
 export function getMatchingItemsInOneTransaction(transaction) {

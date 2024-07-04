@@ -210,107 +210,103 @@ function Leaderboard() {
       <h1 className="text-heading1-bold"> Leaderboard</h1>
 
       <div className="max-w-screen-2xl mx-auto w-full pb-4 mt-10">
-        <Card className="border-none drop-shadow-sm ">
-          <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
-            <CardTitle className="text-heading3-bold line-clamp-1">
-              Top Donors
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <TopDonors />
-          </CardContent>
-        </Card>
+        <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
+          <CardTitle className="text-heading3-bold line-clamp-1">
+            Top Donors
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <TopDonors />
+        </CardContent>
       </div>
 
       <div className="max-w-screen-2xl mx-auto w-full pb-4">
-        <Card className="border-none drop-shadow-sm ">
-          <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
-            <CardTitle className="text-heading3-bold line-clamp-1">
-              All Users
-            </CardTitle>
-            <Button className="bg-sky-400" size="sm">
-              Point's System
-            </Button>
-          </CardHeader>
-          <CardContent>
-            <div className="rounded-md border p-4">
-              <Table className="min-w-full divide-y divide-gray-200">
-                <TableHeader className="bg-sky-100">
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => (
-                        <TableHead
-                          key={header.id}
-                          colSpan={header.colSpan}
-                          className="px-6 py-3 text-left text-xs text-heading5-bold tracking-wider align-middle"
+        <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
+          <CardTitle className="text-heading3-bold line-clamp-1">
+            All Users
+          </CardTitle>
+          <Button className="bg-sky-400" size="sm">
+            Point's System
+          </Button>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-md border p-4">
+            <Table className="min-w-full divide-y divide-gray-200">
+              <TableHeader className="bg-sky-100">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <TableHead
+                        key={header.id}
+                        colSpan={header.colSpan}
+                        className="px-6 py-3 text-left text-xs text-heading5-bold tracking-wider align-middle"
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <TableBody className="bg-white divide-y divide-gray-200">
+                {table.getRowModel().rows.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow key={row.id}>
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell
+                          key={cell.id}
+                          className="px-6 py-4 whitespace-nowrap "
                         >
-                          {header.isPlaceholder
-                            ? null
-                            : flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                        </TableHead>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
                       ))}
                     </TableRow>
-                  ))}
-                </TableHeader>
-                <TableBody className="bg-white divide-y divide-gray-200">
-                  {table.getRowModel().rows.length ? (
-                    table.getRowModel().rows.map((row) => (
-                      <TableRow key={row.id}>
-                        {row.getVisibleCells().map((cell) => (
-                          <TableCell
-                            key={cell.id}
-                            className="px-6 py-4 whitespace-nowrap "
-                          >
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell
-                        colSpan={columns.length}
-                        className="h-24 text-center"
-                      >
-                        No results.
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      No results.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+          <div className="flex items-center justify-end space-x-2 py-4">
+            <div className="flex-1 text-sm text-muted-foreground">
+              {table.getFilteredSelectedRowModel().rows.length} of{" "}
+              {table.getFilteredRowModel().rows.length} row(s) selected.
             </div>
-            <div className="flex items-center justify-end space-x-2 py-4">
-              <div className="flex-1 text-sm text-muted-foreground">
-                {table.getFilteredSelectedRowModel().rows.length} of{" "}
-                {table.getFilteredRowModel().rows.length} row(s) selected.
-              </div>
-              <div className="space-x-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => table.previousPage()}
-                  disabled={!table.getCanPreviousPage()}
-                >
-                  Previous
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => table.nextPage()}
-                  disabled={!table.getCanNextPage()}
-                >
-                  Next
-                </Button>
-              </div>
+            <div className="space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+              >
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+              >
+                Next
+              </Button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </CardContent>
       </div>
     </div>
   );
