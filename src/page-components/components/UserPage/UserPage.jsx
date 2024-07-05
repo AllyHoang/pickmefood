@@ -68,6 +68,7 @@ const UserPage = ({ userId, loggedInUserId }) => {
             loggedInUserId={loggedInUserId}
             type="Donation"
             searchTerm={searchTerm}
+            userData={userData}
           />
         </TabsContent>
       </Tabs>
