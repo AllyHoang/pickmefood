@@ -202,7 +202,7 @@ export default function SignUpFormTest() {
 
           <Button
             type="submit"
-            className="bg-sky-500 font-lg text-md text-white text-center"
+            className="bg-sky-400 hover:bg-sky-500 font-lg text-md text-white text-center"
           >
             Create your account
           </Button>

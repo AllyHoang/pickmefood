@@ -175,7 +175,7 @@ export default function SignInFormTest() {
           />
           <Button
             type="submit"
-            className="bg-sky-500 font-medium w-3/4 shadow-lg"
+            className="bg-sky-400 hover:bg-sky-500 font-medium w-3/4 shadow-lg"
           >
             Sign In
           </Button>
