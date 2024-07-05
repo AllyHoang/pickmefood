@@ -17,7 +17,7 @@ export const UserPageLayout = ({ children }) => {
               <HorizontalBar></HorizontalBar>
             </div>
           </div>
-          <main className="flex overflow-y-scroll flex-1 base-container hide-scrollbar">
+          <main className="flex flex-1 overflow-y-hidden mt-8">
             {children}
           </main>
         </div>

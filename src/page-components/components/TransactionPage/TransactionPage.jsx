@@ -58,6 +58,7 @@ function TransactionPage() {
   }, [router.query.id, transactions]);
 
   return (
+    <div className="base-container">
     <div className="w-full">
 
       <h1 className="text-heading1-bold">Transaction</h1>
@@ -152,6 +153,7 @@ function TransactionPage() {
                             )}
                         </div> */}
       </div>
+    </div>
     </div>
   );
 }

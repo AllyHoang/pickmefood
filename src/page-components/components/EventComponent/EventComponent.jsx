@@ -66,36 +66,27 @@ const EventPage = ({ userId }) => {
   const currentEvents = events.slice(indexOfFirstEvent, indexOfLastEvent);
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="base-container h-screen flex flex-col">
       {/* Sticky header */}
       <h1 className="text-heading1-bold mt-4">Upcoming Events</h1>
       <div className="sticky top-20 bg-white z-50 shadow-md">
         <div className="container mx-auto py-4 flex justify-between items-center">
+          <span className="text-heading2-bold font-bold text-gray-800">
+            Upcoming Events
+          </span>
           <div className="flex space-x-4">
-            <Dialog>
-              <DialogTrigger>
-                <Button className="bg-sky-400 hover:bg-sky-500 text-white font-semibold">
-                  Calendar View
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="min-w-fit w-3/4 h-4/5">
-                <Calendar userId={userId} />
-              </DialogContent>
-            </Dialog>
-          </div>
-          <div className="flex space-x-4">
-            <button
-              className="bg-sky-400 hover:bg-sky-500 text-white font-semibold py-1.5 px-3 rounded focus:outline-none focus:shadow-outline text-sm"
+            <Button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-1.5 px-3 rounded-lg focus:outline-none focus:shadow-outline text-sm"
               onClick={() => router.push("/add-event")}
             >
               Add New Event
-            </button>
-            <button
-              className="bg-sky-400 hover:bg-sky-500 text-white font-semibold py-1.5 px-3 rounded focus:outline-none focus:shadow-outline text-sm"
+            </Button>
+            <Button
+              className="bg-blue-500 hover:bg-blue-700 text-white font-semibold py-1.5 px-3 rounded-lg focus:outline-none focus:shadow-outline text-sm"
               onClick={() => router.push("/my-event")}
             >
               My Events
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -119,19 +110,20 @@ const EventPage = ({ userId }) => {
             ))}
           </div>
           <div className="flex justify-center mt-8">
-            <button
-              className={`bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-l focus:outline-none ${
+            <Button
+              className={`${
                 currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
               }`}
+              variant="secondary"
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
             >
               Previous
-            </button>
+            </Button>
             <span className="px-4 py-2 text-gray-700">
               Page {currentPage} of {totalPages}
             </span>
-            <button
+            <Button
               className={`bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-2 px-4 rounded-r focus:outline-none ${
                 currentPage === totalPages
                   ? "opacity-50 cursor-not-allowed"
@@ -141,7 +133,7 @@ const EventPage = ({ userId }) => {
               disabled={currentPage === totalPages}
             >
               Next
-            </button>
+            </Button>
           </div>
         </div>
       </div>

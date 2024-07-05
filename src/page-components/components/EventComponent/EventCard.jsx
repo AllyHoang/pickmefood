@@ -223,28 +223,18 @@ const EventCard = ({ event, userId }) => {
             To be funded: ${remainingMoney} ({progress.toFixed(2)}% funded)
           </p>
         </div>
-        <div className="flex items-center justify-end space-x-2 mt-auto">
-          <Dialog>
-            <DialogTrigger>
-              <Button className="bg-sky-300 hover:bg-sky-500">Donate</Button>
-            </DialogTrigger>
-            <DialogContent className="min-w-fit w-3/4 h-3/2">
-              <PaymentPage
-                eventId={_id}
-                userId={userId}
-                event={event}
-              ></PaymentPage>
-            </DialogContent>
-          </Dialog>
-          <Dialog>
-            <DialogTrigger>
-              <Button className="bg-sky-300 hover:bg-sky-500">Comment</Button>
-            </DialogTrigger>
-            <DialogContent className="min-w-fit w-4/5 h-4/5">
-              <Comments eventId={_id} userId={userId} />
-            </DialogContent>
-          </Dialog>
-        </div>
+        <Dialog>
+          <DialogTrigger>
+            <Button className="bg-sky-400 hover:bg-sky-500">Donate</Button>
+          </DialogTrigger>
+          <DialogContent className="min-w-fit w-3/4 h-4/5">
+            <PaymentPage
+              eventId={_id}
+              userId={userId}
+              event={event}
+            ></PaymentPage>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

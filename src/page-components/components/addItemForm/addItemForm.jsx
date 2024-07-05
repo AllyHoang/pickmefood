@@ -410,7 +410,7 @@ export default function AddItem({
                     onChange={(e) => setQuantity(e.target.value)}
                     className="flex grow w-full mb-2"
                     type="number"
-                    placeholder="Ex: 1,2"
+                    placeholder="e.g., 3"
                   />
                 </div>
               </div>
@@ -427,7 +427,7 @@ export default function AddItem({
                   onChange={handleAddressChange}
                   className="w-full mb-4"
                   type="text"
-                  placeholder="Enter your address"
+                  placeholder="e.g., 235 Randolph PL, Windsor, Ontario, N9B2T3"
                 />
 
                 {addressSuggestions.length > 0 && (
@@ -461,7 +461,7 @@ export default function AddItem({
                 <Button
                   type="button"
                   onClick={handleAddItem}
-                  className="w-fit justify-center shadow-md  text-white bg-sky-400 mt-4 px-4 rounded-lg"
+                  className="w-fit justify-center shadow-md  text-white bg-sky-400 hover:bg-sky-500 mt-4 px-4 rounded-lg"
                 >
                   Add Item
                 </Button>
@@ -473,24 +473,31 @@ export default function AddItem({
             <div className="mb-2">
               <div className="flex flex-col gap-2 mb-3">
                 <p className="font-medium text-gray-700">Basket image</p>
-                {!externalImageSource && (
-                  <CldUploadButton
-                    className="flex flex-col w-full"
-                    options={{ maxFiles: 1 }}
-                    folder="images"
-                    onSuccess={handleUploadSuccess}
-                    onFailure={(error) =>
-                      console.error("Cloudinary upload error:", error)
-                    }
-                    uploadPreset="zoa1vsa7"
-                  >
-                    <div className="flex flex-row justify-start gap-1">
-                      <p className="text-small-medium text-gray-700">
-                        Upload image
-                      </p>
-                      <IoCloudUploadOutline size={22} />
-                    </div>
-                  </CldUploadButton>
+                {!externalImageSource && !uploadedUrl && (
+                  <div>
+                    <CldUploadButton
+                      className="flex flex-col w-full"
+                      options={{ maxFiles: 1 }}
+                      folder="images"
+                      onSuccess={handleUploadSuccess}
+                      onFailure={(error) =>
+                        console.error("Cloudinary upload error:", error)
+                      }
+                      uploadPreset="zoa1vsa7"
+                    >
+                      <div className="flex flex-row justify-start gap-1">
+                        <p className="text-small-medium text-gray-700">
+                          Upload image
+                        </p>
+                        <IoCloudUploadOutline size={22} 
+                        />
+                      </div>
+                    </CldUploadButton>
+                    <p className="text-small-medium text-muted-foreground mt-1">
+                      If you do not upload your photo, system will
+                      automatically generate based on your items
+                    </p>
+                  </div>
                 )}
               </div>
 
@@ -523,7 +530,7 @@ export default function AddItem({
                   onChange={(e) => setTitle(e.target.value)}
                   className="w-full mb-2"
                   type="text"
-                  placeholder="Please provide input for the basket title"
+                  placeholder="e.g., The best donation"
                 />
               </div>
               <div className="flex flex-col gap-2 mb-3">
@@ -539,15 +546,18 @@ export default function AddItem({
                   onChange={(e) => setDescription(e.target.value)}
                   className="w-full border-2 rounded-lg p-2"
                   type="text"
-                  placeholder="Please provide input for the basket description"
+                  placeholder="e.g., I hope these items can help those in need"
                 />
               </div>
             </div>
 
             <h3 className="text-lg font-medium mb-2 text-gray-700">
-              Items in basket {"("}
-              {items.length}
-              {")"}
+              Items in basket{" "}
+              {items.length > 0 && (
+                <span className="text-muted-foreground text-lg">
+                  ({items.length})
+                </span>
+              )}
             </h3>
             {items.map((item, index) => (
               <div
@@ -584,13 +594,11 @@ export default function AddItem({
       <footer className="sticky bottom-0 bg-white border-t-2 w-full p-6 shadow-md">
         <div className="flex flex-row justify-end gap-4">
           <Link href={`/${currentUser?.username}`}>
-            <Button className="w-fit bg-slate-100 text-gray-700 hover:bg-slate-300 rounded-lg">
-              Cancel
-            </Button>
+            <Button variant="secondary">Cancel</Button>
           </Link>
           <Button
             onClick={handleSubmit}
-            className="w-fit bg-sky-400 rounded-lg"
+            className="w-fit bg-sky-400 hover:bg-sky-500 rounded-lg"
           >
             Create Basket
           </Button>
