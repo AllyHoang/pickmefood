@@ -4,6 +4,7 @@ import BasketRequest from "@/core/models/BasketRequest";
 import { TransactionModel } from "@/core/models/Transaction";
 import { UserModel } from "@/core/models/User";
 import { Status } from "@/lib/utils";
+import { Knock } from "@knocklabs/node";
 
 export default async function handler(req, res) {
   const { method } = req;
@@ -28,6 +29,9 @@ export default async function handler(req, res) {
         location,
       } = req.body;
       // Check if a transaction with the same fields already exists
+      const knock = new Knock(
+        process.env.KNOCK_SECRET_KEY
+      );
       const existingTransaction = await TransactionModel.findOne({
         requesterId: otherUserId,
         basketrequestId: basketrequestId,
@@ -82,8 +86,12 @@ export default async function handler(req, res) {
         matchedAt: null,
         status: Status.PENDING,
         agreedByRequester: false,
-        agreedByDonor: false,
+        agreedByDonor: true,
       });
+      const transactionWithUsers = await TransactionModel.findById(newTransaction._id)
+      .populate('donorId')
+      .populate('requesterId');
+    
       await BasketModel.findByIdAndUpdate(finalItemId, {
         status: Status.PENDING,
         $inc: { pendingTransactions: 1 },
@@ -93,6 +101,31 @@ export default async function handler(req, res) {
         status: Status.PENDING,
         $inc: { pendingTransactions: 1 },
       });
+
+      // Trigger notification if the transaction is updated
+      if (transactionWithUsers) {
+        try {
+          await knock.workflows.trigger("donor-accept-bid", {
+            actor: { id: transactionWithUsers.donorId._id, collection: "User" },
+            recipients: [
+              {
+                id: transactionWithUsers.requesterId._id,
+                email: transactionWithUsers.requesterId.email,
+                // username: newTransaction.requesterId.username,
+              },
+            ],
+            data: {
+              name: transactionWithUsers.donorId.username,
+              id: transactionWithUsers._id,
+              message: "want to donate to you. Click here to view details",
+              type: "Donation"
+            },
+          });
+          console.log("Knock notification sent!");
+        } catch (error) {
+          console.error("Error sending Knock notification:", error);
+        }
+      }
 
       res.status(201).json({
         message: "Transaction successfully created for donator",

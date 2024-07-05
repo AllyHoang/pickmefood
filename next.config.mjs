@@ -6,6 +6,7 @@ const nextConfig = {
       "res.cloudinary.com",
       "upload.wikimedia.org",
       "images.pexels.com",
+      "replicate.delivery",
     ],
   },
 };

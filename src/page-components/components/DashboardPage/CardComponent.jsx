@@ -15,15 +15,7 @@ import Link from "next/link";
 import { extractStateAndZip } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 
-function CardComponent({ basket, setOpenDialog, selectedBasket }) {
-  const truncateDescription = (description, maxWords) => {
-    const words = description?.split(" ");
-    if (words?.length > maxWords) {
-      return words?.slice(0, maxWords)?.join(" ") + "...";
-    }
-    return description;
-  };
-
+function CardComponent({ basket, setOpenDialog, selectedBasket, onPage }) {
   return (
     <Card
       key={basket?._id}
@@ -31,14 +23,12 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
     >
       <div className="flex gap-3">
         <Badge
-          variant={`${basket?.type === "Request" ? "primary" : "secondary"}`}
+          variant="primary"
           className={`px-3 py-1 rounded-full text-small-bold font-md w-28 ${
             basket.type === "Request" ? "bg-sky-100" : "bg-emerald-100"
           }`}
         >
-          {basket.type === "Request"
-            ? `${basket.type} 🤲`
-            : `${basket.type} 🚀`}
+          {basket.type === "Request" ? `${"Request 🤲"} ` : `${"Donation 🚀"} `}
         </Badge>
         {basket?.matchPercentage ? (
           <Badge
@@ -51,7 +41,9 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
           <></>
         )}
       </div>
-      <CardTitle className="text-heading3-bold line-clamp-1">{basket?.title}</CardTitle>
+      <CardTitle className="text-heading3-bold line-clamp-1">
+        {basket?.title}
+      </CardTitle>
       <img
         className="rounded-3xl w-full object-cover h-48"
         src={basket?.image}
@@ -82,8 +74,7 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
         </div>
       </div>
       <p className="h-12 line-clamp-2">
-          {basket.type === "Donation" ? basket?.description : basket?.reason}
-        {" "}
+        {basket.type === "Donation" ? basket?.description : basket?.reason}{" "}
       </p>
       <div className="flex justify-between">
         <div className="flex gap-3 flex-wrap">
@@ -130,6 +121,7 @@ function CardComponent({ basket, setOpenDialog, selectedBasket }) {
           id={basket._id}
           handleOpenDialog={setOpenDialog}
           selectedBasket={selectedBasket}
+          onPage={onPage}
         />
       ) : basket.status === "accepted" ? (
         <Button className="bg-green-500">Accepted</Button>

@@ -16,8 +16,6 @@ import { CldUploadButton } from "next-cloudinary";
 import Link from "next/link";
 import { CiTrash } from "react-icons/ci";
 
-import DatePicker from "react-datepicker";
-
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export default function AddRequest({ userId }) {
@@ -379,7 +377,7 @@ export default function AddRequest({ userId }) {
       }
     } catch (error) {
       console.error("Error submitting request:", error);
-      toast.error("Error submitting request");
+      toast.success("Image generated! Submit your basket now!");
     }
   };
 
@@ -700,7 +698,7 @@ export default function AddRequest({ userId }) {
                 <textarea
                   id="basketReason"
                   value={reason}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={(e) => setReason(e.target.value)}
                   className="w-full border-2 rounded-lg p-2"
                   type="text"
                   placeholder="Please provide input for the reason of request"
@@ -726,10 +724,7 @@ export default function AddRequest({ userId }) {
                       <p className="text-gray-700 text-base-medium">
                         {item.itemName}
                       </p>
-                      <p className="text-gray-600">
-                      Quantity: {item.quantity}
-          
-                      </p>
+                      <p className="text-gray-600">Quantity: {item.quantity}</p>
                     </div>
                   </div>
 

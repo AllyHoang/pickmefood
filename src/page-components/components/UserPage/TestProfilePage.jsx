@@ -60,10 +60,10 @@ const TestProfilePage = ({ userId, loggedInUserId }) => {
     const fetchItems = async () => {
       try {
         const [donationRes, requestRes] = await Promise.all([
-          fetch(`http://localhost:3000/api/activeItem/${userId}`, {
+          fetch(`http://localhost:3000/api/baskets/${userId}`, {
             cache: "no-store",
           }),
-          fetch(`http://localhost:3000/api/activeRequest/${userId}`, {
+          fetch(`http://localhost:3000/api/basketrequests/${userId}`, {
             cache: "no-store",
           }),
         ]);
@@ -75,8 +75,8 @@ const TestProfilePage = ({ userId, loggedInUserId }) => {
           donationRes.json(),
           requestRes.json(),
         ]);
-        setNumDonation(donationData.items.length);
-        setNumRequests(requestData.requests.length);
+        setNumDonation(donationData.baskets.length);
+        setNumRequests(requestData.baskets.length);
       } catch (error) {
         console.log(error);
       }
@@ -104,11 +104,11 @@ const TestProfilePage = ({ userId, loggedInUserId }) => {
           <div>@{user?.username}</div>
         </div>
         <div className="flex gap-5">
-          <Badge className="font-medium bg-sky-500 hover:bg-sky-500">
+          <Badge className="font-medium bg-sky-500 text-white">
             {" "}
             {numDonation} donations{" "}
           </Badge>
-          <Badge className="font-medium bg-sky-500 hover:bg-sky-500">
+          <Badge className="font-medium bg-sky-500 text-white">
             {" "}
             {numRequests} requests{" "}
           </Badge>

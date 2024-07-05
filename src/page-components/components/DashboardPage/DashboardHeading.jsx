@@ -6,6 +6,7 @@ function DashboardHeading({ userId }) {
       <div>
         <div className="text-heading1-bold font-bold text-sky-500 ">
           {`Welcome back, ${useUser(userId).user.firstName}!`}
+
           {console.log(userId)}
         </div>
         <h1 className="flex-auto pt-3 text-base text-gray-500">

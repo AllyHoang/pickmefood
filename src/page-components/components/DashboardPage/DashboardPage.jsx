@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { GoSearch } from "react-icons/go";
 import { Button } from "@/components/ui/button";
 import MapComponent from "../MapDonation/mapComponent";
@@ -33,14 +33,6 @@ function DashboardPage({ userId }) {
   const [currentPage, setCurrentPage] = useState(1);
   const cardsPerPage = 10;
 
-  const truncateDescription = (description, maxWords) => {
-    const words = description?.split(" ");
-    if (words?.length > maxWords) {
-      return words?.slice(0, maxWords)?.join(" ") + "...";
-    }
-    return description;
-  };
-
   const handleOpenPreferenceModal = () => {
     setIsPreferenceModalOpen(true);
   };
@@ -74,9 +66,19 @@ function DashboardPage({ userId }) {
 
   const filteredBaskets = baskets.filter((basket) => {
     const lowerCaseSearchTerm = searchTerm.toLowerCase();
+
     return (
-      basket.title.toLowerCase().includes(lowerCaseSearchTerm) ||
-      basket.description.toLowerCase().includes(lowerCaseSearchTerm)
+      basket?.title?.toLowerCase().includes(lowerCaseSearchTerm) &&
+      (filterType === "all" || basket.type === filterType)
+    );
+  });
+
+  const filteredMatches = matches.filter((match) => {
+    const lowerCaseSearchTerm = searchTerm.toLowerCase();
+
+    return (
+      match?.title?.toLowerCase().includes(lowerCaseSearchTerm) &&
+      (filterType === "all" || match.type === filterType)
     );
   });
 
@@ -106,19 +108,22 @@ function DashboardPage({ userId }) {
   }, []);
 
   const totalCards = matches.length + baskets.length;
+
   const paginatedMatches = matches.slice(
     (currentPage - 1) * cardsPerPage,
     currentPage * cardsPerPage
   );
-  const paginatedBaskets = baskets.slice(
-    (currentPage - 1) * cardsPerPage,
-    currentPage * cardsPerPage
-  );
+
+  // const paginatedBaskets = baskets.slice(
+  //   (currentPage - 1) * cardsPerPage,
+  //   currentPage * cardsPerPage
+  // );
 
   return (
     <div>
       {viewType === "list" ? (
         <>
+
           <div className="container mx-auto px-4 mt-6">
             <div className="grid grid-cols-3 items-center gap-4 mb-5">
               {/* Heading */}
@@ -148,81 +153,34 @@ function DashboardPage({ userId }) {
                     <GoSearch className="h-5 w-5 text-gray-500" />
                   </div>
                 </div>
-                <Button className="px-4 py-2 text-white bg-sky-500 hover:bg-sky-400 rounded transition duration-150 ease-in-out">
-                  Search
-                </Button>
               </div>
 
               {/* Filter Dropdown */}
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
-                className="ml-4 p-2 border border-gray-300 rounded"
+                className="ml-4 p-2 border border-gray-300 rounded-xl"
               >
                 <option value="all">All</option>
-                <option value="donation">Donations</option>
-                <option value="request">Requests</option>
+                <option value="Donation">Donations</option>
+                <option value="Request">Requests</option>
               </select>
             </div>
           </div>
-          {/* <div className="max-w-screen-2xl mx-auto w-full pb-4 mt-10">
-            <Card className="border-none drop-shadow-sm ">
-              <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
-                <CardTitle className="text-heading3-bold line-clamp-1">
-                  Top Match
-                </CardTitle>
-                <div className="flex justify-center align-middle gap-2">
-                  <Button className="bg-sky-400" size="sm">
-                    View Matches
-                  </Button>
-                  <Button
-                    className=""
-                    size="sm"
-                    onClick={handleOpenPreferenceModal}
-                  >
-                    Change Preference
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="w-full">
-                <div className="grid grid-cols-3 gap-4">
-                  {paginatedMatches?.map((match) => {
-                    return (
-                      <CardComponent
-                        basket={match}
-                        setOpenDialog={setOpenDialog}
-                        selectedBasket={selectedBasket}
-                        key={match._id}
-                        className="flex flex-col bg-white rounded-lg shadow-lg"
-                      ></CardComponent>
-                    );
-                  })}
-                  {/* Dialog UI */}
-          {/* {selectedBasket && openDialog && (
-                    <DialogComponent
-                      itemKey={JSON.stringify(selectedBasket)}
-                      openDialog={openDialog}
-                      handleCloseModal={handleCloseModal}
-                      otherBasket={selectedBasket}
-                    ></DialogComponent>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
 
-          </div> */}{" "}
+          <p className="text-heading2-bold mt-6 mb-6 ">Top Matches</p>
           <TopMatchComponent
-            matches={paginatedMatches}
+            matches={filteredMatches}
             handleOpenPreferenceModal={handleOpenPreferenceModal}
             setOpenDialog={setOpenDialog}
             selectedBasket={selectedBasket}
             handleCloseModal={handleCloseModal}
-            openDialog = {openDialog}
+            openDialog={openDialog}
           ></TopMatchComponent>
-          
+
           <p className="text-heading2-bold mt-6 mb-6 ">All Postings</p>
           <div className="grid grid-cols-3 gap-7">
-            {paginatedBaskets?.map((basket) => {
+            {filteredBaskets?.map((basket) => {
               return (
                 <CardComponent
                   basket={basket}
@@ -230,6 +188,7 @@ function DashboardPage({ userId }) {
                   selectedBasket={selectedBasket}
                   key={basket._id}
                   className="flex flex-col bg-white rounded-lg shadow-lg"
+                  onPage="dashboard"
                 ></CardComponent>
               );
             })}

@@ -93,7 +93,7 @@ const MyEventCard = ({ event, userId }) => {
         <div className="mb-4">
           <div className="card-progress h-4 bg-gray-200 rounded-full mb-1">
             <div
-              className="card-progress-bar h-full bg-blue-500 rounded-full"
+              className="card-progress-bar h-full bg-sky-200 rounded-full"
               style={{ width: `${progressStick}%` }}
             ></div>
           </div>
@@ -102,18 +102,18 @@ const MyEventCard = ({ event, userId }) => {
           </p>
         </div>
         <div className="flex justify-end space-x-4">
-          <Button onClick={handleLivestreamClick} className="bg-green-500">
+          <Button onClick={handleLivestreamClick} className="bg-emerald-300">
             Livestream
           </Button>
           <Dialog>
             <DialogTrigger>
-              <Button className="bg-sky-400">Edit</Button>
+              <Button className="bg-sky-300">Edit</Button>
             </DialogTrigger>
             <DialogContent className="min-w-fit w-full h-full">
               <EditEventForm eventId={_id} userId={userId} />
             </DialogContent>
           </Dialog>
-          <Button onClick={handleDeleteButtonClick} className="bg-red-500">
+          <Button onClick={handleDeleteButtonClick} className="bg-red-300">
             Delete
           </Button>
         </div>
