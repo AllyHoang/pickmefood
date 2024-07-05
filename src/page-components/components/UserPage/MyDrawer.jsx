@@ -33,11 +33,11 @@ function MyDrawer({
   loggedInUserId,
   userId,
   type,
+  userData
 }) {
   const [open, setOpen] = useState(false);
-  const username = useUser(userId).user.username;
+  const username = userData?.username;
   const router = useRouter();
-  const user = useUser(selectedBasket?.userId).user;
 
   const calculateDaysDifference = (date) => {
     const currentDate = new Date();
@@ -52,7 +52,7 @@ function MyDrawer({
       onOpenChange={(open) => {
         setOpen(open);
         if (!open) {
-          router.push(`/${username}`);
+          router.push(`/profile/${username}`);
         }
       }}
       direction="right"
@@ -61,7 +61,7 @@ function MyDrawer({
         {/* //item._id */}
         <Link
           href={{
-            pathname: `/${username}`,
+            pathname: `/profile/${username}`,
             query: { id: id },
           }}
           shallow={true}
@@ -103,13 +103,13 @@ function MyDrawer({
           <div className="flex gap-2">
             <Avatar>
               <AvatarImage
-                src={`${user.profileImage}`}
+                src={`${userData?.profileImage}`}
                 alt="Donation Image"
               />
               <AvatarFallback></AvatarFallback>
             </Avatar>
 
-            <div className="font-bold"> {user.username} </div>
+            <div className="font-bold"> {userData?.username} </div>
           </div>
 
           {/* <p className="self-center text-[20px] leading-3 font-medium tracking-wide mt-4 mb-2">
@@ -147,8 +147,8 @@ function MyDrawer({
                     key={item.id}
                     className="bg-sky-100 text-black flex items-center gap-1 font-medium"
                   >
-                    <span>{item.emoji}</span>
-                    <span>{item.itemName}</span>
+                    <span>{item?.emoji}</span>
+                    <span>{item?.itemName}</span>
                   </Badge>
                 ))
               : selectedBasket?.requests.map((request) => (
@@ -157,8 +157,8 @@ function MyDrawer({
                     className="bg-sky-100 text-black flex items-center gap-1 font-medium"
                     c
                   >
-                    <span>{request.emoji}</span>
-                    <span>{request.itemName}</span>
+                    <span>{request?.emoji}</span>
+                    <span>{request?.itemName}</span>
                   </Badge>
                 ))}
           </div>

@@ -64,7 +64,7 @@ function CardComponent({ basket, setOpenDialog, selectedBasket, onPage }) {
           <CardDescription className="underline">
             <Link
               href={{
-                pathname: `/${basket?.userId?.username}`,
+                pathname: `/profile/${basket?.userId?.username}`,
               }}
             >
               {" "}

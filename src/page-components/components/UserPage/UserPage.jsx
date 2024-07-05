@@ -19,6 +19,9 @@ import { FaPlus } from "react-icons/fa6";
 const UserPage = ({ userId, loggedInUserId }) => {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
+  const { user: userData, loading: loadingUserData, error } = useUser(userId);
+  const [activeTab, setActiveTab] = useState("my-requests");
+
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
