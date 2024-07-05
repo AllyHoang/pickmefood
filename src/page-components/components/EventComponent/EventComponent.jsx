@@ -66,10 +66,10 @@ const EventPage = ({ userId }) => {
   const currentEvents = events.slice(indexOfFirstEvent, indexOfLastEvent);
 
   return (
-    <div className="base-container h-screen flex flex-col">
+    <div className="base-container flex flex-col overflow-y-scroll">
       {/* Sticky header */}
-      <h1 className="text-heading1-bold mt-4">Upcoming Events</h1>
-      <div className="sticky top-20 bg-white z-50 shadow-md">
+    
+      <div className="sticky bg-white z-50 shadow-md">
         <div className="container mx-auto py-4 flex justify-between items-center">
           <span className="text-heading2-bold font-bold text-gray-800">
             Upcoming Events

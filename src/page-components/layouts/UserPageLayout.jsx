@@ -13,9 +13,9 @@ export const UserPageLayout = ({ children }) => {
         <SideBar className="border-r border-black-200 fixed pr-4 w-80" />
         <div className="flex flex-col overflow-hidden">
           <div className="sticky min-w-0 h-20 shadow w-full top-0 z-50">
-            <div className="base-container">
+           
               <HorizontalBar></HorizontalBar>
-            </div>
+            
           </div>
           <main className="flex flex-1 overflow-y-hidden mt-8">
             {children}
