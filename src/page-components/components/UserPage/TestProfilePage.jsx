@@ -17,6 +17,21 @@ import {
   DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
 
+// import 
+// {
+//   Dialog,
+//   DialogPortal,
+//   DialogOverlay,
+//   DialogTrigger,
+//   DialogClose,
+//   DialogContent,
+//   DialogHeader,
+//   DialogFooter,
+//   DialogTitle,
+//   DialogDescription,
+// }
+// from "@/components/ui/dialog"
+
 const TestProfilePage = ({
   userData,
   loadingUserData,
@@ -140,6 +155,14 @@ const TestProfilePage = ({
               </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
+          {/* <Dialog>
+            <DialogTrigger>
+              <Button>Hi</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <p>Je</p>
+            </DialogContent>
+          </Dialog> */}
         </div>
       ) : (
         <></>
