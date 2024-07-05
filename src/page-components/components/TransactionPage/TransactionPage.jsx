@@ -77,7 +77,7 @@ function TransactionPage() {
   return (
     <div className="base-container">
     <div className="w-full">
-      <h1 className="text-heading1-bold">Transaction</h1>
+      <h1 className="text-heading1-bold mt-4">Transaction</h1>
       <TransactionSummary
         canceledTransactions={canceledTransactions}
         acceptedTransactions={acceptedTransactions}
@@ -85,9 +85,8 @@ function TransactionPage() {
         matchedTransactions={matchedTransactions}
       />
       <div className="max-w-screen-2xl mx-auto w-full pb-4 mt-4">
-        <div className="text-heading3-bold line-clamp-1">All Transactions</div>
 
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
           {transactions?.map((transaction) => {
             const matchingItems = getMatchingItemsInOneTransaction(transaction);
             return (
@@ -147,7 +146,7 @@ function TransactionPage() {
               </Card>
             );
           })}
-        </CardContent>
+        </div>
 
         {/* <div className="flex gap-3 justify-between">
                           {transaction.status !== "canceled" && (
