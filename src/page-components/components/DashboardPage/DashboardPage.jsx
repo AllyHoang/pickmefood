@@ -124,7 +124,7 @@ function DashboardPage({ userId }) {
       {viewType === "list" ? (
         <>
 
-          <div className="container mx-auto px-4 mt-6">
+          <div className="container mx-auto px-4 mt-6 hide-scrollbar">
             <div className="grid grid-cols-3 items-center gap-4 mb-5">
               {/* Heading */}
               <DashboardHeading userId={userId}></DashboardHeading>
@@ -216,14 +216,14 @@ function DashboardPage({ userId }) {
         onSave={handleSavePreferences}
       />
 
-      <div className="mt-3">
+      {/* <div className="mt-3">
         <PaginationComponent
           totalCards={totalCards}
           cardsPerPage={cardsPerPage}
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
         />
-      </div>
+      </div> */}
     </div>
   );
 }
