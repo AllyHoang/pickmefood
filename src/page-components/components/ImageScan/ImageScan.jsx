@@ -301,7 +301,7 @@ const ImageScan = ({ userId }) => {
           </div>
         ) : uploadedImage && detectedItems.length > 0 ? (
           <div className="flex flex-col gap-8 h-full max-h-full overflow-hidden">
-            <Card className="flex flex-col max-h-64 overflow-hidden m-1">
+            <Card className="flex flex-col max-h-56 overflow-hidden m-1">
               <CardHeader className="text-base-bold pb-2">
                 <CardTitle>Detected items</CardTitle>
                 <CardDescription

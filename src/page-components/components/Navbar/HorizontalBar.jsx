@@ -48,9 +48,9 @@ function HorizontalBar() {
 //   const userImage = "path_to_user_image.jpg"; // Replace with your dynamic image path
 
 return (
-  <div className="relative top-0 z-50 flex justify-end">
+  <div className="base-container relative top-0 z-50 flex justify-end items-center gap-2">
 
-      <div className="fixed right-64 top-6">
+      <div className="">
       <NotificationIconButton
         ref={notifButtonRef}
         onClick={(e) => setIsVisible(!isVisible)}
@@ -89,9 +89,9 @@ return (
                     />
                     {currentUser?.username}
                   </div> */}  
-                   <div className="fixed right-28 -inset-y-4">
+                   <div className="">
                     <NavigationMenu className="bg-none" >
-            <NavigationMenuItem>
+            <NavigationMenuItem className="list-none">
               <div className="flex align-start justify-between pt-2 pb-2">
                 <NavigationMenuTrigger className="h-12">
                   <div className="flex items-center gap-2">
@@ -100,9 +100,9 @@ return (
                       alt="User"
                       className="rounded-full w-10 h-10 object-cover"
                     />
-                    {currentUser?.username}
+                    {currentUser?.username} 
                   </div>
-                  <NavigationMenuContent className="">
+                  <NavigationMenuContent>
                     <ul className="grid gap-3 p-6 md:w-[100px] lg:w-[190px] lg:grid-cols-[1fr]">
                       <Link href="/about" legacyBehavior passHref>
                         <a

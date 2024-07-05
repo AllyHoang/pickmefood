@@ -201,10 +201,10 @@ function Leaderboard() {
   });
 
   return (
-    <div className=" mt-10 w-full  ">
-      <h1 className="text-heading1-bold"> Leaderboard</h1>
+    <div className="base-container mt-10 w-full">
+      <h1 className="text-heading1-bold ml-5"> Leaderboard</h1>
 
-      <div className="max-w-screen-2xl mx-auto w-full mt-6">
+      <div className="max-w-screen-2xl w-full mt-6">
         <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
           <CardTitle className="text-heading3-bold line-clamp-1">
             Top Donors
@@ -235,7 +235,7 @@ function Leaderboard() {
                       <TableHead
                         key={header.id}
                         colSpan={header.colSpan}
-                        className="px-6 py-3 text-left text-xs text-heading5-bold tracking-wider align-middle"
+                        className="py-3 text-left text-xs text-heading5-bold tracking-wider align-middle"
                       >
                         {header.isPlaceholder
                           ? null
