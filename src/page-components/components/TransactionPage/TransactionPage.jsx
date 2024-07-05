@@ -26,13 +26,6 @@ import { Separator } from "@/components/ui/separator";
 import { BiMap } from "react-icons/bi";
 import SubCard from "./SubCard";
 
-import {
-  NotificationFeedPopover,
-  NotificationIconButton,
-  NotificationCell,
-} from "@knocklabs/react";
-// Required CSS import, unless you're overriding the styling
-import "@knocklabs/react/dist/index.css";
 import { Button } from "@/components/ui/button";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { toast } from "react-toastify";
@@ -44,8 +37,6 @@ function TransactionPage() {
   const { transactions, isLoading } = useFetchTransaction(currentUser.id);
   const [openDialog, setOpenDialog] = useState(false);
   console.log(transactions);
-  const [isVisible, setIsVisible] = useState(false);
-  const notifButtonRef = useRef(null);
 
   const handleOpenDialog = (basket) => {
     setSelectedBasket(basket);
@@ -68,35 +59,6 @@ function TransactionPage() {
 
   return (
     <div className="w-full">
-      <NotificationIconButton
-        ref={notifButtonRef}
-        onClick={(e) => setIsVisible(!isVisible)}
-      />
-      <NotificationFeedPopover
-        buttonRef={notifButtonRef}
-        isVisible={isVisible}
-        onClose={() => setIsVisible(false)}
-        renderItem={({ item, ...props }) => (
-          <NotificationCell {...props} item={item}>
-            <div className="rounded-xl">
-              <Link
-                className="flex items-center space-x-4 p-2  rounded-md text-blue-500 transition duration-150 ease-in-out"
-                onClick={() => {
-                  setIsVisible(false);
-                }}
-                href={`/transactions`}
-              >
-                {/* User and Message Container */}
-                <div className="flex flex-col">
-                  <span className="font-bold">{item.data.name}</span>
-                  <span className="text-gray-500 "> {item.data.message}</span>
-
-                </div>
-              </Link>
-            </div>
-          </NotificationCell>
-        )}
-      />
 
       <h1 className="text-heading1-bold">Transaction</h1>
       <TransactionSummary />
