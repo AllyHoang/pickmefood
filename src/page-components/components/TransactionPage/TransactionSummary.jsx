@@ -39,7 +39,7 @@ const TransactionSummary = ({canceledTransactions, acceptedTransactions, pending
       iconBgColor: "bg-orange-100",
     },
     {
-      label: "Accepted",
+      label: "Completed",
       count: acceptedTransactions.length,
       bgColor: "bg-green-200",
       Icon: FiCheckCircle,

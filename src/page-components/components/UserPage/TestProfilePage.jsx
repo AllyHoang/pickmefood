@@ -105,6 +105,7 @@ const TestProfilePage = ({
         <div className="flex flex-col ">
           <div className="first-last-name text-heading2-bold">
             {userData?.firstName}
+            {" "}
             {userData?.lastName}
           </div>
           <div>@{userData?.username}</div>
@@ -120,8 +121,7 @@ const TestProfilePage = ({
 
         </div>
         <div className="w-3/4">
-          This is a short hardcoded bio. I would like to add a field in user
-          model to include bio, maybe maximum 50 words.
+        I love Khoa Thien Le and Viettech Mentorship Program!!!!
         </div>
       </div>
       {userId === loggedInUserId ? (
