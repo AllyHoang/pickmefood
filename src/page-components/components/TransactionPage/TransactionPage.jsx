@@ -77,7 +77,7 @@ function TransactionPage() {
   return (
     <div className="base-container">
     <div className="w-full">
-      <h1 className="text-heading1-bold mt-4">Transaction</h1>
+      <h1 className="text-heading1-bold mt-4">Transactions</h1>
       <TransactionSummary
         canceledTransactions={canceledTransactions}
         acceptedTransactions={acceptedTransactions}
@@ -112,9 +112,9 @@ function TransactionPage() {
                     {transaction.status === "pending"
                       ? "Pending"
                       : transaction.status === "accepted"
-                      ? "Accepted"
+                      ? "Completed"
                       : transaction.status === "canceled"
-                      ? "Rejected"
+                      ? "Canceled"
                       : "Matched"}
                   </Badge>
                 </div>

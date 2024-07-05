@@ -247,11 +247,7 @@ function Leaderboard() {
             <CardTitle className="text-heading3-bold line-clamp-1">
               All Users
             </CardTitle>
-            <Link href={`/profile/${currentUser?.username}`}>
-              <Button className="bg-sky-400" size="sm">
-                Gain more points
-              </Button>
-            </Link>
+          
           </CardHeader>
           <CardContent>
             <div className="rounded-md border">

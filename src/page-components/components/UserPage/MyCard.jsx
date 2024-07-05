@@ -60,7 +60,7 @@ function MyCard({
           <></>
         )}
       </div>
-      <CardTitle className="text-heading3-bold ">{basket?.title}</CardTitle>
+      <CardTitle className="text-heading3-bold line-clamp-1">{basket?.title}</CardTitle>
       <img
         className="rounded-3xl w-full object-cover h-48"
         src={basket?.image}
@@ -95,7 +95,7 @@ function MyCard({
         )}{" "}
       </p>
       <div className="flex justify-between">
-        <div className="flex gap-3 flex-wrap">
+        <div className="flex gap-3 flex-wrap line-clamp-1">
           {basket?.type === "Donation"
             ? basket?.items?.slice(0, 2).map((item) => (
                 <Badge
