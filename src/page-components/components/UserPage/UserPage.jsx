@@ -21,12 +21,13 @@ const UserPage = ({ userId, loggedInUserId }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const { user: userData, loading: loadingUserData, error } = useUser(userId);
   const [activeTab, setActiveTab] = useState("my-requests");
-
+  console.log(userData);
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
 
   return (
+    
     <div className="flex flex-col overflow-hidden h-screen gap-5 pt-5 pl-5 ">
       <TestProfilePage userId={userId} loggedInUserId={loggedInUserId}>
         {" "}
@@ -43,7 +44,7 @@ const UserPage = ({ userId, loggedInUserId }) => {
             <TabsTrigger value="my-receipts">Receipts</TabsTrigger>
           </TabsList>
 
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto hide-scrollbar">
             <TabsContent
               value="my-requests"
               className="flex flex-col justify-normal"
@@ -72,6 +73,7 @@ const UserPage = ({ userId, loggedInUserId }) => {
                 )}
               </div>
               <ActiveCardsList
+                userData={userData}
                 userId={userId}
                 loggedInUserId={loggedInUserId}
                 type="Request"
@@ -133,6 +135,7 @@ const UserPage = ({ userId, loggedInUserId }) => {
 
               <ActiveCardsList
                 userId={userId}
+                userData={userData}
                 loggedInUserId={loggedInUserId}
                 type="Donation"
                 searchTerm={searchTerm}

@@ -54,9 +54,9 @@ const SideBar = () => {
     { href: "/dashboard", icon: <RxHome size="20px" />, label: "Dashboard" },
     { href: "/map-view", icon: <RxPaperPlane size="20px" />, label: "Map" },
     {
-      href: {
-        pathname: `/${currentUser?.username}`,
-      },
+      href: 
+        `/profile/${currentUser?.username}`
+      ,
       icon: <RxAvatar size="20px" />,
       label: "Profile",
     },
@@ -78,7 +78,14 @@ const SideBar = () => {
     { href: "/events", icon: <CiCalendar size="20px" />, label: "Events" },
   ];
 
-  const isActive = (path) => activeItem === path;
+  const isActive = (path) => {
+    console.log("path: ",path);
+    console.log("activeItem:",activeItem);
+    if(path.split("/")[1] === 'profile'){
+      path = "/profile/[username]"
+    }
+    return activeItem === path;
+  };
 
   return (
     <>
