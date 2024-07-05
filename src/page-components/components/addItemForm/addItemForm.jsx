@@ -320,7 +320,7 @@ export default function AddItem({
         toast.success(
           `Create Basket Successfully. You earn total: ${totalPoints} Points`
         );
-        router.push(`/${currentUser?.username}`);
+        router.push(`profile/${currentUser?.username}`);
       } else {
         throw new Error("Failed to create a basket");
       }

@@ -23,6 +23,7 @@ function MyCard({
   loggedInUserId,
   userId,
   type,
+  userData
 }) {
   const truncateDescription = (description, maxWords) => {
     const words = description?.split(" ");
@@ -53,7 +54,7 @@ function MyCard({
             className={`px-3 py-1 rounded-full text-small-bold font-md w-fit bg-amber-200`}
           >
             {" "}
-            {basket.matchPercentage}% match{" "}
+            {basket?.matchPercentage}% match{" "}
           </Badge>
         ) : (
           <></>
@@ -67,30 +68,29 @@ function MyCard({
       <div className="flex gap-2">
         <Avatar>
           <AvatarImage
-            src={useUser(basket?.userId).user.profileImage}
+            src={userData?.profileImage}
             alt="Donation Image"
           />
           <AvatarFallback></AvatarFallback>
         </Avatar>
         <div className="flex flex-col">
           <p className="font-bold">
-            {useUser(basket?.userId).user.firstName} {useUser(basket?.userId).user.lastName}
+            {userData?.firstName} {userData?.lastName}
           </p>
           <CardDescription className="underline">
             <Link
               href={{
-                pathname: `/${basket?.userId?.username}`,
-              }}
-            >
+                pathname: `/profile/${basket?.userId?.username}`,
+              }}>
               {" "}
-              {useUser(basket?.userId).user.username}
+              {userData?.username}
             </Link>
           </CardDescription>
         </div>
       </div>
       <p className="h-11">
         {truncateDescription(
-          basket.type === "Donation" ? basket?.description : basket?.reason,
+          basket?.type === "Donation" ? basket?.description : basket?.reason,
           15
         )}{" "}
       </p>
@@ -129,7 +129,7 @@ function MyCard({
         <BiMap></BiMap>
         <p className="font-medium text-sm">
           {basket?.location
-            ? extractStateAndZip(basket.location)
+            ? extractStateAndZip(basket?.location)
             : "No Location"}
         </p>
       </div>
@@ -140,6 +140,7 @@ function MyCard({
         selectedBasket={selectedBasket}
         type={type}
         userId={userId}
+        userData={userData}
         loggedInUserId={loggedInUserId}
       />
     </Card>

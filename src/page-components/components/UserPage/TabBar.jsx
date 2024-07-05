@@ -36,7 +36,7 @@ export function TabBar({ userId, loggedInUserId }) {
           <TabsTrigger value="my-donations">
             <Link
               href={{
-                pathname: `/${username}`,
+                pathname: `/profile/${username}`,
                 query: { tab: "donations" },
               }}
             >
