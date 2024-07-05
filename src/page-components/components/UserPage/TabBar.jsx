@@ -92,7 +92,7 @@ export function TabBar({ userId, loggedInUserId }) {
               </DialogContent>
             </Dialog>
 
-            <ActiveCardsList userId={userId} type="Donation" />
+            <ActiveCardsList userId={userId} userData={userData} type="Donation" />
           </TabsContent>
         </div>
       </Tabs>

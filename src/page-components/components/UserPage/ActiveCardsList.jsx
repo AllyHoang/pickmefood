@@ -78,6 +78,7 @@ const ActiveCardsList = ({
             loggedInUserId={loggedInUserId}
             userId={userId}
             type={type}
+            userData={userData}
           />
         ))}
       {type === "Receipts" &&
