@@ -30,12 +30,16 @@ import TopDonors from "./TopDonors";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-
+import LoadingPage from "../LoadingPage";
 
 function Leaderboard() {
   const { loading, error, currentUser } = useSelector((state) => state.user);
   const [data, setData] = useState([]);
   const [sorting, setSorting] = useState([]);
+  const [isBasketLoading, setIsBasketLoading] = useState(false);
+  const [isTransactionLoading, setIsTransactionLoading] = useState(false);
+  const [isUserLoading, setIsUserLoading] = useState(false);
+
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10,
@@ -58,23 +62,32 @@ function Leaderboard() {
   // Function to fetch baskets data for a user
   const fetchBasketsData = async (userId) => {
     try {
+      setIsBasketLoading(true); // Start loading before the fetch operation
       const response = await axios.get(`/api/baskets/${userId}`);
+      if (response.status !== 200) {
+        throw new Error("Failed to fetch data");
+      }
       return response.data.baskets || []; // Return baskets data or an empty array
     } catch (error) {
       console.error(`Error fetching baskets for user ${userId}:`, error);
       return []; // Return empty array if fetching fails
+    } finally {
+      setIsBasketLoading(false); // Stop loading regardless of the result
     }
   };
 
   // Function to fetch transactions data for a user
   const fetchTransactionsData = async (userId) => {
     try {
+      setIsTransactionLoading(true); // Start loading before the fetch operation
       const response = await axios.get(`/api/transactions/users/${userId}`);
       console.log(response.data.transactions);
       return response.data.transactions || []; // Return transactions data or an empty array
     } catch (error) {
       console.error(`Error fetching transactions for user ${userId}:`, error);
       return []; // Return empty array if fetching fails
+    } finally {
+      setIsTransactionLoading(false); // Stop loading regardless of the result
     }
   };
 
@@ -96,7 +109,11 @@ function Leaderboard() {
   useEffect(() => {
     const fetchUsersData = async () => {
       try {
+        setIsUserLoading(true); // Start loading before the fetch operations
         const response = await axios.get("/api/users");
+        if (response.status !== 200) {
+          throw new Error("Failed to fetch users");
+        }
         const users = response.data.allUsers;
 
         const promises = users.map(async (user) => {
@@ -133,8 +150,9 @@ function Leaderboard() {
         setData(updatedUsers);
       } catch (error) {
         console.error("Error fetching users:", error);
-        // Handle specific error codes or messages here
-        // Example: Show a notification or retry mechanism
+        // Optionally set an error state here to show error messages or retry UI
+      } finally {
+        setIsUserLoading(false); // Stop loading regardless of the result
       }
     };
 
@@ -180,9 +198,15 @@ function Leaderboard() {
     {
       accessorKey: "rank",
       header: () => <div className="text-center">Rank</div>,
-      cell: ({ getValue }) => <Badge className={` text-white ${getRankColorClass(getValue())} text-small-medium`}>
-      {getValue()}
-    </Badge>,
+      cell: ({ getValue }) => (
+        <Badge
+          className={` text-white ${getRankColorClass(
+            getValue()
+          )} text-small-medium`}
+        >
+          {getValue()}
+        </Badge>
+      ),
     },
   ];
 
@@ -200,111 +224,121 @@ function Leaderboard() {
     getPaginationRowModel: getPaginationRowModel(),
   });
 
-  return (
-    <div className="base-container mt-10 w-full">
-      <h1 className="text-heading1-bold ml-5"> Leaderboard</h1>
+  return isBasketLoading || isTransactionLoading || isUserLoading ? (
+    <LoadingPage />
+  ) : (
+    <div className="base-container">
+      <div className="w-full mt-4">
+        <h1 className="text-heading1-bold">Leaderboard</h1>
 
-      <div className="max-w-screen-2xl w-full mt-6">
-        <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
-          <CardTitle className="text-heading3-bold line-clamp-1">
-            Top Donors
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <TopDonors />
-        </CardContent>
-      </div>
+        <div className="max-w-screen-2xl mx-auto w-full mt-6">
+          <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
+            <CardTitle className="text-heading3-bold line-clamp-1">
+              Top Donors
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <TopDonors />
+          </CardContent>
+        </div>
 
-      <div className="max-w-screen-2xl mx-auto w-full">
-        <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
-          <CardTitle className="text-heading3-bold line-clamp-1">
-            All Users
-          </CardTitle>
-          <Link href={`/profile/${currentUser?.username}`}>
-            <Button className="bg-sky-400" size="sm">  Gain more points</Button>
-           
-          </Link>
-        </CardHeader>
-        <CardContent>
-          <div className="rounded-md border">
-            <Table className="min-w-full divide-y divide-gray-200">
-              <TableHeader className="bg-sky-100">
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => (
-                      <TableHead
-                        key={header.id}
-                        colSpan={header.colSpan}
-                        className="py-3 text-left text-xs text-heading5-bold tracking-wider align-middle"
-                      >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableHead>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableHeader>
-              <TableBody className="bg-white divide-y divide-gray-200">
-                {table.getRowModel().rows.length ? (
-                  table.getRowModel().rows.map((row) => (
-                    <TableRow key={row.id} className={`${
-                      row.original._id === currentUser.id ? "bg-gray-100" : "bg-white"
-                    } divide-y divide-gray-200`}>
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell
-                          key={cell.id}
-                          className={`px-6 py-4 whitespace-nowrap `}
+        <div className="max-w-screen-2xl mx-auto w-full">
+          <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
+            <CardTitle className="text-heading3-bold line-clamp-1">
+              All Users
+            </CardTitle>
+            <Link href={`/profile/${currentUser?.username}`}>
+              <Button className="bg-sky-400" size="sm">
+                Gain more points
+              </Button>
+            </Link>
+          </CardHeader>
+          <CardContent>
+            <div className="rounded-md border">
+              <Table className="min-w-full divide-y divide-gray-200">
+                <TableHeader className="bg-sky-100">
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => (
+                        <TableHead
+                          key={header.id}
+                          colSpan={header.colSpan}
+                          className="px-6 py-3 text-left text-xs text-heading5-bold tracking-wider align-middle"
                         >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </TableCell>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(
+                                header.column.columnDef.header,
+                                header.getContext()
+                              )}
+                        </TableHead>
                       ))}
                     </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center"
-                    >
-                      No results.
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
-          <div className="flex items-center justify-end space-x-2 py-4">
-            <div className="flex-1 text-sm text-muted-foreground">
-              {table.getFilteredSelectedRowModel().rows.length} of{" "}
-              {table.getFilteredRowModel().rows.length} row(s) selected.
+                  ))}
+                </TableHeader>
+                <TableBody className="bg-white divide-y divide-gray-200">
+                  {table.getRowModel().rows.length ? (
+                    table.getRowModel().rows.map((row) => (
+                      <TableRow
+                        key={row.id}
+                        className={`${
+                          row.original._id === currentUser.id
+                            ? "bg-gray-100"
+                            : "bg-white"
+                        } divide-y divide-gray-200`}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell
+                            key={cell.id}
+                            className="px-6 py-4 whitespace-nowrap"
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell
+                        colSpan={columns.length}
+                        className="h-24 text-center"
+                      >
+                        No results.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
             </div>
-            <div className="space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
-              >
-                Previous
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
-              >
-                Next
-              </Button>
+            <div className="flex items-center justify-end space-x-2 py-4">
+              <div className="flex-1 text-sm text-muted-foreground">
+                {table.getFilteredSelectedRowModel().rows.length} of{" "}
+                {table.getFilteredRowModel().rows.length} row(s) selected.
+              </div>
+              <div className="space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => table.previousPage()}
+                  disabled={!table.getCanPreviousPage()}
+                >
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => table.nextPage()}
+                  disabled={!table.getCanNextPage()}
+                >
+                  Next
+                </Button>
+              </div>
             </div>
-          </div>
-        </CardContent>
+          </CardContent>
+        </div>
       </div>
     </div>
   );

@@ -13,6 +13,7 @@ import PreferenceModal from "./PreferenceModal";
 import CardComponent from "./CardComponent";
 import PaginationComponent from "../Pagination/Pagination";
 import TopMatchComponent from "./TopMatchComponent";
+import LoadingPage from "../LoadingPage";
 
 function DashboardPage({ userId }) {
   const [selectedBasket, setSelectedBasket] = useState(null);
@@ -20,11 +21,12 @@ function DashboardPage({ userId }) {
   const [viewType, setViewType] = useState("list");
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("all"); // 'all', 'donations', or 'requests'
-  const { baskets, isLoading } = useFetchAllBaskets();
+  const { baskets, isLoading:isLoadingAllBaskets } = useFetchAllBaskets();
   const [openDialog, setOpenDialog] = useState(false);
   const { loading, error, currentUser } = useSelector((state) => state.user);
   const [matches, setMatches] = useState([]);
   const [isPreferenceModalOpen, setIsPreferenceModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [weights, setWeights] = useState({
     items: 0.6,
     urgency: 0.3,
@@ -90,22 +92,39 @@ function DashboardPage({ userId }) {
     }
   }, [router.query.id, baskets]);
 
+
   useEffect(() => {
     const fetchMatches = async () => {
-      const responseDonation = await fetch(
-        `/api/matching-algorithm/${userId}/donation`
-      );
-      const responseRequest = await fetch(
-        `/api/matching-algorithm/${userId}/request`
-      );
-      const dataDonation = await responseDonation.json();
-      const dataRequest = await responseRequest.json();
-      const data = [...dataDonation, ...dataRequest];
-      setMatches(data);
+      setIsLoading(true);  // Start loading before the fetch calls
+      try {
+        // Fetch donation data
+        const responseDonation = await fetch(`/api/matching-algorithm/${userId}/donation`);
+        if (!responseDonation.ok) {
+          throw new Error('Failed to fetch donation data');
+        }
+        const dataDonation = await responseDonation.json();
+
+        // Fetch request data
+        const responseRequest = await fetch(`/api/matching-algorithm/${userId}/request`);
+        if (!responseRequest.ok) {
+          throw new Error('Failed to fetch request data');
+        }
+        const dataRequest = await responseRequest.json();
+
+        // Combine data from both requests
+        const data = [...dataDonation, ...dataRequest];
+        setMatches(data);
+      } catch (error) {
+        console.error('Error fetching match data:', error);
+        // Handle errors here, e.g., set error state, show notification, etc.
+      } finally {
+        setIsLoading(false);  // Stop loading regardless of the result
+      }
     };
 
     fetchMatches();
-  }, []);
+  }, [userId]);  // Including userId as a dependency if it might change and re-trigger the effect
+
 
   const totalCards = matches.length + baskets.length;
 
@@ -120,111 +139,103 @@ function DashboardPage({ userId }) {
   // );
 
   return (
-    <div className="base-container">
-      {viewType === "list" ? (
-        <>
-
-          <div className="container mx-auto px-4 mt-6 hide-scrollbar">
-            <div className="grid grid-cols-3 items-center gap-4 mb-5">
-              {/* Heading */}
-              <DashboardHeading userId={userId}></DashboardHeading>
-              {/* Point Badge */}
-              <PointBadge userId={userId}></PointBadge>
-            </div>
-            <div className="flex justify-between items-center mb-6">
-              {/* Toggle View From Map to List and vice */}
-              {/* <ToggleView></ToggleView> */}
-              {/* View Type Toggle */}
-              <ToggleView
-                viewType={viewType}
-                handleToggleView={handleToggleView}
-              ></ToggleView>
-              {/* Search Bar */}
-              <div className="flex-grow flex items-center gap-4">
-                <div className="relative flex-grow">
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    value={searchTerm}
-                    onChange={handleSearchChange}
-                    className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-xl"
+    <>
+      {(isLoadingAllBaskets || isLoading) ? (
+        <LoadingPage />
+      ) : (
+        <div className="base-container">
+          {viewType === "list" ? (
+            <>
+              <div className="container mx-auto px-4 mt-6 hide-scrollbar">
+                <div className="grid grid-cols-3 items-center gap-4 mb-5">
+                  <DashboardHeading userId={userId} />
+                  <PointBadge userId={userId} />
+                </div>
+                <div className="flex justify-between items-center mb-6">
+                  <ToggleView
+                    viewType={viewType}
+                    handleToggleView={handleToggleView}
                   />
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <GoSearch className="h-5 w-5 text-gray-500" />
+                  <div className="flex-grow flex items-center gap-4">
+                    <div className="relative flex-grow">
+                      <input
+                        type="text"
+                        placeholder="Search..."
+                        value={searchTerm}
+                        onChange={handleSearchChange}
+                        className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-xl"
+                      />
+                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <GoSearch className="h-5 w-5 text-gray-500" />
+                      </div>
+                    </div>
                   </div>
+                  <select
+                    value={filterType}
+                    onChange={(e) => setFilterType(e.target.value)}
+                    className="ml-4 p-2 border border-gray-300 rounded-xl"
+                  >
+                    <option value="all">All</option>
+                    <option value="Donation">Donations</option>
+                    <option value="Request">Requests</option>
+                  </select>
                 </div>
               </div>
 
-              {/* Filter Dropdown */}
-              <select
-                value={filterType}
-                onChange={(e) => setFilterType(e.target.value)}
-                className="ml-4 p-2 border border-gray-300 rounded-xl"
-              >
-                <option value="all">All</option>
-                <option value="Donation">Donations</option>
-                <option value="Request">Requests</option>
-              </select>
-            </div>
-          </div>
-
-          <p className="text-heading3-bold mt-6 mb-6 ">Top Matches</p>
-          <TopMatchComponent
-            matches={filteredMatches}
-            handleOpenPreferenceModal={handleOpenPreferenceModal}
-            setOpenDialog={setOpenDialog}
-            selectedBasket={selectedBasket}
-            handleCloseModal={handleCloseModal}
-            openDialog={openDialog}
-          ></TopMatchComponent>
-
-          <p className="text-heading3-bold mt-6 mb-6 ">All Postings</p>
-          <div className="grid grid-cols-3 gap-7">
-            {filteredBaskets?.map((basket) => {
-              return (
-                <CardComponent
-                  basket={basket}
-                  setOpenDialog={setOpenDialog}
-                  selectedBasket={selectedBasket}
-                  key={basket._id}
-                  className="flex flex-col bg-white rounded-lg shadow-lg"
-                  onPage="dashboard"
-                ></CardComponent>
-              );
-            })}
-            {/* Dialog UI */}
-
-            {selectedBasket && openDialog && (
-              <DialogComponent
-                itemKey={JSON.stringify(selectedBasket)}
-                openDialog={openDialog}
+              <p className="text-heading3-bold mt-6 mb-6">Top Matches</p>
+              <TopMatchComponent
+                matches={filteredMatches}
+                handleOpenPreferenceModal={handleOpenPreferenceModal}
+                setOpenDialog={setOpenDialog}
+                selectedBasket={selectedBasket}
                 handleCloseModal={handleCloseModal}
-                otherBasket={selectedBasket}
-              ></DialogComponent>
-            )}
-          </div>
-        </>
-      ) : (
-        <div>
-          {/* Render the map view component or layout here */}
-          <MapComponent />
-        </div>
-      )}
-      <PreferenceModal
-        isOpen={isPreferenceModalOpen}
-        onRequestClose={handleClosePreferenceModal}
-        onSave={handleSavePreferences}
-      />
+                openDialog={openDialog}
+              />
 
-      {/* <div className="mt-3">
+              <p className="text-heading3-bold mt-6 mb-6">All Postings</p>
+              <div className="grid grid-cols-3 gap-7">
+                {filteredBaskets?.map((basket) => (
+                  <CardComponent
+                    basket={basket}
+                    setOpenDialog={setOpenDialog}
+                    selectedBasket={selectedBasket}
+                    key={basket._id}
+                    className="flex flex-col bg-white rounded-lg shadow-lg"
+                    onPage="dashboard"
+                  />
+                ))}
+                {selectedBasket && openDialog && (
+                  <DialogComponent
+                    itemKey={JSON.stringify(selectedBasket)}
+                    openDialog={openDialog}
+                    handleCloseModal={handleCloseModal}
+                    otherBasket={selectedBasket}
+                  />
+                )}
+              </div>
+            </>
+          ) : (
+            <div>
+              <MapComponent />
+            </div>
+          )}
+          <PreferenceModal
+            isOpen={isPreferenceModalOpen}
+            onRequestClose={handleClosePreferenceModal}
+            onSave={handleSavePreferences}
+          />
+               <div className="mt-3">
         <PaginationComponent
           totalCards={totalCards}
           cardsPerPage={cardsPerPage}
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
         />
-      </div> */}
-    </div>
+      </div> 
+        </div>
+
+      )}
+    </>
   );
 }
 

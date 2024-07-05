@@ -116,26 +116,13 @@ function CardComponent({ basket, setOpenDialog, selectedBasket, onPage }) {
         </p>
       </div>
       <Separator></Separator>
-      {basket.status === "initiated" || basket?.status == undefined ? (
         <DrawerComponent
           id={basket._id}
           handleOpenDialog={setOpenDialog}
           selectedBasket={selectedBasket}
           onPage={onPage}
         />
-      ) : basket.status === "accepted" ? (
-        <Button className="bg-green-500">Accepted</Button>
-      ) : basket.status === "canceled" ? (
-        <Button className="self-center bg-red-500 ">Canceled</Button>
-      ) : (
-        <Link
-          className="self-center w-full"
-          href={{ pathname: "/chats" }}
-          shallow={true}
-        >
-          <Button className="bg-sky-500 w-full">Let's chat</Button>
-        </Link>
-      )}
+      
     </Card>
   );
 }
