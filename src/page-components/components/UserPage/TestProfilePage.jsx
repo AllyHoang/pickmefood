@@ -95,10 +95,10 @@ const TestProfilePage = ({
           <div>@{userData?.username}</div>
         </div>
         <div className="flex gap-5">
-          <Badge className="font-medium bg-sky-400 text-white">
+          <Badge className="font-medium border-sky-400 text-gray-700 bg-none">
             {numDonation} donations{" "}
           </Badge>
-          <Badge className="font-medium bg-sky-400 text-white">
+          <Badge className="font-medium border-sky-400 text-gray-700 bg-none">
             {numRequests} requests{" "}
           </Badge>
         </div>

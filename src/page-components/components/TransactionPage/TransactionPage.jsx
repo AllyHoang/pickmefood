@@ -61,7 +61,7 @@ function TransactionPage() {
     <div className="base-container">
     <div className="w-full">
 
-      <h1 className="text-heading2-bold">Transaction</h1>
+      <h1 className="text-heading1-bold">Transaction</h1>
       <TransactionSummary />
       <div className="max-w-screen-2xl mx-auto w-full pb-4 mt-4">
         <div className="text-heading3-bold line-clamp-1">All Transactions</div>

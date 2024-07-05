@@ -27,7 +27,7 @@ const UserPage = ({ userId, loggedInUserId }) => {
   const [activeTab, setActiveTab] = useState("my-requests");
 
   return (
-    <div className="base-container flex flex-col gap-4 mt-12 h-full max-h-full pb-12">
+    <div className="base-container flex flex-col gap-4 h-full max-h-full">
       <TestProfilePage
         userData={userData}
         loadingUserData={loadingUserData}

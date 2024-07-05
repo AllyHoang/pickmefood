@@ -479,7 +479,7 @@ export default function AddRequest({ userId }) {
                   onClick={handleAddItem}
                   className="w-fit justify-center bg-sky-400 hover:bg-sky-500"
                 >
-                  Add Request
+                  Add a Request
                 </Button>
               </div>
             </form>
