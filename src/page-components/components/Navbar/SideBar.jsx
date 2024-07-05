@@ -24,11 +24,13 @@ import {
 import { IoIosChatbubbles } from "react-icons/io";
 import { FiCreditCard } from "react-icons/fi";
 import { AiOutlineTrophy } from "react-icons/ai";
+import { IoChatbubblesOutline } from "react-icons/io5";
 import { FiBell } from "react-icons/fi";
 import { MdEvent } from "react-icons/md";
 import { MdOutlineLeaderboard } from "react-icons/md";
 import { useSelector } from "react-redux";
 import Image from "next/image";
+import { CiCalendar } from "react-icons/ci";
 
 const handleLogout = async () => {
   try {
@@ -68,8 +70,12 @@ const SideBar = () => {
       icon: <AiOutlineTrophy size="21px" />,
       label: "Leaderboard",
     },
-    { href: "/chats", icon: <IoIosChatbubbles size="20px" />, label: "Chats" },
-    { href: "/events", icon: <MdEvent size="20px" />, label: "Events" },
+    {
+      href: "/chats",
+      icon: <IoChatbubblesOutline size="20px" />,
+      label: "Chats",
+    },
+    { href: "/events", icon: <CiCalendar size="20px" />, label: "Events" },
   ];
 
   const isActive = (path) => {

@@ -64,19 +64,14 @@ const MyEvents = ({ userId }) => {
 
   return (
     <div className="h-screen flex flex-col">
-      {/* Sticky header */}
-      <div className="sticky top-0 bg-white z-50 shadow-md">
-        <div className="container mx-auto py-4 flex justify-between items-center">
-          <span className="text-5xl font-bold text-gray-800">My Events</span>
-        </div>
-      </div>
+      <h1 className="text-heading1-bold mt-4">My Events</h1>
 
       {/* Scrollable content */}
       <div
         className="flex-grow overflow-y-scroll "
         style={{ scrollbarWidth: "none" }}
       >
-        <div className="container mx-auto py-4">
+        <div className="container mx-auto py-4 mt-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {currentEvents.map((event) => (
               <div key={event._id} className="w-full">

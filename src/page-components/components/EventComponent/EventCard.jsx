@@ -1,10 +1,12 @@
-// src/components/EventCard.jsx
-
 import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import PaymentPage from "../CheckOutForm/PaymentPage";
 import { useRouter } from "next/router";
+import { format } from "date-fns";
+import Comments from "./Comments";
+import { CiHeart } from "react-icons/ci";
+import { FaHeart } from "react-icons/fa";
 
 const EventCard = ({ event, userId }) => {
   const {
@@ -19,13 +21,37 @@ const EventCard = ({ event, userId }) => {
     _id,
     progress,
   } = event;
+
   const [progressStick, setProgress] = useState(0);
   const [remainingMoney, setRemainingMoney] = useState(money);
+  const [liked, setLiked] = useState(false); // Local state for liking
   const router = useRouter();
   const [eventId, setEventId] = useState("");
   const [isChatLive, setIsChatLive] = useState(false);
 
   useEffect(() => {
+    // Fetch initial liked state when component mounts
+    const fetchLikedState = async () => {
+      try {
+        const response = await fetch(`/api/events/${_id}/likes`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch liked state");
+        }
+        const data = await response.json();
+        const isLikedByUser = data.event.likedBy.some(
+          (like) => like.user === userId && like.state
+        );
+        setLiked(isLikedByUser);
+      } catch (error) {
+        console.error("Error fetching liked state:", error);
+      }
+    };
+
+    fetchLikedState();
+  }, [_id, userId]);
+
+  useEffect(() => {
+    // WebSocket setup example
     const socket = new WebSocket("ws://localhost:8080");
 
     socket.onopen = () => {
@@ -51,7 +77,6 @@ const EventCard = ({ event, userId }) => {
           console.error("Error parsing JSON:", error);
         }
       } else if (event.data instanceof Blob) {
-        // Handle Blob data, if necessary
         const reader = new FileReader();
         reader.onload = () => {
           try {
@@ -88,6 +113,7 @@ const EventCard = ({ event, userId }) => {
   }, []);
 
   useEffect(() => {
+    // Example fetch progress function
     const fetchProgress = async () => {
       try {
         const response = await fetch(`/api/events/${_id}`);
@@ -107,24 +133,68 @@ const EventCard = ({ event, userId }) => {
   }, [_id, money]);
 
   const routeToChannel = () => {
-    // Example: Redirect to a specific route based on the event _id
-    router.push(`/channel/Summer Festival`);
+    router.push(`/channel/${_id}`);
+  };
+
+  const formatDate = (date) => {
+    return format(new Date(date), "MMMM d, yyyy");
+  };
+
+  const handleLike = async () => {
+    try {
+      // Post the like state to the server
+      const response = await fetch(`/api/events/${_id}/likes`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, state: !liked }), // Toggle liked state
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to like event");
+      }
+
+      // Update local state based on the server response
+      const { event: updatedEvent } = await response.json();
+      setLiked(
+        updatedEvent.likedBy.some((like) => like.user === userId && like.state)
+      );
+    } catch (error) {
+      console.error("Error liking event:", error);
+    }
   };
 
   return (
-    <div className="event-card bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
-      <img
-        src={image}
-        alt={eventName}
-        className="card-image w-full h-48 object-cover"
-      />
+    <div className="relative bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300">
+      <div className="relative">
+        <img
+          src={image}
+          alt={eventName}
+          className="card-image w-full h-48 object-cover"
+        />
+        <button
+          className="absolute top-2 left-2 z-10 focus:outline-none"
+          onClick={handleLike}
+        >
+          {liked ? (
+            <FaHeart className="h-12 w-12 text-red-500" />
+          ) : (
+            <CiHeart
+              className={`h-12 w-12 ${
+                liked ? "text-red-500" : "text-white hover:text-red-500"
+              }`}
+            />
+          )}
+        </button>
+      </div>
       <div className="p-4 flex flex-col h-full">
         <div className="flex justify-between items-center mb-2">
           <h2 className="card-title text-xl font-semibold text-gray-800">
             {eventName}
           </h2>
           <div className="date-box bg-white text-gray-700 border border-gray-300 px-2 py-1 rounded shadow-sm">
-            <span className="text-xs">{expirationDate}</span>
+            <span className="text-xs">{formatDate(expirationDate)}</span>
           </div>
           {isChatLive && _id === eventId && (
             <button
@@ -145,12 +215,12 @@ const EventCard = ({ event, userId }) => {
         <div className="mb-4">
           <div className="card-progress h-4 bg-gray-200 rounded-full mb-1">
             <div
-              className="card-progress-bar h-full bg-blue-500 rounded-full"
+              className="card-progress-bar h-full bg-sky-200 rounded-full"
               style={{ width: `${progressStick}%` }}
             ></div>
           </div>
           <p className="card-funding-info text-sm text-gray-700">
-            To be funded: ${remainingMoney} (${progress.toFixed(2)}% funded)
+            To be funded: ${remainingMoney} ({progress.toFixed(2)}% funded)
           </p>
         </div>
         <Dialog>

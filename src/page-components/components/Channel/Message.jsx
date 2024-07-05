@@ -5,6 +5,7 @@ import { FaTrash } from "react-icons/fa"; // Import trash icon from react-icons/
 export const Message = ({ key, content, id, onDelete, userId, sender }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [user, setUser] = useState(null); // State to store user info
+  const [senderInfo, setSender] = useState(null);
 
   const isMine = sender?.userId === userId;
 
@@ -23,9 +24,23 @@ export const Message = ({ key, content, id, onDelete, userId, sender }) => {
         console.error("Error fetching user info:", error);
       }
     };
+    const fetchSenderInfo = async () => {
+      try {
+        // Example fetch request to retrieve user data
+        const response = await fetch(`/api/users/${sender?.userId}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch user data");
+        }
+        const userData = await response.json();
+        setSender(userData.user); // Set user data in state
+      } catch (error) {
+        console.error("Error fetching user info:", error);
+      }
+    };
 
     fetchUserInfo();
-  }, [userId]);
+    fetchSenderInfo();
+  }, [userId, sender?.userId]);
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -58,7 +73,7 @@ export const Message = ({ key, content, id, onDelete, userId, sender }) => {
       {/* Render profile image if user data is available */}
       {user && (
         <img
-          src={user.profileImage}
+          src={senderInfo?.profileImage}
           alt={user.name}
           style={{
             width: 40,

@@ -98,9 +98,11 @@ const TestProfilePage = ({
           <Badge className="font-medium border-sky-400 text-gray-700 bg-none">
             {numDonation} donations{" "}
           </Badge>
+
           <Badge className="font-medium border-sky-400 text-gray-700 bg-none">
             {numRequests} requests{" "}
           </Badge>
+
         </div>
         <div className="w-3/4">
           This is a short hardcoded bio. I would like to add a field in user

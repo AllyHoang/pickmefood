@@ -1,9 +1,9 @@
-// src/pages/EventPage.jsx
-
 import React, { useState, useEffect } from "react";
 import EventCard from "./EventCard";
 import { useRouter } from "next/router";
 import { useChat } from "@/lib/ChatContext";
+import Calendar from "./EventCalendar";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 
 const EventPage = ({ userId }) => {
@@ -15,8 +15,6 @@ const EventPage = ({ userId }) => {
   const { isChatLive, eventId } = useChat();
 
   const router = useRouter();
-  console.log(isChatLive);
-  console.log(eventId);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -70,7 +68,8 @@ const EventPage = ({ userId }) => {
   return (
     <div className="base-container h-screen flex flex-col">
       {/* Sticky header */}
-      <div className="sticky top-0 bg-white z-50 shadow-md">
+      <h1 className="text-heading1-bold mt-4">Upcoming Events</h1>
+      <div className="sticky top-20 bg-white z-50 shadow-md">
         <div className="container mx-auto py-4 flex justify-between items-center">
           <span className="text-heading2-bold font-bold text-gray-800">
             Upcoming Events
@@ -94,10 +93,10 @@ const EventPage = ({ userId }) => {
 
       {/* Scrollable content */}
       <div
-        className="flex-grow overflow-y-scroll "
+        className="flex-grow overflow-y-scroll"
         style={{ scrollbarWidth: "none" }}
       >
-        <div className="container mx-auto py-4">
+        <div className="container mx-auto py-4 mt-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {currentEvents.map((event) => (
               <div key={event._id} className="w-full">
