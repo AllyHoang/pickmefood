@@ -28,6 +28,8 @@ import {
 import { useSelector } from "react-redux";
 import TopDonors from "./TopDonors";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+
 
 function Leaderboard() {
   const { loading, error, currentUser } = useSelector((state) => state.user);
@@ -39,9 +41,9 @@ function Leaderboard() {
   });
   const rankTiers = [
     { name: "Bronze", minPoints: 0, maxPoints: 100 },
-    { name: "Silver", minPoints: 101, maxPoints: 200 },
-    { name: "Gold", minPoints: 201, maxPoints: 300 },
-    { name: "Platinum", minPoints: 301, maxPoints: Infinity }, // Infinity for the highest tier
+    { name: "Silver", minPoints: 101, maxPoints: 500 },
+    { name: "Gold", minPoints: 501, maxPoints: 1000 },
+    { name: "Platinum", minPoints: 1001, maxPoints: Infinity }, // Infinity for the highest tier
   ];
 
   // Function to determine rank based on points
@@ -72,6 +74,21 @@ function Leaderboard() {
     } catch (error) {
       console.error(`Error fetching transactions for user ${userId}:`, error);
       return []; // Return empty array if fetching fails
+    }
+  };
+
+  const getRankColorClass = (rank) => {
+    switch (rank) {
+      case "Platinum":
+        return "bg-blue-300"; // Adjust the color as needed
+      case "Gold":
+        return "bg-yellow-300"; // Adjust the color as needed
+      case "Silver":
+        return "bg-gray-300"; // Adjust the color as needed
+      case "Bronze":
+        return "bg-orange-300"; // Adjust the color as needed
+      default:
+        return "bg-gray-300"; // Default color for unknown ranks
     }
   };
 
@@ -162,33 +179,10 @@ function Leaderboard() {
     {
       accessorKey: "rank",
       header: () => <div className="text-center">Rank</div>,
-      cell: ({ getValue }) => <div className="text-center">{getValue()}</div>,
+      cell: ({ getValue }) => <Badge className={` text-white ${getRankColorClass(getValue())} text-small-medium`}>
+      {getValue()}
+    </Badge>,
     },
-    // {
-    //   id: "actions",
-    //   enableHiding: false,
-    //   cell: ({ row }) => (
-    //     <DropdownMenu>
-    //       <DropdownMenuTrigger asChild>
-    //         <Button variant="ghost" className="h-8 w-8 p-0">
-    //           <span className="sr-only">Open menu</span>
-    //           <MoreHorizontal className="h-4 w-4" />
-    //         </Button>
-    //       </DropdownMenuTrigger>
-    //       <DropdownMenuContent align="end">
-    //         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-    //         <DropdownMenuItem
-    //           onClick={() => navigator.clipboard.writeText(row.original.id)}
-    //         >
-    //           Copy payment ID
-    //         </DropdownMenuItem>
-    //         <DropdownMenuSeparator />
-    //         <DropdownMenuItem>View customer</DropdownMenuItem>
-    //         <DropdownMenuItem>View payment details</DropdownMenuItem>
-    //       </DropdownMenuContent>
-    //     </DropdownMenu>
-    //   ),
-    // },
   ];
 
   const table = useReactTable({
@@ -206,7 +200,7 @@ function Leaderboard() {
   });
 
   return (
-    <div className="w-full">
+    <div className=" mt-10 w-full  ">
       <h1 className="text-heading1-bold"> Leaderboard</h1>
 
       <div className="max-w-screen-2xl mx-auto w-full pb-4 mt-10">
@@ -255,11 +249,13 @@ function Leaderboard() {
               <TableBody className="bg-white divide-y divide-gray-200">
                 {table.getRowModel().rows.length ? (
                   table.getRowModel().rows.map((row) => (
-                    <TableRow key={row.id}>
+                    <TableRow key={row.id} className={`${
+                      row.original._id === currentUser.id ? "bg-gray-100" : "bg-white"
+                    } divide-y divide-gray-200`}>
                       {row.getVisibleCells().map((cell) => (
                         <TableCell
                           key={cell.id}
-                          className="px-6 py-4 whitespace-nowrap "
+                          className={`px-6 py-4 whitespace-nowrap `}
                         >
                           {flexRender(
                             cell.column.columnDef.cell,
