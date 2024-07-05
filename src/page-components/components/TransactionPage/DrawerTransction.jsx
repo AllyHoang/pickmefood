@@ -13,7 +13,7 @@ import { IoIosArrowBack } from "react-icons/io";
 import Link from "next/link";
 import { RxSewingPin } from "react-icons/rx";
 import { RxPerson } from "react-icons/rx";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Router } from "lucide-react";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -25,6 +25,7 @@ import { AiOutlineCloseCircle } from "react-icons/ai";
 import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import { toast } from "react-toastify";
 import SubDrawer from "./SubDrawer";
+import { Separator } from "@/components/ui/separator";
 
 function DrawerTransaction({ selectedTransaction, id, handleOpenDialog }) {
   const [open, setOpen] = useState(false);
@@ -148,27 +149,27 @@ function DrawerTransaction({ selectedTransaction, id, handleOpenDialog }) {
         </Link>
       </DrawerTrigger>
 
-      <DrawerContent className="bg-white flex flex-grow flex-col rounded-t-lg shadow-xl transition-all duration-300 h-screen w-[600px] mt-24 fixed bottom-0 right-0">
-        <div className="">
-          <div className="flex flex-col gap-10 p-2 mt-5">
+      <DrawerContent className="bg-white flex flex-grow flex-col rounded-t-lg shadow-xl transition-all duration-300 h-screen w-[600px] mt-24 fixed bottom-0 right-0 px-3 pt-3">
+        <div className="h-full flex flex-col overflow-hidden">
+          <div className="flex-1 flex overflow-y-scroll flex-col gap-6 p-2 mt-5">
             <SubDrawer
               user={selectedTransaction?.donorId}
               basket={selectedTransaction?.basketId}
               type="Donation"
             ></SubDrawer>
-
+            <Separator/>
             <SubDrawer
               user={selectedTransaction?.requesterId}
               basket={selectedTransaction?.basketrequestId}
               type="Request"
             ></SubDrawer>
           </div>
-
-          <div className="mt-2 flex items-center justify-center gap-2">
+<div className="sticky bottom-0 flex flex-col gap-1 items-center mb-2">
+          <div className="mt-2 flex justify-center gap-2 w-10/12">
             {((isDonor && !selectedTransaction?.agreedByDonor) ||
               (!isDonor && !selectedTransaction?.agreedByRequester)) &&
               selectedTransaction?.status === "pending" && (
-                <button
+                <Button
                   onClick={() => {
                     handleAccept(selectedTransaction);
                     // router.reload();
@@ -179,10 +180,10 @@ function DrawerTransaction({ selectedTransaction, id, handleOpenDialog }) {
                     size={20}
                   ></IoMdCheckmarkCircleOutline>
                   Accept
-                </button>
+                </Button>
               )}
             {selectedTransaction?.status === "connected" && (
-              <button
+              <Button
                 onClick={() => {
                   handleDoneTransaction(selectedTransaction);
                   // router.reload();
@@ -191,11 +192,11 @@ function DrawerTransaction({ selectedTransaction, id, handleOpenDialog }) {
               >
                 <AiOutlineCloseCircle size={20}></AiOutlineCloseCircle>
                 Done
-              </button>
+              </Button>
             )}
             {selectedTransaction?.status !== "canceled" &&
               selectedTransaction?.status !== "accepted" && (
-                <button
+                <Button
                   onClick={() => {
                     handleCancel(selectedTransaction);
                     // router.reload();
@@ -205,25 +206,26 @@ function DrawerTransaction({ selectedTransaction, id, handleOpenDialog }) {
                     (!isDonor && selectedTransaction?.agreedByRequester)
                       ? "w-full"
                       : "w-1/2"
-                  } bg-red-500 hover:bg-red-400 text-white py-2 gap-1 rounded transition duration-150 ease-in-out`}
+                  } bg-red-500 hover:bg-red-400 text-white py-2 w-1/2 gap-1 rounded transition duration-150 ease-in-out`}
                 >
                   <AiOutlineCloseCircle size={20}></AiOutlineCloseCircle>
                   Cancel
-                </button>
+                </Button>
               )}
           </div>
           {selectedTransaction?.agreedByRequester &&
             selectedTransaction?.agreedByDonor && (
-              <button
+              <Button
                 onClick={() => {
                   handleChat(selectedTransaction);
                 }}
-                className="flex items-center justify-center gap-1 w-full bg-sky-500 hover:bg-sky-400 text-white py-2 rounded transition duration-150 ease-in-out mt-2"
+                className="flex items-center justify-center gap-1 w-10/12 bg-sky-500 hover:bg-sky-400 text-white py-2 rounded transition duration-150 ease-in-out mt-2"
               >
                 <CiChat2 size={20} />
                 Let's connect
-              </button>
+              </Button>
             )}
+          </div>
         </div>
       </DrawerContent>
     </Drawer>

@@ -16,7 +16,7 @@ export const DashboardLayout = ({ children }) => {
               <HorizontalBar></HorizontalBar>
             </div>
           </div>
-          <main className="flex overflow-y-scroll flex-1 base-container hide-scrollbar">
+          <main className="flex overflow-y-scroll flex-1 hide-scrollbar">
             {children}
           </main>
         </div>
