@@ -29,6 +29,7 @@ import { useSelector } from "react-redux";
 import TopDonors from "./TopDonors";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 
 function Leaderboard() {
@@ -219,9 +220,10 @@ function Leaderboard() {
           <CardTitle className="text-heading3-bold line-clamp-1">
             All Users
           </CardTitle>
-          <Button className="bg-sky-400" size="sm">
-            Point's System
-          </Button>
+          <Link href={`/profile/${currentUser?.username}`}>
+            <Button className="bg-sky-400" size="sm">  Gain more points</Button>
+           
+          </Link>
         </CardHeader>
         <CardContent>
           <div className="rounded-md border p-4">
