@@ -7,22 +7,16 @@ import {
   FiTruck,
 } from "react-icons/fi";
 
-const TransactionSummary = () => {
-  const [transactions, setTransactions] = useState({
-    total: 1000,
-    pending: 145,
-    accepted: 812,
-    cancelled: 80,
-  });
+const TransactionSummary = ({canceledTransactions, acceptedTransactions, pendingTransactions, matchedTransactions}) => {
+  const [transactions, setTransactions] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
-      // Simulate fetching data
       setTransactions({
-        total: 1000,
-        pending: 145,
-        accepted: 812,
-        cancelled: 80,
+        matched: matchedTransactions.length,
+        pending: pendingTransactions.length,
+        accepted: acceptedTransactions.length,
+        cancelled: canceledTransactions.length,
       });
     };
 
@@ -31,29 +25,29 @@ const TransactionSummary = () => {
 
   const stats = [
     {
-      label: "Total",
-      count: transactions.total,
+      label: "Pending",
+      count: pendingTransactions.length,
       bgColor: "bg-blue-200",
       Icon: FiPackage,
       iconBgColor: "bg-blue-100",
     },
     {
-      label: "Pending",
-      count: transactions.pending,
+      label: "Matched",
+      count: matchedTransactions.length,
       bgColor: "bg-orange-200",
       Icon: FiClock,
       iconBgColor: "bg-orange-100",
     },
     {
       label: "Accepted",
-      count: transactions.accepted,
+      count: acceptedTransactions.length,
       bgColor: "bg-green-200",
       Icon: FiCheckCircle,
       iconBgColor: "bg-green-100",
     },
     {
       label: "Cancelled",
-      count: transactions.cancelled,
+      count: canceledTransactions.length,
       bgColor: "bg-red-200",
       Icon: FiXCircle,
       iconBgColor: "bg-red-100",
