@@ -168,13 +168,13 @@ function DrawerComponent({ selectedBasket, id, handleOpenDialog, onPage }) {
 
         <div className="mt-4" onClick={() => handleOpenDialog(true)}>
           {selectedBasket?.type === "Request" ? (
-            <button className="w-10/12 fixed bottom-1 left-10 bg-sky-500">
+            <Button className="w-10/12 fixed bottom-4 left-10 bg-sky-500">
               Donate
-            </button>
+            </Button>
           ) : (
-            <button className="w-10/12 fixed bottom-1 left-10 bg-emerald-500">
+            <Button className="w-10/12 fixed bottom-4 left-10 bg-emerald-500">
               Request
-            </button>
+            </Button>
           )}
         </div>
       </DrawerContent>

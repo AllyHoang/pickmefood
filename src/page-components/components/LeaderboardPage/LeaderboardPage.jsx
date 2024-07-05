@@ -204,7 +204,7 @@ function Leaderboard() {
     <div className=" mt-10 w-full  ">
       <h1 className="text-heading1-bold"> Leaderboard</h1>
 
-      <div className="max-w-screen-2xl mx-auto w-full pb-4 mt-10">
+      <div className="max-w-screen-2xl mx-auto w-full mt-6">
         <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
           <CardTitle className="text-heading3-bold line-clamp-1">
             Top Donors
@@ -215,7 +215,7 @@ function Leaderboard() {
         </CardContent>
       </div>
 
-      <div className="max-w-screen-2xl mx-auto w-full pb-4">
+      <div className="max-w-screen-2xl mx-auto w-full">
         <CardHeader className="gap-y-2 lg:flex-row lg:items-center lg:justify-between">
           <CardTitle className="text-heading3-bold line-clamp-1">
             All Users
@@ -226,7 +226,7 @@ function Leaderboard() {
           </Link>
         </CardHeader>
         <CardContent>
-          <div className="rounded-md border p-4">
+          <div className="rounded-md border">
             <Table className="min-w-full divide-y divide-gray-200">
               <TableHeader className="bg-sky-100">
                 {table.getHeaderGroups().map((headerGroup) => (

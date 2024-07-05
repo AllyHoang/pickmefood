@@ -75,6 +75,7 @@ function TransactionPage() {
   console.log("matchedTransactions: ", matchedTransactions);
 
   return (
+    <div className="base-container">
     <div className="w-full">
       <h1 className="text-heading1-bold">Transaction</h1>
       <TransactionSummary
@@ -173,6 +174,7 @@ function TransactionPage() {
                             )}
                         </div> */}
       </div>
+    </div>
     </div>
   );
 }

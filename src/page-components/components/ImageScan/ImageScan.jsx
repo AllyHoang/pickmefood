@@ -35,7 +35,7 @@ const ImageScan = ({ userId }) => {
   const [error, setError] = useState(null);
   const router = useRouter();
   const [scanning, setScanning] = useState(false);
-  const {confirmedItems: confirmedItemsFromQuery} = router.query;
+  const { confirmedItems: confirmedItemsFromQuery } = router.query;
   const { currentUser } = useSelector((state) => state.user);
 
   const itemsPerPage = 10;
@@ -203,8 +203,8 @@ const ImageScan = ({ userId }) => {
       externalImageSource={uploadedImage}
     />
   ) : (
-    <div className="flex flex-col gap-6 overflow-auto h-full pb-16">
-<div className="base-container">
+    <div className="flex flex-col gap-6 overflow-auto h-full pb-8 max-h-screen">
+      <div className="base-container">
         <Breadcrumbs
           crumbs={[
             {
@@ -216,181 +216,193 @@ const ImageScan = ({ userId }) => {
           className="text-small-medium mt-8"
         />
       </div>
-      <div className="flex flex-col items-center h-full gap-4">
-      <h1 className="text-heading2-bold text-gray-700 pt-5">Scan your photo</h1>
-      <h2 className="text-body-medium text-gray-700">
-        We will detect items from your uploaded photo, then use them to create
-        donation
-      </h2>
-      <p className="text-base-light text-gray-500">
-        Want a different way? Try
-        <a
-          href="/add-item"
-          className="underline underline-offset-2 hover:text-blue-400"
-        >
-          {" "}
-          creating manually
-        </a>
-        <a
-          href="/video-scan"
-          className="underline underline-offset-2 hover:text-blue-400"
-        >
-          {" "}
-          or do a video scan
-        </a>
-      </p>
-      {!firstImageUploaded && (
-        <CldUploadButton
-          options={{ maxFiles: 1 }}
-          folder="images"
-          onSuccess={handleFirstUploadSuccess}
-          onFailure={(error) =>
-            console.error("Cloudinary upload error:", error)
-          }
-          uploadPreset="zoa1vsa7"
-        >
-          <Button className="bg-sky-400 hover:bg-sky-600">
-            Upload your photo
-          </Button>
-        </CldUploadButton>
-      )}
-      {firstImageUploaded && !secondImageUploaded && (
-        <CldUploadButton
-          options={{ maxFiles: 1 }}
-          folder="images"
-          onSuccess={handleSecondUploadSuccess}
-          onFailure={(error) =>
-            console.error("Cloudinary upload error:", error)
-          }
-          uploadPreset="zoa1vsa7"
-        >
-          <Button className="w-fit bg-slate-100 text-gray-700 hover:bg-slate-300 rounded-lg">
-            Upload again
-          </Button>
-        </CldUploadButton>
-      )}
-
-      <div className="grid grid-cols-2 max-w-[90%] self-center w-full flex-1 gap-8 p-8">
+      <div className="mx-auto flex flex-col items-center gap-2 mt-4">
+        <h1 className="text-heading2-bold text-gray-700">Scan your photo</h1>
+        <p className="text-body-medium font-normal">
+          We will detect items from your photo and use them to create a
+          donation.
+        </p>
+        <p className="text-base-light text-gray-500">
+          Want a different way? Try
+          <a
+            href="/add-item"
+            className="underline underline-offset-2 hover:text-blue-400"
+          >
+            {" "}
+            creating manually
+          </a>
+          <a
+            href="/video-scan"
+            className="underline underline-offset-2 hover:text-blue-400"
+          >
+            {" "}
+            or do a video scan
+          </a>
+        </p>
+      </div>
+      <div className="self-center flex gap-4">
+        {!firstImageUploaded && (
+          <CldUploadButton
+            options={{ maxFiles: 1 }}
+            folder="images"
+            onSuccess={handleFirstUploadSuccess}
+            onFailure={(error) =>
+              console.error("Cloudinary upload error:", error)
+            }
+            uploadPreset="zoa1vsa7"
+          >
+            <Button className="bg-sky-400 hover:bg-sky-700">
+              Upload your photo
+            </Button>
+          </CldUploadButton>
+        )}
+        {firstImageUploaded && !secondImageUploaded && (
+          <CldUploadButton
+            options={{ maxFiles: 1 }}
+            folder="images"
+            onSuccess={handleSecondUploadSuccess}
+            onFailure={(error) =>
+              console.error("Cloudinary upload error:", error)
+            }
+            uploadPreset="zoa1vsa7"
+          >
+            <Button variant="outline">Upload again</Button>
+          </CldUploadButton>
+        )}
+      </div>
+      <div className="grid grid-cols-2 base-container self-center gap-8 w-full flex-1 mt-2 overflow-hidden">
         {uploadedImage && (
-          <div className="col-span-1">
+          <div className="col-span-1 p-1">
             <div className="w-full h-full relative">
               <Image
                 src={uploadedImage}
                 alt="Your uploaded photo"
                 fill
-                className="object-fill rounded object-top"
+                className="object-cover rounded-md object-top shadow-md"
               />
             </div>
           </div>
         )}
         {uploadedImage && detectedItems.length === 0 ? (
-          <div className="border-dashed border-2 border-gray-400 rounded-lg flex flex-col items-center justify-center gap-2">
-            <p className="text-gray-500 text-base-light">
-              Please note that your photo may be cropped for display purposes
+          <div className="border border-dashed flex flex-col gap-1 items-center justify-center rounded p-8">
+            <p className="text-muted-foreground text-center">
+              Please note, your photo may be cropped for display purposes.
             </p>
-            <p className="text-gray-500 text-base-light">
-              All scanned items will appear here
+            <p className="text-muted-foreground text-center">
+              All scanned items will appear here.
             </p>
             {scanning ? (
-              <AiOutlineLoading3Quarters className="text-muted-foreground mt-3 animate-spin" />
+              <AiOutlineLoading3Quarters className="animate-spin text-muted-foreground mt-4" />
             ) : (
-              <Button onClick={runClarifai} className="bg-sky-400 mt-1">
-                Scan Image
+              <Button onClick={runClarifai} className="bg-sky-400 hover:bg-sky-500 mt-4">
+                Scan photo
               </Button>
             )}
           </div>
-        ) : (
-          <div>
-            {detectedItems.length > 0 && (
-              <div className="flex flex-col w-full gap-8">
-                <Card className="flex flex-col max-h-72 overflow-hidden">
-                  <div className="flex flex-col items-center pt-4 pb-3">
-                    <p className="text-base-bold">Detected items</p>
-
-                    <p className="text-small-medium text-muted-foreground">
-                      Tick to choose the items
+        ) : uploadedImage && detectedItems.length > 0 ? (
+          <div className="flex flex-col gap-8 h-full max-h-full overflow-hidden">
+            <Card className="flex flex-col max-h-64 overflow-hidden m-1">
+              <CardHeader className="text-base-bold pb-2">
+                <CardTitle>Detected items</CardTitle>
+                <CardDescription
+                  className="text-small-medium"
+                  style={{ fontWeight: "400" }}
+                >
+                  <p className="text-muted-foreground">
+                    Tick to choose the items
+                  </p>
+                </CardDescription>
+              </CardHeader>
+              <div className="flex-1 overflow-y-scroll px-6">
+                <ul className="list-none p-0 m-0">
+                  {detectedItems.map((item, index) => (
+                    <li
+                      key={item}
+                      className={`flex items-center ${
+                        index !== detectedItems.length - 1
+                          ? "border-b border-gray-300 py-2"
+                          : "pt-2 pb-3"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        id={`item-${index}`}
+                        checked={confirmedItems.has(item)}
+                        onChange={(e) =>
+                          e.target.checked
+                            ? handleItemCheck(item)
+                            : handleItemUncheck(item)
+                        }
+                        className="mr-2"
+                      />
+                      <label
+                        htmlFor={`item-${index}`}
+                        className="text-gray-700"
+                      >
+                        {item}
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Card>
+            <Card className="flex flex-col flex-1 overflow-hidden m-1 gap-4">
+              <CardHeader className="text-base-bold pb-0">
+                <CardTitle>
+                  Chosen items{" "}
+                  {[...confirmedItems].length > 0 && (
+                    <span className="text-muted-foreground text-small-medium">
+                      ({[...confirmedItems].length})
+                    </span>
+                  )}
+                </CardTitle>
+                <CardDescription
+                  className="text-small-medium"
+                  style={{ fontWeight: "400" }}
+                >
+                  <p className="text-muted-foreground">
+                    Scroll to see more items
+                  </p>
+                </CardDescription>
+              </CardHeader>
+              <div className="flex-1 h-64 overflow-y-scroll px-6">
+                {[...confirmedItems].length === 0 ? (
+                  <div className="h-full flex flex-col justify-center">
+                    <p className="text-center text-muted-foreground">
+                      Please choose at least one item.
                     </p>
                   </div>
-
-                  <div className="flex-1 overflow-y-scroll px-6">
-                    <ul className="list-none p-0 m-0">
-                      {detectedItems.map((item, index) => (
-                        <li
-                          key={item}
-                          className={`flex items-center ${
-                            index !== detectedItems.length - 1
-                              ? "border-b border-gray-300 py-2"
-                              : "pt-2 pb-3"
-                          }`}
-                        >
-                          <input
-                            type="checkbox"
-                            id={`item-${index}`}
-                            checked={confirmedItems.has(item)}
-                            onChange={(e) =>
-                              e.target.checked
-                                ? handleItemCheck(item)
-                                : handleItemUncheck(item)
-                            }
-                            className="mr-2"
-                          />
-                          <label
-                            htmlFor={`item-${index}`}
-                            className="text-gray-700"
-                          >
-                            {item}
-                          </label>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </Card>
-                <Card className="flex flex-col flex-1 max-h-72 overflow-hidden">
-                  <p className="text-base-bold flex flex-col items-center pt-4 pb-3">
-                    Confirm items
-                  </p>
-                  <div className="flex-1 overflow-y-scroll px-6 max-h-64">
-                    {[...confirmedItems].length === 0 ? (
-                      <div className="h-full flex flex-col justify-center">
-                        <p className="text-center text-muted-foreground">
-                          Please choose at least one item.
-                        </p>
-                      </div>
-                    ) : (
-                      <ul className="list-none p-0 m-0">
-                        {[...confirmedItems].reverse().map((item, index) => (
-                          <li
-                            key={item}
-                            className={`flex items-center ${
-                              index !== [...confirmedItems].length - 1
-                                ? "border-b border-gray-300 py-2"
-                                : "pt-2 pb-4"
-                            }`}
-                          >
-                            {item}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                  <Button
-                    onClick={redirectToConfirmationPage}
-                    className="bg-sky-400 hover:bg-sky-600 m-4"
-                    disabled={[...confirmedItems].length === 0}
-                  >
-                    Go to confirmation page
-                  </Button>
-                </Card>
+                ) : (
+                  <ul className="list-none p-0 m-0">
+                    {[...confirmedItems].reverse().map((item, index) => (
+                      <li
+                        key={item}
+                        className={`flex items-center ${
+                          index !== [...confirmedItems].length - 1
+                            ? "border-b border-gray-300 py-2"
+                            : "pt-2 pb-4"
+                        } ${index === 0 && "pt-0"}`}
+                      >
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
-            )}
+              <Button
+                onClick={redirectToConfirmationPage}
+                className="bg-sky-400 hover:bg-sky-500 mx-6 mt-auto mb-4"
+                disabled={[...confirmedItems].length === 0}
+              >
+                {" "}
+                Confirm your items
+              </Button>
+            </Card>
           </div>
-        )}
+        ) : null}
       </div>
     </div>
-    </div>
-  )
-    
-  
+  );
 };
 
 export default ImageScan;

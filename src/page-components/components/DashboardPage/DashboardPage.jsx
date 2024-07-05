@@ -120,7 +120,7 @@ function DashboardPage({ userId }) {
   // );
 
   return (
-    <div>
+    <div className="base-container">
       {viewType === "list" ? (
         <>
 
@@ -168,7 +168,7 @@ function DashboardPage({ userId }) {
             </div>
           </div>
 
-          <p className="text-heading2-bold mt-6 mb-6 ">Top Matches</p>
+          <p className="text-heading3-bold mt-6 mb-6 ">Top Matches</p>
           <TopMatchComponent
             matches={filteredMatches}
             handleOpenPreferenceModal={handleOpenPreferenceModal}
@@ -178,7 +178,7 @@ function DashboardPage({ userId }) {
             openDialog={openDialog}
           ></TopMatchComponent>
 
-          <p className="text-heading2-bold mt-6 mb-6 ">All Postings</p>
+          <p className="text-heading3-bold mt-6 mb-6 ">All Postings</p>
           <div className="grid grid-cols-3 gap-7">
             {filteredBaskets?.map((basket) => {
               return (

@@ -24,11 +24,13 @@ import {
 import { IoIosChatbubbles } from "react-icons/io";
 import { FiCreditCard } from "react-icons/fi";
 import { AiOutlineTrophy } from "react-icons/ai";
+import { IoChatbubblesOutline } from "react-icons/io5";
 import { FiBell } from "react-icons/fi";
 import { MdEvent } from "react-icons/md";
 import { MdOutlineLeaderboard } from "react-icons/md";
 import { useSelector } from "react-redux";
 import Image from "next/image";
+import { CiCalendar } from "react-icons/ci";
 
 const handleLogout = async () => {
   try {
@@ -68,8 +70,12 @@ const SideBar = () => {
       icon: <AiOutlineTrophy size="21px" />,
       label: "Leaderboard",
     },
-    { href: "/chats", icon: <IoIosChatbubbles size="20px" />, label: "Chats" },
-    { href: "/events", icon: <MdEvent size="20px" />, label: "Events" },
+    {
+      href: "/chats",
+      icon: <IoChatbubblesOutline size="20px" />,
+      label: "Chats",
+    },
+    { href: "/events", icon: <CiCalendar size="20px" />, label: "Events" },
   ];
 
   const isActive = (path) => {
@@ -83,14 +89,14 @@ const SideBar = () => {
 
   return (
     <>
-      <NavigationMenu className="border shadow-md h-screen">
+      <NavigationMenu className="border shadow-md h-screen bg-sky-100">
         <NavigationMenuList className="flex flex-col items-start md:h-[100vh] space-y-6 pt-6 justify-between">
           <div>
             <NavigationMenuItem className="flex items-center align-center pl-2 pr-6">
               <Link href="/dashboard" legacyBehavior passHref>
                 <NavigationMenuLink className={`text-heading3-bold`}>
                   <Image
-                    src="/Pick Me Food Logo.png"
+                    src="/Logo transparent.png"
                     alt="Pick Me Food Logo"
                     width={190}
                     height={80}
@@ -98,9 +104,9 @@ const SideBar = () => {
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
-            <hr className="my-2 border-t-2 border-gray-200"></hr>
+            {/* <hr className="my-2 border-t-2 border-gray-200"></hr> */}
 
-            <div className="flex flex-col justify-between space-y-2">
+            <div className="flex flex-col justify-between space-y-2 mt-4">
               {MenuList.map((item) => (
                 <NavigationMenuItem key={item.label} className="w-[100%]">
                   <Link href={item.href} legacyBehavior passHref>
@@ -133,8 +139,8 @@ const SideBar = () => {
             </div>
           </div>
           <div>
-            <hr className="border"></hr>
-            <div className="flex align-middle justify-start">
+            {/* <hr className="border"></hr> */}
+            {/* <div className="flex align-middle justify-start">
               <NavigationMenuItem>
                 <div className="flex align-start justify-between pt-2 pb-2">
                   <NavigationMenuTrigger className="h-12">
@@ -177,7 +183,7 @@ const SideBar = () => {
                   </NavigationMenuTrigger>
                 </div>
               </NavigationMenuItem>
-            </div>
+            </div> */}
           </div>
         </NavigationMenuList>
       </NavigationMenu>

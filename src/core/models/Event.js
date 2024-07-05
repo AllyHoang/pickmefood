@@ -5,21 +5,21 @@ const EventSchema = new Schema(
   {
     eventName: {
       type: String,
-      require: true,
+      required: true,
       default: "",
     },
     money: {
       type: Number,
-      require: true,
-      default: "",
+      required: true,
+      default: 0,
     },
     progress: {
       type: Number,
       default: 0,
     },
     expirationDate: {
-      type: String,
-      default: "",
+      type: Date,
+      default: null,
     },
     organizationName: {
       type: String,
@@ -43,7 +43,7 @@ const EventSchema = new Schema(
       default: "",
     },
     description: {
-      type: String, // Remove whitespace from the description
+      type: String,
     },
     channel: [
       {
@@ -76,6 +76,34 @@ const EventSchema = new Schema(
         message: (props) => `${props.value} is not a valid image URL!`,
       },
     },
+    comments: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
+        text: {
+          type: String,
+          required: true,
+        },
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
+    likedBy: [
+      {
+        user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User", // Reference to the User model
+        },
+        state: {
+          type: Boolean,
+          default: false,
+        },
+      },
+    ],
   },
 
   {

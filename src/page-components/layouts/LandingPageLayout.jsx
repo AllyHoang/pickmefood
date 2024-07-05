@@ -9,7 +9,6 @@ export const LandingPageLayout = ({ children }) => {
         <title>PickMeFood | Home</title>
       </Head>
       <div>
-        <LandingPageNavbar className="border-r border-black-200 pr-4" />
         <main className="p-6">{children}</main>
       </div>
     </>

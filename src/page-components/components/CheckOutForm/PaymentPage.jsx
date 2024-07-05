@@ -48,7 +48,7 @@ export default function PaymentPage({ eventId, userId, event }) {
   const options = { clientSecret, appearance };
 
   return (
-    <div className="App">
+    <div className="text-center">
       {!clientSecret ? (
         <form onSubmit={handleSubmit}>
           <input
@@ -60,15 +60,26 @@ export default function PaymentPage({ eventId, userId, event }) {
             min="1"
             step="any"
             disabled={isLoading}
+            className="w-full h-40 text-8xl rounded-lg border-2 border-gray-300 px-6 py-4 outline-none focus:border-blue-500 text-center text-gray-900 font-bold"
           />
+          <br />
           {!isLoading ? (
-            <button type="submit">Donate</button>
+            <button
+              type="submit"
+              className="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            >
+              Donate
+            </button>
           ) : (
-            <button type="button" disabled>
+            <button
+              type="button"
+              disabled
+              className="mt-4 bg-gray-400 text-white font-bold py-2 px-4 rounded cursor-not-allowed"
+            >
               Loading...
             </button>
           )}
-          {message && <div>{message}</div>}
+          {message && <div className="mt-4 text-red-500">{message}</div>}
         </form>
       ) : (
         <Elements options={options} stripe={stripePromise}>
