@@ -403,7 +403,7 @@ const AddEventForm = ({ userId }) => {
               <Button
                 type="button"
                 onClick={handleGetUserLocation}
-                className="bg-sky-500 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 ease-in-out"
+                className="bg-sky-400 hover:bg-sky-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition duration-300 ease-in-out"
               >
                 Get My Location
               </Button>

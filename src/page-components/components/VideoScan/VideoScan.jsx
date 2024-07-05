@@ -138,22 +138,13 @@ const VideoScan = ({ userId }) => {
   };
 
   const navigateToConfirmation = async () => {
-    if (confirmedItems.length > 0 && generatedImageUrl == null) {
-      if (uploadImageChecked) {
-        // Handle upload image logic here
-        console.log("Upload image checked");
-      } else {
-        const prompt = `Generate an image that includes the following items: ${confirmedItems.join(
-          ", "
-        )}`;
-        generateReplicateImage(prompt);
-      }
-    }
     setProcessing(false);
     socket.emit("stop_video");
     router.push({
-      pathname: "/confirmation",
-      query: { confirmedItems: JSON.stringify(confirmedItems) },
+      pathname: "",
+      query: {
+        confirmedItems: JSON.stringify([...confirmedItems]),
+      },
     });
   };
 
@@ -186,22 +177,22 @@ const VideoScan = ({ userId }) => {
           donation.
         </p>
         <p className="text-base-light text-gray-500">
-        Want a different way? Try
-        <a
-          href="/add-item"
-          className="underline underline-offset-2 hover:text-blue-400"
-        >
-          {" "}
-          creating manually
-        </a>
-        <a
-          href="/image-scan"
-          className="underline underline-offset-2 hover:text-blue-400"
-        >
-          {" "}
-          or do a image scan
-        </a>
-      </p>
+          Want a different way? Try
+          <a
+            href="/add-item"
+            className="underline underline-offset-2 hover:text-blue-400"
+          >
+            {" "}
+            creating manually
+          </a>
+          <a
+            href="/image-scan"
+            className="underline underline-offset-2 hover:text-blue-400"
+          >
+            {" "}
+            or do a image scan
+          </a>
+        </p>
       </div>
       <div className="flex items-center gap-2 mx-auto">
         <Button
@@ -220,14 +211,6 @@ const VideoScan = ({ userId }) => {
         </Button>
       </div>
       <div className="grid grid-cols-2 base-container self-center gap-8 w-full flex-1 mt-2">
-         {/* <div className={styles.videoContainer}>
-          <img
-            ref={videoRef}
-            src="https://images.pexels.com/photos/1132047/pexels-photo-1132047.jpeg"
-            alt="Video Stream"
-            className={styles.videoStream}
-          />
-        </div> */}
         <div className="col-span-1">
           {!beginCamera ? (
             <div className="h-full border border-dashed flex flex-col gap-1 items-center justify-center rounded p-8">
@@ -242,12 +225,11 @@ const VideoScan = ({ userId }) => {
               </Button>
             </div>
           ) : (
-            <div className="w-full h-full relative">
-              <Image
-                src="https://images.pexels.com/photos/1132047/pexels-photo-1132047.jpeg"
-                alt="Your uploaded photo"
-                fill
-                className="object-cover rounded object-top"
+            <div className={styles.videoContainer}>
+              <img
+                ref={videoRef}
+                alt="Video Stream"
+                className={styles.videoStream}
               />
             </div>
           )}
@@ -266,7 +248,7 @@ const VideoScan = ({ userId }) => {
               </CardDescription>
             </CardHeader>
             <div className="flex-1 overflow-y-scroll px-6">
-              {confirmedItems.length === 0 ? (
+              {detectedItems.length === 0 ? (
                 <div className="h-full w-full flex items-center justify-center">
                   <p className="text-center text-muted-foreground">
                     When detected, the items will automatically appear here.
@@ -274,7 +256,7 @@ const VideoScan = ({ userId }) => {
                 </div>
               ) : (
                 <ul className="list-none p-0 m-0">
-                  {confirmedItems.map((item, index) => (
+                  {detectedItems.map((item, index) => (
                     <li
                       key={index}
                       className={`flex items-center ${
@@ -286,7 +268,6 @@ const VideoScan = ({ userId }) => {
                       <input
                         type="checkbox"
                         id={`item-${index}`}
-                        checked={confirmedItems.has(item)}
                         onChange={(e) =>
                           e.target.checked
                             ? handleItemCheck(item)
@@ -342,7 +323,7 @@ const VideoScan = ({ userId }) => {
             <Button
               onClick={navigateToConfirmation}
               className="bg-sky-400 mx-6 mt-auto mb-4"
-              disabled={confirmedItems.length === 0}
+              disabled={[...confirmedItems].length === 0}
             >
               Go to confirmation page
             </Button>

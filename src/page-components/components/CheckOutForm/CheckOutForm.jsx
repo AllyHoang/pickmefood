@@ -6,6 +6,10 @@ import {
   PaymentElement,
 } from "@stripe/react-stripe-js";
 import Breadcrumbs from "@/components/ui/breadcrumbs";
+import { Router } from "lucide-react";
+import { useRouter } from "next/router";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function CheckoutForm({
   clientSecret,
@@ -18,6 +22,7 @@ export default function CheckoutForm({
   const elements = useElements();
   const [isLoadingPayment, setIsLoadingPayment] = useState(false);
   const [paymentError, setPaymentError] = useState(null);
+  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -55,6 +60,8 @@ export default function CheckoutForm({
         setPaymentError(data.error);
       } else {
         setMessage("Payment successful!");
+        toast.success("Payment successful!");
+        router.push(`/events`);
       }
       setIsLoadingPayment(false);
     }
@@ -85,7 +92,6 @@ export default function CheckoutForm({
   return (
     <div>
       <Breadcrumbs crumbs={crumbs} />
-
       <form onSubmit={handleSubmit}>
         <div>
           <strong>Donation Amount:</strong> ${donationAmount}
@@ -98,7 +104,7 @@ export default function CheckoutForm({
         <button
           type="submit"
           disabled={!clientSecret || isLoadingPayment}
-          style={{ marginTop: "20px" }}
+          className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4`}
         >
           {isLoadingPayment ? "Processing..." : "Pay now"}
         </button>

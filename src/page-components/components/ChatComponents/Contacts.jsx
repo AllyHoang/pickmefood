@@ -11,7 +11,9 @@ const Contacts = ({ userId }) => {
   const getContacts = async () => {
     try {
       const res = await fetch(
-        search !== "" ? `/api/users/searchContact/${search}` : "/api/users"
+        search !== ""
+          ? `/api/users/searchContact/${search}`
+          : `/api/users/${userId}/group`
       );
       const data = await res.json();
 
@@ -22,7 +24,7 @@ const Contacts = ({ userId }) => {
           (contact) => contact._id && contact._id !== userId
         );
       } else {
-        filteredContacts = data.allUsers.filter(
+        filteredContacts = data.usersInChats.filter(
           (contact) => contact._id && contact._id !== userId
         );
       }

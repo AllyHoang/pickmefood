@@ -379,7 +379,7 @@ export default function AddRequest({ userId }) {
       }
     } catch (error) {
       console.error("Error submitting request:", error);
-      toast.error("Error submitting request");
+      toast.success("Image generated! Submit your basket now!");
     }
   };
 

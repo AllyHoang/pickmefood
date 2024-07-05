@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import styles from "./ResetPasswordForm.module.css";
+import { Button } from "@/components/ui/button";
 
 export default function ResetPasswordForm({ id }) {
   const [password, setPassword] = useState("");
@@ -74,38 +75,49 @@ export default function ResetPasswordForm({ id }) {
   };
 
   return (
-    <div className={styles.container}>
-      <form onSubmit={handleSubmit} className={styles["form-container"]}>
-        <h1>Let's reset your password!</h1>
-        <label htmlFor="password" className={styles["label-text"]}>
-          Password
-        </label>
-        <input
-          id="password"
-          name="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          type="password"
-          className={styles["input-field"]}
-        />
-        <label htmlFor="confirmPassword" className={styles["label-text"]}>
-          Confirm Password
-        </label>
-        <input
-          id="confirmPassword"
-          name="confirmPassword"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          type="password"
-          className={styles["input-field"]}
-        />
-        {!passwordsMatch && (
-          <p style={{ color: "red" }}>Passwords do not match!</p>
-        )}
-        <button type="submit" className={styles["submit-button"]}>
-          Reset!
-        </button>
-      </form>
+    <div className="bg-gradient-to-tr from-sky-200 via-sky-300 to-sky-400 min-h-screen flex items-center justify-center">
+      <div className="bg-white p-10 rounded-3xl shadow-lg w-full max-w-xl">
+        <main className="flex p-6 w-full">
+          <div className="flex flex-col justify-around gap-10 w-full">
+            <label className="text-2xl font-bold">
+              Let's reset your password!
+            </label>
+            <form onSubmit={handleSubmit} className="space-y-8">
+              <label htmlFor="password" className={styles["label-text"]}>
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                type="password"
+                className={styles["input-field"]}
+              />
+              <label htmlFor="confirmPassword" className={styles["label-text"]}>
+                Confirm Password
+              </label>
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                type="password"
+                className={styles["input-field"]}
+              />
+              {!passwordsMatch && (
+                <p style={{ color: "red" }}>Passwords do not match!</p>
+              )}
+              <Button
+                type="submit"
+                className="bg-sky-500 text-white font-semibold"
+              >
+                Reset!
+              </Button>
+            </form>
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
