@@ -19,6 +19,7 @@ import DialogComponent from "../DashboardPage/DialogComponent";
 import getMatchingItems, {
   extractStateAndZip,
   getMatchingItemsInOneTransaction,
+  Status,
 } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import DrawerTransaction from "./DrawerTransction";
@@ -35,6 +36,18 @@ function TransactionPage() {
   const { currentUser } = useSelector((state) => state.user);
   const router = useRouter();
   const { transactions, isLoading } = useFetchTransaction(currentUser.id);
+  const acceptedTransactions = transactions.filter(
+    (transaction) => transaction.status === Status.ACCEPTED
+  );
+  const pendingTransactions = transactions.filter(
+    (transaction) => transaction.status === Status.PENDING
+  );
+  const matchedTransactions = transactions.filter(
+    (transaction) => transaction.status === Status.CONNECTED
+  );
+  const canceledTransactions = transactions.filter(
+    (transaction) => transaction.status === Status.CANCELED
+  );
   const [openDialog, setOpenDialog] = useState(false);
   console.log(transactions);
 
@@ -56,13 +69,21 @@ function TransactionPage() {
       setSelectedTransaction(transaction);
     }
   }, [router.query.id, transactions]);
+  console.log("canceledTransactions: ", canceledTransactions);
+  console.log("acceptedTransactions: ", acceptedTransactions);
+  console.log("pendingTransactions: ", pendingTransactions);
+  console.log("matchedTransactions: ", matchedTransactions);
 
   return (
     <div className="base-container">
     <div className="w-full">
-
       <h1 className="text-heading1-bold">Transaction</h1>
-      <TransactionSummary />
+      <TransactionSummary
+        canceledTransactions={canceledTransactions}
+        acceptedTransactions={acceptedTransactions}
+        pendingTransactions={pendingTransactions}
+        matchedTransactions={matchedTransactions}
+      />
       <div className="max-w-screen-2xl mx-auto w-full pb-4 mt-4">
         <div className="text-heading3-bold line-clamp-1">All Transactions</div>
 
@@ -116,12 +137,12 @@ function TransactionPage() {
                 <Separator></Separator>
 
                 {/* {transaction.status !== "accepted" && ( */}
-                  <DrawerTransaction
-                    id={transaction._id}
-                    handleOpenDialog={setOpenDialog}
-                    selectedTransaction={selectedTransaction}
-                    className="self-center"
-                  />
+                <DrawerTransaction
+                  id={transaction._id}
+                  handleOpenDialog={setOpenDialog}
+                  selectedTransaction={selectedTransaction}
+                  className="self-center"
+                />
                 {/* )} */}
               </Card>
             );
