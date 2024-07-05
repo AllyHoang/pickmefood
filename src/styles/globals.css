@@ -330,3 +330,6 @@ a {
 .base-container {
   @apply w-full max-w-[95%] mx-auto px-12;
 }
+.btn-primary {
+  @apply bg-sky-400 hover:bg-sky-500;
+}

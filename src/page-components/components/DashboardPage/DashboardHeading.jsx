@@ -4,7 +4,7 @@ function DashboardHeading({ userId }) {
   return (
     <div className="col-span-3 md:col-span-2">
       <div>
-        <div className="text-heading1-bold font-bold text-sky-500 ">
+        <div className="text-heading2-bold font-bold text-sky-500 ">
           {`Welcome back, ${useUser(userId).user.firstName}!`}
 
           {console.log(userId)}

@@ -155,7 +155,7 @@ const EventCard = ({ event, userId }) => {
         </div>
         <Dialog>
           <DialogTrigger>
-            <Button className="bg-sky-400">Donate</Button>
+            <Button className="bg-sky-400 hover:bg-sky-500">Donate</Button>
           </DialogTrigger>
           <DialogContent className="min-w-fit w-3/4 h-4/5">
             <PaymentPage
